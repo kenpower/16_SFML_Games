@@ -136,6 +136,7 @@
     <ClCompile Include="16_SFML_Games.cpp" />
     <ClCompile Include="arkanoid.cpp" />
     <ClCompile Include="doodle_jump.cpp" />
+    <ClCompile Include="fifteen_puzzle.cpp" />
     <ClCompile Include="minesweeper.cpp" />
     <ClCompile Include="snake.cpp" />
     <ClCompile Include="tetris.cpp" />

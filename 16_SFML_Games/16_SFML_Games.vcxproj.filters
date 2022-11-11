@@ -33,5 +33,8 @@
     <ClCompile Include="minesweeper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fifteen_puzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

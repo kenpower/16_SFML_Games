@@ -22,6 +22,7 @@ int doodle_jump();
 int arkanoid();
 int snake();
 int minesweeper();
+int fifteen_puzzle();
 
 using namespace std;
 int main()
@@ -35,6 +36,7 @@ int main()
         cout << "Arkanoid\n";
         cout << "Snake\n";
         cout << "Minesweeper\n";
+        cout << "Fifteen puzzle\n";
 
 
         cin >> key;
@@ -59,6 +61,10 @@ int main()
             case 'M':
             case 'm':
                 minesweeper();
+                break;
+            case 'F':
+            case 'f':
+                fifteen_puzzle();
                 break;
         }
 

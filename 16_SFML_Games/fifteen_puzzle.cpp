@@ -3,13 +3,13 @@
 
 using namespace sf;
 
-int main()
+int fifteen_puzzle()
 {
     RenderWindow app(VideoMode(256,256), "15-Puzzle!");
     app.setFramerateLimit(60);
 
     Texture t;
-    t.loadFromFile("images/15.png");
+    t.loadFromFile("images/fifteen_puzzle/15.png");
  
     int w = 64;
     int grid[6][6] = {0};
