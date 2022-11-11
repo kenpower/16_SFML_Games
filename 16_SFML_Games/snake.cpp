@@ -35,15 +35,15 @@ void Tick()
      if (s[0].x==s[i].x && s[0].y==s[i].y)  num=i;
  }
 
-int main()
+int snake()
 {  
     srand(time(0));
 
     RenderWindow window(VideoMode(w, h), "Snake Game!");
 
     Texture t1,t2;
-    t1.loadFromFile("images/white.png");
-    t2.loadFromFile("images/red.png");
+    t1.loadFromFile("images/snake/white.png");
+    t2.loadFromFile("images/snake/red.png");
 
     Sprite sprite1(t1);
     Sprite sprite2(t2);

@@ -20,6 +20,7 @@
 int tetris();
 int doodle_jump();
 int arkanoid();
+int snake();
 
 using namespace std;
 int main()
@@ -31,6 +32,8 @@ int main()
         cout << "Tetris \n";
         cout << "Doodle jump\n";  
         cout << "Arkanoid\n";
+        cout << "Snake\n";
+
 
         cin >> key;
 
@@ -46,6 +49,10 @@ int main()
             case 'A':
             case 'a':
                 arkanoid();
+                break;
+            case 'S':
+            case 's':
+                snake();
                 break;
         }
 
