@@ -15,11 +15,36 @@
 #pragma comment(lib,"glu32.lib")
 #pragma comment(lib,"winmm.lib")
 
+#include<iostream>
+
 int tetris();
 int doodle_jump();
 
+using namespace std;
 int main()
 {
+    char key;
+    while (true) {
+        cout << "Choose a game. Enter the uppercase key in game name :\n";
+        cout << "============================================\n";
+        cout << "Tetris \n";
+        cout << "Doodle jump\n";
+
+        cin >> key;
+
+        switch (key) {
+            case 'T':
+            case 't':
+                tetris();
+                break;
+            case 'D':
+            case 'd':
+                doodle_jump();
+                break;
+
+        }
+
+    }
     //tetris();
     doodle_jump();
 }
