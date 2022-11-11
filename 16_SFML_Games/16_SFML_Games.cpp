@@ -21,6 +21,7 @@ int tetris();
 int doodle_jump();
 int arkanoid();
 int snake();
+int minesweeper();
 
 using namespace std;
 int main()
@@ -33,6 +34,7 @@ int main()
         cout << "Doodle jump\n";  
         cout << "Arkanoid\n";
         cout << "Snake\n";
+        cout << "Minesweeper\n";
 
 
         cin >> key;
@@ -53,6 +55,10 @@ int main()
             case 'S':
             case 's':
                 snake();
+                break;
+            case 'M':
+            case 'm':
+                minesweeper();
                 break;
         }
 

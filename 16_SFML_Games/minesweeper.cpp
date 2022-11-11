@@ -2,7 +2,7 @@
 #include <time.h>
 using namespace sf;
 
-int main()
+int minesweeper()
 {
     srand(time(0));
 
@@ -13,7 +13,7 @@ int main()
     int sgrid[12][12]; //for showing
 
     Texture t;
-    t.loadFromFile("images/tiles.jpg");
+    t.loadFromFile("images/minesweeper/tiles.jpg");
     Sprite s(t);
 
     for (int i=1;i<=10;i++)
