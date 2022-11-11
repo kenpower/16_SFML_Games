@@ -19,6 +19,7 @@
 
 int tetris();
 int doodle_jump();
+int arkanoid();
 
 using namespace std;
 int main()
@@ -28,7 +29,8 @@ int main()
         cout << "Choose a game. Enter the uppercase key in game name :\n";
         cout << "============================================\n";
         cout << "Tetris \n";
-        cout << "Doodle jump\n";
+        cout << "Doodle jump\n";  
+        cout << "Arkanoid\n";
 
         cin >> key;
 
@@ -41,7 +43,10 @@ int main()
             case 'd':
                 doodle_jump();
                 break;
-
+            case 'A':
+            case 'a':
+                arkanoid();
+                break;
         }
 
     }

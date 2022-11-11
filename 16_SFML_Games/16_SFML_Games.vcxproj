@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="16_SFML_Games.cpp" />
+    <ClCompile Include="arkanoid.cpp" />
     <ClCompile Include="doodle_jump.cpp" />
     <ClCompile Include="tetris.cpp" />
   </ItemGroup>

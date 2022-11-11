@@ -24,5 +24,8 @@
     <ClCompile Include="doodle_jump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="arkanoid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
