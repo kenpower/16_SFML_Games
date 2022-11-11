@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <time.h>
 using namespace sf;
 
@@ -38,9 +39,9 @@ int tetris()
     RenderWindow window(VideoMode(320, 480), "The Game!");
 
     Texture t1,t2,t3;
-    t1.loadFromFile("images/tetris/tiles.png");
-    t2.loadFromFile("images/tetris/background.png");
-    t3.loadFromFile("images/tetris/frame.png");
+    t1.loadFromFile("images/tiles.png");
+    t2.loadFromFile("images/background.png");
+    t3.loadFromFile("images/frame.png");
 
     Sprite s(t1), background(t2), frame(t3);
 

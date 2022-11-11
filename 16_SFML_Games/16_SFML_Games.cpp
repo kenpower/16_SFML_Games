@@ -15,15 +15,13 @@
 #pragma comment(lib,"glu32.lib")
 #pragma comment(lib,"winmm.lib")
 
-
-
-#include <iostream>
-
 int tetris();
+int doodle_jump();
 
 int main()
 {
-    tetris();
+    //tetris();
+    doodle_jump();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
