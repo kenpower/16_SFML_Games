@@ -18,5 +18,8 @@
     <ClCompile Include="16_SFML_Games.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tetris.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

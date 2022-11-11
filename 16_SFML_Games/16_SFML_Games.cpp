@@ -1,11 +1,29 @@
-// 16_SFML_Games.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#ifdef _DEBUG
+#pragma comment(lib,"sfml-graphics-s-d.lib")
+#pragma comment(lib,"sfml-audio-s-d.lib")
+#pragma comment(lib,"sfml-system-s-d.lib")
+#pragma comment(lib,"sfml-window-s-d.lib")
+#pragma comment(lib,"sfml-network-s-d.lib")
+#else
+#pragma comment(lib,"sfml-graphics-s.lib")
+#pragma comment(lib,"sfml-audio-s.lib")
+#pragma comment(lib,"sfml-system-s.lib")
+#pragma comment(lib,"sfml-window-s.lib")
+#pragma comment(lib,"sfml-network-s.lib")
+#endif
+#pragma comment(lib,"opengl32.lib")
+#pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"winmm.lib")
+
+
 
 #include <iostream>
 
+int tetris();
+
 int main()
 {
-    std::cout << "Hello World!\n";
+    tetris();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
