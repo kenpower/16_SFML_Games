@@ -20,7 +20,7 @@ void swap(piece p1,piece p2)
 }
 
 
-int main()
+int bejeweled()
 {
     srand(time(0));
 
@@ -28,8 +28,8 @@ int main()
     app.setFramerateLimit(60);
 
     Texture t1,t2;
-    t1.loadFromFile("images/background.png");
-    t2.loadFromFile("images/gems.png");
+    t1.loadFromFile("images/bejeweled/background.png");
+    t2.loadFromFile("images/bejeweled/gems.png");
 
     Sprite background(t1), gems(t2);
 

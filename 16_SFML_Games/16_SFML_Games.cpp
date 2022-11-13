@@ -23,6 +23,10 @@ int arkanoid();
 int snake();
 int minesweeper();
 int fifteen_puzzle();
+int racing();
+int outrun();
+int xonix();
+int bejeweled();
 
 using namespace std;
 int main()
@@ -37,6 +41,12 @@ int main()
         cout << "Snake\n";
         cout << "Minesweeper\n";
         cout << "Fifteen puzzle\n";
+        cout << "Racing game\n";
+        cout << "Outrun\n";
+        cout << "Xonix\n";
+        cout << "Bejeweled\n";
+        cout << "Xonix\n";
+
 
 
         cin >> key;
@@ -65,12 +75,27 @@ int main()
             case 'F':
             case 'f':
                 fifteen_puzzle();
+                break; 
+            case 'r':
+            case 'R':
+                racing();
+                break;
+            case 'O':
+            case 'o':
+                outrun();
+                break;
+            case 'X':
+            case 'x':
+                xonix();
+                break;    
+            case 'b':
+            case 'B':
+                bejeweled();
                 break;
         }
 
     }
-    //tetris();
-    doodle_jump();
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

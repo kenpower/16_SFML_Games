@@ -62,7 +62,7 @@ struct Line
 };
 
 
-int main()
+int outrun()
 {
     RenderWindow app(VideoMode(width, height), "Outrun Racing!");
     app.setFramerateLimit(60);
@@ -71,13 +71,13 @@ int main()
     Sprite object[50];
     for(int i=1;i<=7;i++)
      {
-       t[i].loadFromFile("images/"+std::to_string(i)+".png");
+       t[i].loadFromFile("images/outrun/"+std::to_string(i)+".png");
        t[i].setSmooth(true);
        object[i].setTexture(t[i]);
      }
 
     Texture bg;
-    bg.loadFromFile("images/bg.png");
+    bg.loadFromFile("images/outrun/bg.png");
     bg.setRepeated(true);
     Sprite sBackground(bg);
     sBackground.setTextureRect(IntRect(0,0,5000,411));
