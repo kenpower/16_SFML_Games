@@ -27,6 +27,13 @@ int racing();
 int outrun();
 int xonix();
 int bejeweled();
+int netwalk();
+int mahjong();
+int tron();
+int chess();
+int volleyball() {/* TODO add box2D*/ return 0; }
+int asteroids();
+
 
 using namespace std;
 int main()
@@ -41,11 +48,16 @@ int main()
         cout << "Snake\n";
         cout << "Minesweeper\n";
         cout << "Fifteen puzzle\n";
-        cout << "Racing game\n";
+        cout << "Racing game (Micro-Machines)\n";
         cout << "Outrun\n";
         cout << "Xonix\n";
         cout << "Bejeweled\n";
-        cout << "Xonix\n";
+        cout << "Netwalk (Pipes game)\n";
+        cout << "mahJong solitare\n";
+        cout << "tron U\n";
+        cout << "Chess\n";
+        cout << "Volleyball\n";
+        cout << "astEroids\n";
 
 
 
@@ -92,19 +104,33 @@ int main()
             case 'B':
                 bejeweled();
                 break;
+            case 'n':
+            case 'N':
+                netwalk();
+                break;
+            case 'J':
+            case 'j':
+                mahjong();
+                break;
+            case 'u':
+            case 'U':
+                tron();
+                break;
+            case 'c':
+            case 'C':
+                chess();
+                break;
+            case 'v':
+            case 'V':
+                volleyball();
+                break;
+            case 'e':
+            case 'E':
+                asteroids();
+                break;
         }
 
     }
 
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

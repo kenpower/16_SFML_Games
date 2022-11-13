@@ -3,9 +3,9 @@
 using namespace sf;
 
 int N=30,M=20;
-int size=16;
-int w = size*N;
-int h = size*M;
+int sz=16;
+int w = sz*N;
+int h = sz*M;
 
 int dir,num=4;
 
@@ -79,12 +79,12 @@ int snake()
 
     for (int i=0; i<N; i++) 
       for (int j=0; j<M; j++) 
-        { sprite1.setPosition(i*size, j*size);  window.draw(sprite1); }
+        { sprite1.setPosition(i*sz, j*sz);  window.draw(sprite1); }
 
     for (int i=0;i<num;i++)
-        { sprite2.setPosition(s[i].x*size, s[i].y*size);  window.draw(sprite2); }
+        { sprite2.setPosition(s[i].x*sz, s[i].y*sz);  window.draw(sprite2); }
    
-    sprite2.setPosition(f.x*size, f.y*size);  window.draw(sprite2);    
+    sprite2.setPosition(f.x*sz, f.y*sz);  window.draw(sprite2);    
 
     window.display();
     }

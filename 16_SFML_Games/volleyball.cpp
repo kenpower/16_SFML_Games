@@ -20,16 +20,16 @@ void setWall(int x,int y,int w,int h)
     b_ground->CreateFixture(&gr,1);
 }
 
-int main()
+int volleyball()
 {
     RenderWindow window(VideoMode(800, 600), "Volleyball Game!");
     window.setFramerateLimit(60);
     window.setSize(Vector2u(800*0.8,600*0.8));
     
     Texture t1,t2,t3;
-    t1.loadFromFile("images/background.png");
-    t2.loadFromFile("images/ball.png");
-    t3.loadFromFile("images/blobby.png");
+    t1.loadFromFile("images/volleyball/background.png");
+    t2.loadFromFile("images/volleyball/ball.png");
+    t3.loadFromFile("images/volleyball/blobby.png");
     t1.setSmooth(true);
     t2.setSmooth(true);
     t3.setSmooth(true);

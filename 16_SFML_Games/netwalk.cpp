@@ -3,8 +3,8 @@
 using namespace sf;
 
 const int N = 6;
-int ts = 54; //tile size
-Vector2f offset(65,55);
+int tsz = 54; //tile size
+Vector2f oset(65,55);
 
 Vector2i Up(0,-1);
 Vector2i Down(0,1);
@@ -84,17 +84,17 @@ void drop(Vector2i v)
 }
 
 
-int main()
+int netwalk()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(390, 390), "The Pipe Puzzle!");
+    RenderWindow app(VideoMode(390, 390), "Netwalk The Pipe Puzzle!");
 
     Texture t1,t2,t3,t4;
-    t1.loadFromFile("images/background.png");
-    t2.loadFromFile("images/comp.png");
-    t3.loadFromFile("images/server.png");
-    t4.loadFromFile("images/pipes.png");
+    t1.loadFromFile("images/netwalk/background.png");
+    t2.loadFromFile("images/netwalk/comp.png");
+    t3.loadFromFile("images/netwalk/server.png");
+    t4.loadFromFile("images/netwalk/pipes.png");
     t4.setSmooth(true);
 
     Sprite sBackground(t1), sComp(t2), sServer(t3), sPipe(t4);
@@ -124,8 +124,8 @@ int main()
 
     Vector2i servPos;
     while(cell(servPos).dirs.size()==1) {servPos = Vector2i(rand()%N, rand()%N);}
-    sServer.setPosition(Vector2f(servPos*ts));
-    sServer.move(offset);
+    sServer.setPosition(Vector2f(servPos*tsz));
+    sServer.move(oset);
 
     while (app.isOpen())
     {
@@ -138,8 +138,8 @@ int main()
             if (e.type == Event::MouseButtonPressed)
                 if (e.key.code == Mouse::Left)
                   {
-                    Vector2i pos = Mouse::getPosition(app) + Vector2i(ts/2,ts/2) - Vector2i(offset);
-                    pos/=ts;
+                    Vector2i pos = Mouse::getPosition(app) + Vector2i(tsz/2,tsz/2) - Vector2i(oset);
+                    pos/=tsz;
                     if (isOut(pos)) continue;
                     cell(pos).orientation++;
                     cell(pos).rotate();
@@ -166,15 +166,15 @@ int main()
             p.angle+=5;
             if (p.angle>p.orientation*90) p.angle=p.orientation*90;
 
-            sPipe.setTextureRect(IntRect(ts*kind,0,ts,ts));
+            sPipe.setTextureRect(IntRect(tsz*kind,0,tsz,tsz));
             sPipe.setRotation(p.angle);
-            sPipe.setPosition(j*ts,i*ts);sPipe.move(offset);
+            sPipe.setPosition(j*tsz,i*tsz);sPipe.move(oset);
             app.draw(sPipe);
 
             if (kind==1)
                { if (p.on) sComp.setTextureRect(IntRect(53,0,36,36));
                  else sComp.setTextureRect(IntRect(0,0,36,36));
-                 sComp.setPosition(j*ts,i*ts);sComp.move(offset);
+                 sComp.setPosition(j*tsz,i*tsz);sComp.move(oset);
                  app.draw(sComp);
                }
            }

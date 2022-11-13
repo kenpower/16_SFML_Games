@@ -4,7 +4,7 @@
 using namespace sf;
 
 int size = 56;
-Vector2f offset(28,28);
+Vector2f os(28,28);
 
 Sprite f[32]; //figures
 std::string position="";
@@ -72,15 +72,19 @@ void loadPosition()
 }
 
 
-int main()
+int chess()
 {
     RenderWindow window(VideoMode(504, 504), "The Chess! (press SPACE)");
+    
+    const wchar_t const* engine = L"stockfish.exe";
+    wchar_t dst[14];
+    wcscpy_s(dst, engine);
 
-    ConnectToEngine("stockfish.exe");    
+    ConnectToEngine(dst);    
 
     Texture t1,t2;
-    t1.loadFromFile("images/figures.png"); 
-    t2.loadFromFile("images/board.png");
+    t1.loadFromFile("images/chess/figures.png"); 
+    t2.loadFromFile("images/chess/board.png");
 
     for(int i=0;i<32;i++) f[i].setTexture(t1);
     Sprite sBoard(t2); 
@@ -95,7 +99,7 @@ int main()
 
     while (window.isOpen())
     {
-        Vector2i pos = Mouse::getPosition(window) - Vector2i(offset);
+        Vector2i pos = Mouse::getPosition(window) - Vector2i(os);
 
         Event e;
         while (window.pollEvent(e))
@@ -149,9 +153,9 @@ int main()
             Vector2f p = newPos - oldPos;
             f[n].move(p.x/50, p.y/50); 
             window.draw(sBoard);
-            for(int i=0;i<32;i++) f[i].move(offset);
+            for(int i=0;i<32;i++) f[i].move(os);
             for(int i=0;i<32;i++) window.draw(f[i]); window.draw(f[n]);
-            for(int i=0;i<32;i++) f[i].move(-offset);
+            for(int i=0;i<32;i++) f[i].move(-os);
             window.display();
           }
 
@@ -164,13 +168,12 @@ int main()
     ////// draw  ///////
     window.clear();
     window.draw(sBoard);
-    for(int i=0;i<32;i++) f[i].move(offset);
+    for(int i=0;i<32;i++) f[i].move(os);
     for(int i=0;i<32;i++) window.draw(f[i]); window.draw(f[n]);
-    for(int i=0;i<32;i++) f[i].move(-offset);
+    for(int i=0;i<32;i++) f[i].move(-os);
     window.display();
     }
 
     CloseConnection();
-
     return 0;
 }

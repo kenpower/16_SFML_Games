@@ -32,7 +32,7 @@ struct player
   {return Vector3f(color.r,color.g,color.b);}
 };
 
-int main()
+int tron()
 {
     srand(time(0));
 
@@ -40,7 +40,7 @@ int main()
     window.setFramerateLimit(60);
 
     Texture texture;
-    texture.loadFromFile("background.jpg");
+    texture.loadFromFile("images/tron/background.jpg");
     Sprite sBackground(texture);
 
     player p1(Color::Red), p2(Color::Green); 

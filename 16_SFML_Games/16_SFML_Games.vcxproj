@@ -135,15 +135,23 @@
   <ItemGroup>
     <ClCompile Include="16_SFML_Games.cpp" />
     <ClCompile Include="arkanoid.cpp" />
+    <ClCompile Include="asteroids.cpp" />
     <ClCompile Include="bejeweled.cpp" />
+    <ClCompile Include="chess.cpp" />
     <ClCompile Include="doodle_jump.cpp" />
     <ClCompile Include="fifteen_puzzle.cpp" />
+    <ClCompile Include="mahjong.cpp" />
     <ClCompile Include="minesweeper.cpp" />
+    <ClCompile Include="netwalk.cpp" />
     <ClCompile Include="outrun.cpp" />
     <ClCompile Include="racing.cpp" />
     <ClCompile Include="snake.cpp" />
     <ClCompile Include="tetris.cpp" />
+    <ClCompile Include="tron.cpp" />
     <ClCompile Include="xonix.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Connector.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

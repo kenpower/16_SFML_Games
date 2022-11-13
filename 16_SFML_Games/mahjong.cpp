@@ -23,15 +23,15 @@ bool isOpen(int x,int y,int z)
 }
 
 
-int main()
+int mahjong()
 {
     srand(time(0));
 
     RenderWindow app(VideoMode(740, 570), "Mahjong Solitaire!");
 
     Texture t1,t2;
-    t1.loadFromFile("files/tiles.png");
-    t2.loadFromFile("files/background.png");
+    t1.loadFromFile("images/mahjong/tiles.png");
+    t2.loadFromFile("images/mahjong/background.png");
     Sprite s(t1), sBackground(t2);
     int w=48, h=66;
     int stepX=w/2-2, stepY=h/2-2;
@@ -41,7 +41,7 @@ int main()
 
 
     ////load from file////
-    std::fstream myfile("files/map.txt");
+    std::fstream myfile("images/mahjong/map.txt");
     for(int y=0;y<18;y++)
      for(int x=0;x<30;x++)
       {
