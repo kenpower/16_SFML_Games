@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\asteroids">
+      <UniqueIdentifier>{df1e313e-98c3-4e1f-aacc-5b8dd05ffd83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="16_SFML_Games.cpp">
@@ -66,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
