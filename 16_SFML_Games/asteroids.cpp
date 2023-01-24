@@ -61,6 +61,9 @@ public:
         angle = Angle;
         R = radius;
     }
+
+    virtual void update() {};
+	
 };
 
 class Entity
@@ -77,8 +80,6 @@ public:
      controller = ecr;
      controller->settings(X, Y, Angle, radius);
    }
-
-   virtual void update(){};
 
    void draw(RenderWindow &app)
    {
@@ -321,7 +322,7 @@ int asteroids()
     {
       Entity *e = *i;
 
-      e->update();
+      e->controller->update();
       e->anim.update();
 
       if (e->controller->life==false) {i=entities.erase(i); delete e;}
