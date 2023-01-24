@@ -150,6 +150,7 @@ class player: public EntityController
    player()
    {
      name="player";
+     dx = dy = 0;
    }
 
    void update()
@@ -227,7 +228,7 @@ int asteroids()
 
     player *p = new player();
 	Entity* pe = new Entity;
-    pe->settings(sPlayer, p, 200,200,0,20);
+    pe->settings(sPlayer, p, W / 2, H / 2, 0, 20);
     entities.push_back(pe);
 
     /////main loop/////
