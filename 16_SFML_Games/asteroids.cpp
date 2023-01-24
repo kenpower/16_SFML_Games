@@ -45,41 +45,51 @@ class Animation
    }
 
 };
-
+class EntityController {
+public:
+    float x, y, dx, dy, R, angle;
+    bool life;
+    std::string name;
+	
+    EntityController()
+    {
+        life = 1;
+    }
+    void settings(int X, int Y, float Angle = 0, int radius = 1)
+    {
+        x = X; y = Y;
+        angle = Angle;
+        R = radius;
+    }
+};
 
 class Entity
 {
-   public:
-   float x,y,dx,dy,R,angle;
-   bool life;
-   std::string name;
+public:
+
    Animation anim;
+   EntityController* controller;
+   
 
-   Entity()
-   {
-     life=1;
-   }
-
-   void settings(Animation &a,int X,int Y,float Angle=0,int radius=1)
+   void settings(Animation &a, EntityController* ecr, int X,int Y,float Angle=0,int radius=1)
    {
      anim = a;
-     x=X; y=Y;
-     angle = Angle;
-     R = radius;
+     controller = ecr;
+     controller->settings(X, Y, Angle, radius);
    }
 
    virtual void update(){};
 
    void draw(RenderWindow &app)
    {
-     anim.sprite.setPosition(x,y);
-     anim.sprite.setRotation(angle+90);
+     anim.sprite.setPosition(controller->x,controller->y);
+     anim.sprite.setRotation(controller->angle+90);
      app.draw(anim.sprite);
 
-     CircleShape circle(R);
-     circle.setFillColor(Color(255,0,0,170));
-     circle.setPosition(x,y);
-     circle.setOrigin(R,R);
+     //CircleShape circle(R);
+     //circle.setFillColor(Color(255,0,0,170));
+     //circle.setPosition(x,y);
+     //circle.setOrigin(R,R);
      //app.draw(circle);
    }
 
@@ -87,7 +97,7 @@ class Entity
 };
 
 
-class asteroid: public Entity
+class asteroid: public EntityController
 {
    public:
    asteroid()
@@ -109,7 +119,7 @@ class asteroid: public Entity
 };
 
 
-class bullet: public Entity
+class bullet: public EntityController
 {
    public:
    bullet()
@@ -131,7 +141,7 @@ class bullet: public Entity
 };
 
 
-class player: public Entity
+class player: public EntityController
 {
    public:
    bool thrust;
@@ -166,7 +176,7 @@ class player: public Entity
 };
 
 
-bool isCollide(Entity *a,Entity *b)
+bool isCollide(EntityController*a, EntityController*b)
 {
   return (b->x - a->x)*(b->x - a->x)+
          (b->y - a->y)*(b->y - a->y)<
@@ -209,13 +219,15 @@ int asteroids()
     for(int i=0;i<15;i++)
     {
       asteroid *a = new asteroid();
-      a->settings(sRock, rand()%W, rand()%H, rand()%360, 25);
-      entities.push_back(a);
+      Entity* ae = new Entity;
+      ae->settings(sRock,a, rand()%W, rand()%H, rand()%360, 25);
+      entities.push_back(ae);
     }
 
     player *p = new player();
-    p->settings(sPlayer,200,200,0,20);
-    entities.push_back(p);
+	Entity* pe = new Entity;
+    pe->settings(sPlayer, p, 200,200,0,20);
+    entities.push_back(pe);
 
     /////main loop/////
     while (app.isOpen())
@@ -230,8 +242,9 @@ int asteroids()
              if (event.key.code == Keyboard::Space)
               {
                 bullet *b = new bullet();
-                b->settings(sBullet,p->x,p->y,p->angle,10);
-                entities.push_back(b);
+				Entity* be = new Entity();
+                be->settings(sBullet, b, p->x,p->y,p->angle,10);
+                entities.push_back(be);
               }
         }
 
@@ -241,9 +254,12 @@ int asteroids()
     else p->thrust=false;
 
 
-    for(auto a:entities)
-     for(auto b:entities)
+    for(auto ae:entities)
+     for(auto be:entities)
      {
+         auto a = ae->controller;
+         auto b = be->controller;
+
       if (a->name=="asteroid" && b->name=="bullet")
        if ( isCollide(a,b) )
            {
@@ -251,16 +267,18 @@ int asteroids()
             b->life=false;
 
             Entity *e = new Entity();
-            e->settings(sExplosion,a->x,a->y);
-            e->name="explosion";
+            EntityController* c = new EntityController;
+            e->settings(sExplosion, c, a->x,a->y);
+            c->name="explosion";
             entities.push_back(e);
 
 
             for(int i=0;i<2;i++)
             {
              if (a->R==15) continue;
-             Entity *e = new asteroid();
-             e->settings(sRock_small,a->x,a->y,rand()%360,15);
+             Entity* e = new Entity();
+             EntityController* ac = new asteroid();
+             e->settings(sRock_small,ac, a->x,a->y,rand()%360,15);
              entities.push_back(e);
             }
 
@@ -272,29 +290,31 @@ int asteroids()
             b->life=false;
 
             Entity *e = new Entity();
-            e->settings(sExplosion_ship,a->x,a->y);
-            e->name="explosion";
+            EntityController* c = new EntityController;
+            e->settings(sExplosion_ship,c, a->x,a->y);
+            c->name="explosion";
             entities.push_back(e);
 
-            p->settings(sPlayer,W/2,H/2,0,20);
-            p->dx=0; p->dy=0;
+            a->settings(W/2,H/2,0,20);
+            a->dx=0; a->dy=0;
            }
      }
 
 
-    if (p->thrust)  p->anim = sPlayer_go;
-    else   p->anim = sPlayer;
+    if (p->thrust)  pe->anim = sPlayer_go;
+    else   pe->anim = sPlayer;
 
 
     for(auto e:entities)
-     if (e->name=="explosion")
-      if (e->anim.isEnd()) e->life=0;
+     if (e->controller->name=="explosion")
+      if (e->anim.isEnd()) e->controller->life=0;
 
     if (rand()%150==0)
      {
        asteroid *a = new asteroid();
-       a->settings(sRock, 0,rand()%H, rand()%360, 25);
-       entities.push_back(a);
+       Entity* e = new Entity();
+       e->settings(sRock, a, 0,rand()%H, rand()%360, 25);
+       entities.push_back(e);
      }
 
     for(auto i=entities.begin();i!=entities.end();)
@@ -304,7 +324,7 @@ int asteroids()
       e->update();
       e->anim.update();
 
-      if (e->life==false) {i=entities.erase(i); delete e;}
+      if (e->controller->life==false) {i=entities.erase(i); delete e;}
       else i++;
     }
 
