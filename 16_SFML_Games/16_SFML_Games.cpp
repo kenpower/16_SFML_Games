@@ -1,3 +1,4 @@
+#define SFML_STATIC
 #ifdef _DEBUG
 #pragma comment(lib,"sfml-graphics-s-d.lib")
 #pragma comment(lib,"sfml-audio-s-d.lib")
