@@ -2,10 +2,10 @@
 #include <time.h>
 using namespace sf;
 
-const int M = 25;
-const int N = 40;
+const int HEIGHT = 25;
+const int WIDTH = 40;
 
-int grid[M][N] = {0};
+int grid[HEIGHT][WIDTH] = {0};
 int tileSize = 18; 
 
 struct Enemy
@@ -38,7 +38,7 @@ int xonix()
 {
     srand(time(0));
 
-    RenderWindow window(VideoMode(N*tileSize, M*tileSize), "Xonix Game!");
+    RenderWindow window(VideoMode(WIDTH*tileSize, HEIGHT*tileSize), "Xonix Game!");
     window.setFramerateLimit(60);
 
     Texture t1,t2,t3;
@@ -50,17 +50,17 @@ int xonix()
     sGameover.setPosition(100,100);
     sEnemy.setOrigin(20,20);
 
-    int enemyCount = 4;
-    Enemy a[10];
+    const int enemyCount = 4;
+    Enemy a[enemyCount];
 
     bool Game=true;
     int x=0, y=0, dx=0, dy=0;
     float timer=0, delay=0.07; 
     Clock clock;
 
-    for (int i=0;i<M;i++)
-     for (int j=0;j<N;j++)
-      if (i==0 || j==0 || i==M-1 || j==N-1)  grid[i][j]=1;
+    for (int i=0;i<HEIGHT;i++)
+     for (int j=0;j<WIDTH;j++)
+      if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=1;
 
     while (window.isOpen())
     {
@@ -77,8 +77,8 @@ int xonix()
             if (e.type == Event::KeyPressed)
              if (e.key.code==Keyboard::Escape)
                {
-                for (int i=1;i<M-1;i++)
-                 for (int j=1;j<N-1;j++)
+                for (int i=1;i<HEIGHT-1;i++)
+                 for (int j=1;j<WIDTH-1;j++)
                    grid[i][j]=0;
 
                 x=10;y=0;
@@ -98,8 +98,8 @@ int xonix()
          x+=dx;
          y+=dy;
 
-         if (x<0) x=0; if (x>N-1) x=N-1;
-         if (y<0) y=0; if (y>M-1) y=M-1;
+         if (x<0) x=0; if (x>WIDTH-1) x=WIDTH-1;
+         if (y<0) y=0; if (y>HEIGHT-1) y=HEIGHT-1;
 
          if (grid[y][x]==2) Game=false;
          if (grid[y][x]==0) grid[y][x]=2;
@@ -115,8 +115,8 @@ int xonix()
            for (int i=0;i<enemyCount;i++)
                 drop(a[i].y/tileSize, a[i].x/tileSize);
 
-           for (int i=0;i<M;i++)
-             for (int j=0;j<N;j++)
+           for (int i=0;i<HEIGHT;i++)
+             for (int j=0;j<WIDTH;j++)
               if (grid[i][j]==-1) grid[i][j]=0;
               else grid[i][j]=1;
           }
@@ -127,8 +127,8 @@ int xonix()
       /////////draw//////////
       window.clear();
 
-      for (int i=0;i<M;i++)
-        for (int j=0;j<N;j++)
+      for (int i=0;i<HEIGHT;i++)
+        for (int j=0;j<WIDTH;j++)
          {
             if (grid[i][j]==0) continue;
             if (grid[i][j]==1) sTile.setTextureRect(IntRect( 0,0,tileSize,tileSize));
