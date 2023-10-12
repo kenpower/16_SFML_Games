@@ -5,7 +5,9 @@ using namespace sf;
 const int HEIGHT = 25;
 const int WIDTH = 40;
 
-int grid[HEIGHT][WIDTH] = {0};
+enum tiles { EMPTY = 0, WALL = 1, PLAYER = 2, NOT_TO_BE_FILLED = -1 };
+
+int grid[HEIGHT][WIDTH] = {EMPTY};
 int tileSize = 18; 
 
 struct Enemy
@@ -20,18 +22,19 @@ struct Enemy
 
   void move()
    { 
-    x+=dx; if (grid[y/tileSize][x/tileSize]==1) {dx=-dx; x+=dx;}
-    y+=dy; if (grid[y/tileSize][x/tileSize]==1) {dy=-dy; y+=dy;}
+    x+=dx; if (grid[y/tileSize][x/tileSize]==WALL) {dx=-dx; x+=dx;}
+    y+=dy; if (grid[y/tileSize][x/tileSize]==WALL) {dy=-dy; y+=dy;}
    }
 };
 
+
 void drop(int y,int x)
 {
-  if (grid[y][x]==0) grid[y][x]=-1;
-  if (grid[y-1][x]==0) drop(y-1,x);
-  if (grid[y+1][x]==0) drop(y+1,x);
-  if (grid[y][x-1]==0) drop(y,x-1);
-  if (grid[y][x+1]==0) drop(y,x+1);
+  if (grid[y][x]==EMPTY) grid[y][x]= NOT_TO_BE_FILLED;
+  if (grid[y-1][x]==EMPTY) drop(y-1,x);
+  if (grid[y+1][x]==EMPTY) drop(y+1,x);
+  if (grid[y][x-1]==EMPTY) drop(y,x-1);
+  if (grid[y][x+1]==EMPTY) drop(y,x+1);
 }
 
 int xonix()
@@ -60,7 +63,7 @@ int xonix()
 
     for (int i=0;i<HEIGHT;i++)
      for (int j=0;j<WIDTH;j++)
-      if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=1;
+      if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=WALL;
 
     while (window.isOpen())
     {
@@ -79,7 +82,7 @@ int xonix()
                {
                 for (int i=1;i<HEIGHT-1;i++)
                  for (int j=1;j<WIDTH-1;j++)
-                   grid[i][j]=0;
+                   grid[i][j]=EMPTY;
 
                 x=10;y=0;
                 Game=true;
@@ -101,47 +104,55 @@ int xonix()
          if (x<0) x=0; if (x>WIDTH-1) x=WIDTH-1;
          if (y<0) y=0; if (y>HEIGHT-1) y=HEIGHT-1;
 
-         if (grid[y][x]==2) Game=false;
-         if (grid[y][x]==0) grid[y][x]=2;
+         if (grid[y][x]==PLAYER) Game=false;
+         if (grid[y][x]==0) grid[y][x]=PLAYER;
          timer=0;
         }
 
         for (int i=0;i<enemyCount;i++) a[i].move();
 
-        if (grid[y][x]==1)
+        if (grid[y][x]==WALL) //player touches filled square
           {
-           dx=dy=0;
+           dx=dy=0; //stop player
 
+           //marks all tiles that are connected to enemy as -1
            for (int i=0;i<enemyCount;i++)
-                drop(a[i].y/tileSize, a[i].x/tileSize);
+                drop(a[i].y/tileSize, a[i].x/tileSize); 
 
+           // put a tile in all cells not -1
            for (int i=0;i<HEIGHT;i++)
              for (int j=0;j<WIDTH;j++)
-              if (grid[i][j]==-1) grid[i][j]=0;
-              else grid[i][j]=1;
+              if (grid[i][j]==NOT_TO_BE_FILLED) grid[i][j]=EMPTY;
+              else grid[i][j]=WALL;
           }
 
+        //if player touches enemy, game over
         for (int i=0;i<enemyCount;i++)
-           if  (grid[a[i].y/tileSize][a[i].x/tileSize]==2) Game=false;
+           if  (grid[a[i].y/tileSize][a[i].x/tileSize]==PLAYER) Game=false;
 
       /////////draw//////////
       window.clear();
 
+      //draw wall times
       for (int i=0;i<HEIGHT;i++)
         for (int j=0;j<WIDTH;j++)
          {
-            if (grid[i][j]==0) continue;
-            if (grid[i][j]==1) sTile.setTextureRect(IntRect( 0,0,tileSize,tileSize));
-            if (grid[i][j]==2) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
+            if (grid[i][j]==EMPTY) continue;
+            if (grid[i][j]==WALL) sTile.setTextureRect(IntRect( 0,0,tileSize,tileSize));
+            if (grid[i][j]==PLAYER) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
             sTile.setPosition(j*tileSize,i*tileSize);
             window.draw(sTile);
          }
 
+      //draw player
       sTile.setTextureRect(IntRect(36,0,tileSize,tileSize));
       sTile.setPosition(x*tileSize,y*tileSize);
       window.draw(sTile);
 
+
       sEnemy.rotate(10);
+      
+      //draw enemy
       for (int i=0;i<enemyCount;i++)
        {
         sEnemy.setPosition(a[i].x,a[i].y);
@@ -150,7 +161,7 @@ int xonix()
 
       if (!Game) window.draw(sGameover);
 
-       window.display();
+      window.display();
     }
 
     return 0;
