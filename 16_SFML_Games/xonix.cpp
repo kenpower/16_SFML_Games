@@ -25,20 +25,20 @@ public:
 		return grid[y][x];
 	}
 
-    void drop(int y, int x) {
+    void markConnectedCellsNotToBeFilled(int y, int x) {
 		if (grid[y][x] == EMPTY)
 			grid[y][x] = NOT_TO_BE_FILLED;
 		if (grid[y - 1][x] == EMPTY)
-			drop(y - 1, x);
+			markConnectedCellsNotToBeFilled(y - 1, x);
 		if (grid[y + 1][x] == EMPTY)
-			drop(y + 1, x);
+			markConnectedCellsNotToBeFilled(y + 1, x);
 		if (grid[y][x - 1] == EMPTY)
-			drop(y, x - 1);
+			markConnectedCellsNotToBeFilled(y, x - 1);
 		if (grid[y][x + 1] == EMPTY)
-			drop(y, x + 1);
+			markConnectedCellsNotToBeFilled(y, x + 1);
 	}
 
-    void fill() {
+    void fillEmptyCells() {
 		for (int i = 0; i < HEIGHT; i++)
 			for (int j = 0; j < WIDTH; j++)
 				if (grid[i][j] == NOT_TO_BE_FILLED)
@@ -206,26 +206,29 @@ int xonix()
 
         if (timer>delay)
         {
-         player.move();
+             player.move();
 
-         if (grid.cellIsNewWall(player.y,player.x)) Game=false;
+             bool playerIsTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
+             if (playerIsTouchesNewWall) 
+                 Game=false;
 
-         grid.newWall(player.y, player.x);
+             grid.newWall(player.y, player.x);
          
-         timer=0;
+             timer=0;
         }
 
         for (int i=0;i<enemyCount;i++) enemies[i].move();
 
-        if (grid.isWall(player.y, player.x)) //player touches filled square
+        bool playerTouchesFilledWall = grid.isWall(player.y, player.x);
+
+        if (playerTouchesFilledWall) 
         {
             player.stop();
 
-            //marks all tiles that are connected to enemy as -1
             for (int i = 0; i < enemyCount; i++)
-                grid.drop(enemies[i].y / tileSize, enemies[i].x / tileSize);
+                grid.markConnectedCellsNotToBeFilled(enemies[i].y / tileSize, enemies[i].x / tileSize);
 
-            grid.fill();
+            grid.fillEmptyCells();
         }
         //if enemy touches new wall, game over
         for (int i=0;i<enemyCount;i++)
