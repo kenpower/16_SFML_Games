@@ -6,8 +6,6 @@ const int HEIGHT = 25;
 const int WIDTH = 40;
 const int tileSize = 18; 
 
-
-
 class Grid {
     enum tiles { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
 
@@ -171,16 +169,17 @@ int xonix()
     const int enemyCount = 4;
     Enemy enemies[enemyCount];
 
-    bool Game=true;
+    bool gameIsActive=true;
     Player player;
-    float timer=0, delay=0.07; 
+    float frameTimer = 0;
+    const float FRAME_TIME=0.07; 
     Clock clock;
 
     while (window.isOpen())
     {
         float time = clock.getElapsedTime().asSeconds();
         clock.restart();
-        timer+=time;
+        frameTimer+=time;
 
         Event e;
         while (window.pollEvent(e))
@@ -193,7 +192,7 @@ int xonix()
                {
 				grid.clear();
                 player.reset();
-                Game=true;
+                gameIsActive=true;
                }
         }
 
@@ -202,19 +201,20 @@ int xonix()
         if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp() ;
         if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown() ;
         
-        if (!Game) continue;
+        if (!gameIsActive) continue;
 
-        if (timer>delay)
+        bool newFrame = frameTimer > FRAME_TIME;
+        if (newFrame)
         {
              player.move();
 
              bool playerIsTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
              if (playerIsTouchesNewWall) 
-                 Game=false;
+                 gameIsActive=false;
 
              grid.newWall(player.y, player.x);
          
-             timer=0;
+             frameTimer=0;
         }
 
         for (int i=0;i<enemyCount;i++) enemies[i].move();
@@ -233,7 +233,7 @@ int xonix()
         //if enemy touches new wall, game over
         for (int i=0;i<enemyCount;i++)
            if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) 
-               Game=false;
+               gameIsActive=false;
 
       /////////draw//////////
       window.clear();
@@ -268,7 +268,7 @@ int xonix()
         window.draw(sEnemy);
        }
 
-      if (!Game) window.draw(sGameover);
+      if (!gameIsActive) window.draw(sGameover);
 
       window.display();
     }
