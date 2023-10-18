@@ -7,9 +7,9 @@ const int WIDTH = 40;
 const int tileSize = 18; 
 
 class Grid {
-    enum tiles { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
+    enum tile { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
 
-    int grid[HEIGHT][WIDTH] = { EMPTY };
+    tile grid[HEIGHT][WIDTH] = { EMPTY };
 
 public:
     Grid() {
@@ -168,61 +168,98 @@ void moveEnemies() {
 	for (int i=0;i<enemyCount;i++) enemies[i].move();
 }
 
-void drawFrame(RenderWindow& window, Sprite& sTile, Sprite& sEnemy, Sprite& sGameover, bool gameOver) {
-    /////////draw//////////
-    window.clear();
+class Screen {
+    RenderWindow window;
+    Texture t1, t2, t3;
+    //Sprite sTile(t1), sGameover(t2), sEnemy(t3);
+    Sprite sTile, sGameover, sEnemy;
+public:
 
-    IntRect blueTile(0, 0, tileSize, tileSize);
-    IntRect greenTile(54, 0, tileSize, tileSize);
-    IntRect redTile(36, 0, tileSize, tileSize);
+    Screen():window(VideoMode(WIDTH* tileSize, HEIGHT* tileSize), "Xonix Game!") {
+     
+        window.setFramerateLimit(60);
 
-    //draw wall times
-    for (int i = 0; i < HEIGHT; i++)
-        for (int j = 0; j < WIDTH; j++)
-        {
-            if (grid.isEmpty(i, j))   continue;
-            if (grid.isWall(i, j))    sTile.setTextureRect(blueTile);
-            if (grid.isNewWall(i, j)) sTile.setTextureRect(greenTile);
-            sTile.setPosition(j * tileSize, i * tileSize);
-            window.draw(sTile);
-        }
+        t1.loadFromFile("images/xonix/tiles.png");
+        t2.loadFromFile("images/xonix/gameover.png");
+        t3.loadFromFile("images/xonix/enemy.png");
 
-    //draw player
-    sTile.setTextureRect(redTile);
-    sTile.setPosition(player.x * tileSize, player.y * tileSize);
-    window.draw(sTile);
+        sTile.setTexture(t1);
+        sGameover.setTexture(t2);
+        sEnemy.setTexture(t3);
 
-
-    sEnemy.rotate(10);
-
-    //draw enemy
-    for (int i = 0; i < enemyCount; i++)
-    {
-        sEnemy.setPosition(enemies[i].x, enemies[i].y);
-        window.draw(sEnemy);
+        sGameover.setPosition(100, 100);
+        sEnemy.setOrigin(20, 20);
     }
 
-    if (gameOver) window.draw(sGameover);
+    void drawFrame(bool gameOver) {
+        /////////draw//////////
+        window.clear();
 
-    window.display();
-}
+        IntRect blueTile(0, 0, tileSize, tileSize);
+        IntRect greenTile(54, 0, tileSize, tileSize);
+        IntRect redTile(36, 0, tileSize, tileSize);
+
+        //draw wall times
+        for (int i = 0; i < HEIGHT; i++)
+            for (int j = 0; j < WIDTH; j++)
+            {
+                if (grid.isEmpty(i, j))   continue;
+                if (grid.isWall(i, j))    sTile.setTextureRect(blueTile);
+                if (grid.isNewWall(i, j)) sTile.setTextureRect(greenTile);
+                sTile.setPosition(j * tileSize, i * tileSize);
+                window.draw(sTile);
+            }
+
+        //draw player
+        sTile.setTextureRect(redTile);
+        sTile.setPosition(player.x * tileSize, player.y * tileSize);
+        window.draw(sTile);
+
+
+        sEnemy.rotate(10);
+
+        //draw enemy
+        for (int i = 0; i < enemyCount; i++)
+        {
+            sEnemy.setPosition(enemies[i].x, enemies[i].y);
+            window.draw(sEnemy);
+        }
+
+        if (gameOver) window.draw(sGameover);
+
+        window.display();
+    }
+
+    bool isOpen() {
+		return window.isOpen();
+	}
+
+    bool handleEvents() {
+        Event e;
+        bool shouldReset = false;
+        while (window.pollEvent(e))
+        {
+            if (e.type == Event::Closed)
+                window.close();
+
+            if (e.type == Event::KeyPressed)
+                if (e.key.code == Keyboard::Escape)
+                {
+					shouldReset = true;
+                }
+        }
+        return shouldReset;
+    }
+};
+
+
 int xonix()
 {
     srand(time(0));
 
-    RenderWindow window(VideoMode(WIDTH*tileSize, HEIGHT*tileSize), "Xonix Game!");
-    window.setFramerateLimit(60);
-
-    Texture t1,t2,t3;
-    t1.loadFromFile("images/xonix/tiles.png");
-    t2.loadFromFile("images/xonix/gameover.png");
-    t3.loadFromFile("images/xonix/enemy.png");
-
-    Sprite sTile(t1), sGameover(t2), sEnemy(t3);
-    sGameover.setPosition(100,100);
-    sEnemy.setOrigin(20,20);
 
 
+    Screen screen;
 
     bool gameOver=false;
 
@@ -230,25 +267,17 @@ int xonix()
     const float FRAME_TIME=0.07; 
     Clock clock;
 
-    while (window.isOpen())
+    while (screen.isOpen())
     {
         float time = clock.getElapsedTime().asSeconds();
         clock.restart();
         frameTimer+=time;
 
-        Event e;
-        while (window.pollEvent(e))
-        {
-            if (e.type == Event::Closed)
-                window.close();
-               
-            if (e.type == Event::KeyPressed)
-             if (e.key.code==Keyboard::Escape)
-               {
-				gameReset();    
-                gameOver=false;
-               }
+        if (screen.handleEvents() == true) {
+            gameReset();
+            gameOver = false;
         }
+        
 
         if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft() ;
         if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight() ;
@@ -284,9 +313,9 @@ int xonix()
             grid.fillEmptyCells();
         }
 
-        gameOver=enemyTouchesNewWall();
+        gameOver = enemyTouchesNewWall();
 
-        drawFrame(window, sTile, sEnemy,sGameover, gameOver);
+        screen.drawFrame(gameOver);
 
       
     }
