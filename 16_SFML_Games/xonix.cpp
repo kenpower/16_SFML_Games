@@ -4,11 +4,11 @@ using namespace sf;
 
 const int HEIGHT = 25;
 const int WIDTH = 40;
+const int tileSize = 18; 
 
-enum tiles { EMPTY = 0, WALL = 1, PLAYER = 2, NOT_TO_BE_FILLED = -1 };
+enum tiles { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
 
 int grid[HEIGHT][WIDTH] = {EMPTY};
-int tileSize = 18; 
 
 struct Enemy
 {int x,y,dx,dy;
@@ -30,7 +30,7 @@ struct Enemy
 
 void drop(int y,int x)
 {
-  if (grid[y][x]==EMPTY) grid[y][x]= NOT_TO_BE_FILLED;
+  if (grid[y][x]  ==EMPTY) grid[y][x]= NOT_TO_BE_FILLED;
   if (grid[y-1][x]==EMPTY) drop(y-1,x);
   if (grid[y+1][x]==EMPTY) drop(y+1,x);
   if (grid[y][x-1]==EMPTY) drop(y,x-1);
@@ -104,8 +104,8 @@ int xonix()
          if (x<0) x=0; if (x>WIDTH-1) x=WIDTH-1;
          if (y<0) y=0; if (y>HEIGHT-1) y=HEIGHT-1;
 
-         if (grid[y][x]==PLAYER) Game=false;
-         if (grid[y][x]==0) grid[y][x]=PLAYER;
+         if (grid[y][x]==NEW_WALL) Game=false;
+         if (grid[y][x]==0) grid[y][x]=NEW_WALL;
          timer=0;
         }
 
@@ -128,7 +128,7 @@ int xonix()
 
         //if player touches enemy, game over
         for (int i=0;i<enemyCount;i++)
-           if  (grid[a[i].y/tileSize][a[i].x/tileSize]==PLAYER) Game=false;
+           if  (grid[a[i].y/tileSize][a[i].x/tileSize]==NEW_WALL) Game=false;
 
       /////////draw//////////
       window.clear();
@@ -139,7 +139,7 @@ int xonix()
          {
             if (grid[i][j]==EMPTY) continue;
             if (grid[i][j]==WALL) sTile.setTextureRect(IntRect( 0,0,tileSize,tileSize));
-            if (grid[i][j]==PLAYER) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
+            if (grid[i][j]==NEW_WALL) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
             sTile.setPosition(j*tileSize,i*tileSize);
             window.draw(sTile);
          }
