@@ -100,7 +100,56 @@ struct Enemy
    }
 };
 
+class Player {
+public:
+    int x, y, dx, dy;
+    Player() {
+        x = 0;
+        y = 0;
+        dx = 0;
+        dy = 0;
+    }
 
+    void move() {
+        x += dx;
+        y += dy;
+        constrain();
+    }
+
+    void constrain(){
+        if (x < 0) x = 0;
+        if (x > WIDTH - 1) x = WIDTH - 1;
+        if (y < 0) y = 0;
+        if (y > HEIGHT - 1) y = HEIGHT - 1;
+    }
+
+    void stop() {
+		dx = 0;
+		dy = 0;
+	}
+
+    void reset(){
+        x = 10; y = 0;
+    }
+
+    void goLeft() {
+        dx = -1;
+        dy = 0;
+    }
+    void goRight() {
+        dx = +1;
+        dy = 0;
+    }
+    void goUp() {
+        dx = 0;
+        dy = -1;
+    }
+    void goDown() {
+        dx = 0;
+        dy = +1;
+    }
+
+};
 
 
 int xonix()
@@ -123,7 +172,7 @@ int xonix()
     Enemy enemies[enemyCount];
 
     bool Game=true;
-    int x=0, y=0, dx=0, dy=0;
+    Player player;
     float timer=0, delay=0.07; 
     Clock clock;
 
@@ -143,40 +192,34 @@ int xonix()
              if (e.key.code==Keyboard::Escape)
                {
 				grid.clear();
-                x=10;y=0;
+                player.reset();
                 Game=true;
                }
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) {dx=-1;dy=0;};
-        if (Keyboard::isKeyPressed(Keyboard::Right))  {dx=1;dy=0;};
-        if (Keyboard::isKeyPressed(Keyboard::Up)) {dx=0;dy=-1;};
-        if (Keyboard::isKeyPressed(Keyboard::Down)) {dx=0;dy=1;};
+        if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft() ;
+        if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight() ;
+        if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp() ;
+        if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown() ;
         
         if (!Game) continue;
 
         if (timer>delay)
         {
-         x+=dx;
-         y+=dy;
+         player.move();
 
-         if (x<0) x=0; 
-         if (x>WIDTH-1) x=WIDTH-1;
-         if (y<0) y=0; 
-         if (y>HEIGHT-1) y=HEIGHT-1;
+         if (grid.cellIsNewWall(player.y,player.x)) Game=false;
 
-         if (grid.cellIsNewWall(y,x)) Game=false;
-
-         grid.newWall(y, x);
+         grid.newWall(player.y, player.x);
          
          timer=0;
         }
 
         for (int i=0;i<enemyCount;i++) enemies[i].move();
 
-        if (grid.isWall(y, x)) //player touches filled square
+        if (grid.isWall(player.y, player.x)) //player touches filled square
         {
-            dx = dy = 0; //stop player
+            player.stop();
 
             //marks all tiles that are connected to enemy as -1
             for (int i = 0; i < enemyCount; i++)
@@ -184,7 +227,7 @@ int xonix()
 
             grid.fill();
         }
-        //if player touches enemy, game over
+        //if enemy touches new wall, game over
         for (int i=0;i<enemyCount;i++)
            if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) 
                Game=false;
@@ -205,7 +248,7 @@ int xonix()
 
       //draw player
       sTile.setTextureRect(IntRect(36,0,tileSize,tileSize));
-      sTile.setPosition(x*tileSize,y*tileSize);
+      sTile.setPosition(player.x*tileSize,player.y*tileSize);
       window.draw(sTile);
 
 
