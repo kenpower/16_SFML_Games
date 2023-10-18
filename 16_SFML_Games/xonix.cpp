@@ -252,26 +252,42 @@ public:
     }
 };
 
+void controlPlayer(){
+    if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft();
+    if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight();
+    if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp();
+    if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown();
+}
 
+void playerTouchesExistingWall() {
+    bool playerTouchesFilledWall = grid.isWall(player.y, player.x);
+
+    if (playerTouchesFilledWall)
+    {
+        player.stop();
+
+        for (int i = 0; i < enemyCount; i++)
+            grid.markConnectedCellsNotToBeFilled(enemies[i].y / tileSize, enemies[i].x / tileSize);
+
+        grid.fillEmptyCells();
+    }
+}
 int xonix()
 {
     srand(time(0));
-
-
 
     Screen screen;
 
     bool gameOver=false;
 
-    float frameTimer = 0;
-    const float FRAME_TIME=0.07; 
+    float timeSincePlayerMoved = 0;
+    const float TIME_BETWEEN_PLAYER_MOVES=0.07; 
     Clock clock;
 
     while (screen.isOpen())
     {
-        float time = clock.getElapsedTime().asSeconds();
+        timeSincePlayerMoved += clock.getElapsedTime().asSeconds();
         clock.restart();
-        frameTimer+=time;
 
         if (screen.handleEvents() == true) {
             gameReset();
@@ -279,15 +295,11 @@ int xonix()
         }
         
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft() ;
-        if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight() ;
-        if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp() ;
-        if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown() ;
-        
+        controlPlayer();
         if (gameOver) continue;
 
-        bool newFrame = frameTimer > FRAME_TIME;
-        if (newFrame)
+        bool playerShouldMove = timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
+        if (playerShouldMove)
         {
              player.move();
 
@@ -296,22 +308,13 @@ int xonix()
 
              grid.newWall(player.y, player.x);
          
-             frameTimer=0;
+             timeSincePlayerMoved=0;
         }
 
         moveEnemies();
 
-        bool playerTouchesFilledWall = grid.isWall(player.y, player.x);
+        playerTouchesExistingWall();
 
-        if (playerTouchesFilledWall) 
-        {
-            player.stop();
-
-            for (int i = 0; i < enemyCount; i++)
-                grid.markConnectedCellsNotToBeFilled(enemies[i].y / tileSize, enemies[i].x / tileSize);
-
-            grid.fillEmptyCells();
-        }
 
         gameOver = enemyTouchesNewWall();
 
