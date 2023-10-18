@@ -152,6 +152,21 @@ public:
 Player player;
 const int enemyCount = 4;
 Enemy enemies[enemyCount];
+
+void gameReset() {
+    grid.clear();
+	player.reset();
+}
+
+bool enemyTouchesNewWall() {
+	for (int i=0;i<enemyCount;i++)
+		if (grid.pointInNewWall(enemies[i].y,enemies[i].x)) return true;
+	return false;
+}
+
+void moveEnemies() {
+	for (int i=0;i<enemyCount;i++) enemies[i].move();
+}
 int xonix()
 {
     srand(time(0));
@@ -191,8 +206,7 @@ int xonix()
             if (e.type == Event::KeyPressed)
              if (e.key.code==Keyboard::Escape)
                {
-				grid.clear();
-                player.reset();
+				gameReset();    
                 gameOver=false;
                }
         }
@@ -209,16 +223,15 @@ int xonix()
         {
              player.move();
 
-             bool playerIsTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
-             if (playerIsTouchesNewWall) 
-                 gameOver=true;
+             bool playerTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
+             gameOver = playerTouchesNewWall;
 
              grid.newWall(player.y, player.x);
          
              frameTimer=0;
         }
 
-        for (int i=0;i<enemyCount;i++) enemies[i].move();
+        moveEnemies();
 
         bool playerTouchesFilledWall = grid.isWall(player.y, player.x);
 
@@ -231,10 +244,8 @@ int xonix()
 
             grid.fillEmptyCells();
         }
-        //if enemy touches new wall, game over
-        for (int i=0;i<enemyCount;i++)
-           if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) 
-               gameOver=true;
+
+        gameOver=enemyTouchesNewWall();
 
       /////////draw//////////
       window.clear();
