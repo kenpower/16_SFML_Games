@@ -6,12 +6,85 @@ const int HEIGHT = 25;
 const int WIDTH = 40;
 const int tileSize = 18; 
 
-enum tiles { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
 
-int grid[HEIGHT][WIDTH] = {EMPTY};
+
+class Grid {
+    enum tiles { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
+
+    int grid[HEIGHT][WIDTH] = { EMPTY };
+
+public:
+    Grid() {
+		for (int i = 0; i < HEIGHT; i++)
+			for (int j = 0; j < WIDTH; j++)
+				if (i == 0 || j == 0 || i == HEIGHT - 1 || j == WIDTH - 1)
+					grid[i][j] = WALL;
+	}
+
+    int cell(int y, int x) {
+		return grid[y][x];
+	}
+
+    void drop(int y, int x) {
+		if (grid[y][x] == EMPTY)
+			grid[y][x] = NOT_TO_BE_FILLED;
+		if (grid[y - 1][x] == EMPTY)
+			drop(y - 1, x);
+		if (grid[y + 1][x] == EMPTY)
+			drop(y + 1, x);
+		if (grid[y][x - 1] == EMPTY)
+			drop(y, x - 1);
+		if (grid[y][x + 1] == EMPTY)
+			drop(y, x + 1);
+	}
+
+    void fill() {
+		for (int i = 0; i < HEIGHT; i++)
+			for (int j = 0; j < WIDTH; j++)
+				if (grid[i][j] == NOT_TO_BE_FILLED)
+					grid[i][j] = EMPTY;
+				else
+					grid[i][j] = WALL;
+	}
+
+    bool pointInWall(int y, int x) {
+        return grid[y / tileSize][x / tileSize] == WALL;
+    }
+
+    bool pointInNewWall(int y, int x) {
+        return grid[y / tileSize][x / tileSize] == NEW_WALL;
+    }
+
+    void clear() {
+        for (int i = 1; i < HEIGHT - 1; i++)
+            for (int j = 1; j < WIDTH - 1; j++)
+                grid[i][j] = EMPTY;
+    }
+
+    bool cellIsNewWall(int y, int x) {
+        		return grid[y][x] == NEW_WALL;
+    }
+
+    void newWall(int y, int x) {
+        if (grid[y][x] == EMPTY) grid[y][x] = NEW_WALL;
+    }
+
+    bool isWall(int y, int x) {
+		return grid[y][x] == WALL;
+	}
+    bool isNewWall(int y, int x) {
+        return grid[y][x] == NEW_WALL;
+    }
+    bool isEmpty(int y, int x) {
+        return grid[y][x] == EMPTY;
+    }
+};
+
+Grid grid;
 
 struct Enemy
-{int x,y,dx,dy;
+{
+    int x,y,dx,dy;
 
   Enemy()
    {
@@ -22,20 +95,13 @@ struct Enemy
 
   void move()
    { 
-    x+=dx; if (grid[y/tileSize][x/tileSize]==WALL) {dx=-dx; x+=dx;}
-    y+=dy; if (grid[y/tileSize][x/tileSize]==WALL) {dy=-dy; y+=dy;}
+    x+=dx; if (grid.pointInWall(y,x)) {dx=-dx; x+=dx;}
+    y+=dy; if (grid.pointInWall(y, x)) {dy=-dy; y+=dy;}
    }
 };
 
 
-void drop(int y,int x)
-{
-  if (grid[y][x]  ==EMPTY) grid[y][x]= NOT_TO_BE_FILLED;
-  if (grid[y-1][x]==EMPTY) drop(y-1,x);
-  if (grid[y+1][x]==EMPTY) drop(y+1,x);
-  if (grid[y][x-1]==EMPTY) drop(y,x-1);
-  if (grid[y][x+1]==EMPTY) drop(y,x+1);
-}
+
 
 int xonix()
 {
@@ -61,9 +127,9 @@ int xonix()
     float timer=0, delay=0.07; 
     Clock clock;
 
-    for (int i=0;i<HEIGHT;i++)
-     for (int j=0;j<WIDTH;j++)
-      if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=WALL;
+    //for (int i=0;i<HEIGHT;i++)
+    // for (int j=0;j<WIDTH;j++)
+    //  if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=WALL;
 
     while (window.isOpen())
     {
@@ -80,10 +146,7 @@ int xonix()
             if (e.type == Event::KeyPressed)
              if (e.key.code==Keyboard::Escape)
                {
-                for (int i=1;i<HEIGHT-1;i++)
-                 for (int j=1;j<WIDTH-1;j++)
-                   grid[i][j]=EMPTY;
-
+				grid.clear();
                 x=10;y=0;
                 Game=true;
                }
@@ -104,31 +167,28 @@ int xonix()
          if (x<0) x=0; if (x>WIDTH-1) x=WIDTH-1;
          if (y<0) y=0; if (y>HEIGHT-1) y=HEIGHT-1;
 
-         if (grid[y][x]==NEW_WALL) Game=false;
-         if (grid[y][x]==0) grid[y][x]=NEW_WALL;
+         if (grid.cellIsNewWall(y,x)) Game=false;
+
+         grid.newWall(y, x);
+         
          timer=0;
         }
 
         for (int i=0;i<enemyCount;i++) a[i].move();
 
-        if (grid[y][x]==WALL) //player touches filled square
-          {
-           dx=dy=0; //stop player
+        if (grid.isWall(y, x)) //player touches filled square
+        {
+            dx = dy = 0; //stop player
 
-           //marks all tiles that are connected to enemy as -1
-           for (int i=0;i<enemyCount;i++)
-                drop(a[i].y/tileSize, a[i].x/tileSize); 
+            //marks all tiles that are connected to enemy as -1
+            for (int i = 0; i < enemyCount; i++)
+                grid.drop(a[i].y / tileSize, a[i].x / tileSize);
 
-           // put a tile in all cells not -1
-           for (int i=0;i<HEIGHT;i++)
-             for (int j=0;j<WIDTH;j++)
-              if (grid[i][j]==NOT_TO_BE_FILLED) grid[i][j]=EMPTY;
-              else grid[i][j]=WALL;
-          }
-
+            grid.fill();
+        }
         //if player touches enemy, game over
         for (int i=0;i<enemyCount;i++)
-           if  (grid[a[i].y/tileSize][a[i].x/tileSize]==NEW_WALL) Game=false;
+           if  (grid.pointInNewWall(a[i].y, a[i].x)) Game=false;
 
       /////////draw//////////
       window.clear();
@@ -137,9 +197,9 @@ int xonix()
       for (int i=0;i<HEIGHT;i++)
         for (int j=0;j<WIDTH;j++)
          {
-            if (grid[i][j]==EMPTY) continue;
-            if (grid[i][j]==WALL) sTile.setTextureRect(IntRect( 0,0,tileSize,tileSize));
-            if (grid[i][j]==NEW_WALL) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
+            if (grid.isEmpty(i,j)) continue;
+            if (grid.isWall(i,j)) sTile.setTextureRect(IntRect(0, 0, tileSize, tileSize));
+            if (grid.isNewWall(i,j)) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
             sTile.setPosition(j*tileSize,i*tileSize);
             window.draw(sTile);
          }
