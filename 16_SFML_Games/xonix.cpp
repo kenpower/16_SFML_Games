@@ -160,8 +160,10 @@ int xonix()
          x+=dx;
          y+=dy;
 
-         if (x<0) x=0; if (x>WIDTH-1) x=WIDTH-1;
-         if (y<0) y=0; if (y>HEIGHT-1) y=HEIGHT-1;
+         if (x<0) x=0; 
+         if (x>WIDTH-1) x=WIDTH-1;
+         if (y<0) y=0; 
+         if (y>HEIGHT-1) y=HEIGHT-1;
 
          if (grid.cellIsNewWall(y,x)) Game=false;
 
@@ -184,7 +186,8 @@ int xonix()
         }
         //if player touches enemy, game over
         for (int i=0;i<enemyCount;i++)
-           if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) Game=false;
+           if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) 
+               Game=false;
 
       /////////draw//////////
       window.clear();
@@ -193,8 +196,8 @@ int xonix()
       for (int i=0;i<HEIGHT;i++)
         for (int j=0;j<WIDTH;j++)
          {
-            if (grid.isEmpty(i,j)) continue;
-            if (grid.isWall(i,j)) sTile.setTextureRect(IntRect(0, 0, tileSize, tileSize));
+            if (grid.isEmpty(i,j))   continue;
+            if (grid.isWall(i,j))    sTile.setTextureRect(IntRect(0, 0, tileSize, tileSize));
             if (grid.isNewWall(i,j)) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
             sTile.setPosition(j*tileSize,i*tileSize);
             window.draw(sTile);
