@@ -149,7 +149,9 @@ public:
 
 };
 
-
+Player player;
+const int enemyCount = 4;
+Enemy enemies[enemyCount];
 int xonix()
 {
     srand(time(0));
@@ -166,11 +168,10 @@ int xonix()
     sGameover.setPosition(100,100);
     sEnemy.setOrigin(20,20);
 
-    const int enemyCount = 4;
-    Enemy enemies[enemyCount];
 
-    bool gameIsActive=true;
-    Player player;
+
+    bool gameOver=false;
+
     float frameTimer = 0;
     const float FRAME_TIME=0.07; 
     Clock clock;
@@ -192,7 +193,7 @@ int xonix()
                {
 				grid.clear();
                 player.reset();
-                gameIsActive=true;
+                gameOver=false;
                }
         }
 
@@ -201,7 +202,7 @@ int xonix()
         if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp() ;
         if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown() ;
         
-        if (!gameIsActive) continue;
+        if (gameOver) continue;
 
         bool newFrame = frameTimer > FRAME_TIME;
         if (newFrame)
@@ -210,7 +211,7 @@ int xonix()
 
              bool playerIsTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
              if (playerIsTouchesNewWall) 
-                 gameIsActive=false;
+                 gameOver=true;
 
              grid.newWall(player.y, player.x);
          
@@ -233,7 +234,7 @@ int xonix()
         //if enemy touches new wall, game over
         for (int i=0;i<enemyCount;i++)
            if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) 
-               gameIsActive=false;
+               gameOver=true;
 
       /////////draw//////////
       window.clear();
@@ -268,7 +269,7 @@ int xonix()
         window.draw(sEnemy);
        }
 
-      if (!gameIsActive) window.draw(sGameover);
+      if (gameOver) window.draw(sGameover);
 
       window.display();
     }
