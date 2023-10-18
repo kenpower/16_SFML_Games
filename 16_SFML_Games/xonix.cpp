@@ -120,16 +120,12 @@ int xonix()
     sEnemy.setOrigin(20,20);
 
     const int enemyCount = 4;
-    Enemy a[enemyCount];
+    Enemy enemies[enemyCount];
 
     bool Game=true;
     int x=0, y=0, dx=0, dy=0;
     float timer=0, delay=0.07; 
     Clock clock;
-
-    //for (int i=0;i<HEIGHT;i++)
-    // for (int j=0;j<WIDTH;j++)
-    //  if (i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1)  grid[i][j]=WALL;
 
     while (window.isOpen())
     {
@@ -174,7 +170,7 @@ int xonix()
          timer=0;
         }
 
-        for (int i=0;i<enemyCount;i++) a[i].move();
+        for (int i=0;i<enemyCount;i++) enemies[i].move();
 
         if (grid.isWall(y, x)) //player touches filled square
         {
@@ -182,13 +178,13 @@ int xonix()
 
             //marks all tiles that are connected to enemy as -1
             for (int i = 0; i < enemyCount; i++)
-                grid.drop(a[i].y / tileSize, a[i].x / tileSize);
+                grid.drop(enemies[i].y / tileSize, enemies[i].x / tileSize);
 
             grid.fill();
         }
         //if player touches enemy, game over
         for (int i=0;i<enemyCount;i++)
-           if  (grid.pointInNewWall(a[i].y, a[i].x)) Game=false;
+           if  (grid.pointInNewWall(enemies[i].y, enemies[i].x)) Game=false;
 
       /////////draw//////////
       window.clear();
@@ -215,7 +211,7 @@ int xonix()
       //draw enemy
       for (int i=0;i<enemyCount;i++)
        {
-        sEnemy.setPosition(a[i].x,a[i].y);
+        sEnemy.setPosition(enemies[i].x,enemies[i].y);
         window.draw(sEnemy);
        }
 
