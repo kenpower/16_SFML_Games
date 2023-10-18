@@ -152,10 +152,12 @@ public:
 Player player;
 const int enemyCount = 4;
 Enemy enemies[enemyCount];
+bool gameOver = false;
 
 void gameReset() {
     grid.clear();
 	player.reset();
+    gameOver = false;
 }
 
 bool enemyTouchesNewWall() {
@@ -259,7 +261,16 @@ void controlPlayer(){
     if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown();
 }
 
-void playerTouchesExistingWall() {
+void movePlayer(bool& playerTouchedNewWall){
+
+        player.move();
+
+        playerTouchedNewWall = grid.cellIsNewWall(player.y, player.x);
+
+        grid.newWall(player.y, player.x);
+}
+
+void playerCompletesLoop() {
     bool playerTouchesFilledWall = grid.isWall(player.y, player.x);
 
     if (playerTouchesFilledWall)
@@ -278,7 +289,7 @@ int xonix()
 
     Screen screen;
 
-    bool gameOver=false;
+
 
     float timeSincePlayerMoved = 0;
     const float TIME_BETWEEN_PLAYER_MOVES=0.07; 
@@ -289,34 +300,30 @@ int xonix()
         timeSincePlayerMoved += clock.getElapsedTime().asSeconds();
         clock.restart();
 
-        if (screen.handleEvents() == true) {
+        if (screen.handleEvents() == true) 
             gameReset();
-            gameOver = false;
+
+       
+
+        if (gameOver) continue;
+
+        controlPlayer();
+
+        bool playerTouchedNewWall = false;
+        bool playerShouldMove = timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
+
+        if (playerShouldMove) {
+            movePlayer(playerTouchedNewWall);
+            timeSincePlayerMoved = 0;
         }
         
 
-        controlPlayer();
-        if (gameOver) continue;
-
-        bool playerShouldMove = timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
-        if (playerShouldMove)
-        {
-             player.move();
-
-             bool playerTouchesNewWall = grid.cellIsNewWall(player.y, player.x);
-             gameOver = playerTouchesNewWall;
-
-             grid.newWall(player.y, player.x);
-         
-             timeSincePlayerMoved=0;
-        }
 
         moveEnemies();
 
-        playerTouchesExistingWall();
+        playerCompletesLoop();
 
-
-        gameOver = enemyTouchesNewWall();
+        gameOver = enemyTouchesNewWall() || playerTouchedNewWall;
 
         screen.drawFrame(gameOver);
 
