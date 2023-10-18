@@ -167,6 +167,45 @@ bool enemyTouchesNewWall() {
 void moveEnemies() {
 	for (int i=0;i<enemyCount;i++) enemies[i].move();
 }
+
+void drawFrame(RenderWindow& window, Sprite& sTile, Sprite& sEnemy, Sprite& sGameover, bool gameOver) {
+    /////////draw//////////
+    window.clear();
+
+    IntRect blueTile(0, 0, tileSize, tileSize);
+    IntRect greenTile(54, 0, tileSize, tileSize);
+    IntRect redTile(36, 0, tileSize, tileSize);
+
+    //draw wall times
+    for (int i = 0; i < HEIGHT; i++)
+        for (int j = 0; j < WIDTH; j++)
+        {
+            if (grid.isEmpty(i, j))   continue;
+            if (grid.isWall(i, j))    sTile.setTextureRect(blueTile);
+            if (grid.isNewWall(i, j)) sTile.setTextureRect(greenTile);
+            sTile.setPosition(j * tileSize, i * tileSize);
+            window.draw(sTile);
+        }
+
+    //draw player
+    sTile.setTextureRect(redTile);
+    sTile.setPosition(player.x * tileSize, player.y * tileSize);
+    window.draw(sTile);
+
+
+    sEnemy.rotate(10);
+
+    //draw enemy
+    for (int i = 0; i < enemyCount; i++)
+    {
+        sEnemy.setPosition(enemies[i].x, enemies[i].y);
+        window.draw(sEnemy);
+    }
+
+    if (gameOver) window.draw(sGameover);
+
+    window.display();
+}
 int xonix()
 {
     srand(time(0));
@@ -247,42 +286,9 @@ int xonix()
 
         gameOver=enemyTouchesNewWall();
 
-      /////////draw//////////
-      window.clear();
+        drawFrame(window, sTile, sEnemy,sGameover, gameOver);
 
-      IntRect blueTile(0, 0, tileSize, tileSize);
-      IntRect greenTile(54, 0, tileSize, tileSize);
-      IntRect redTile(36,0,tileSize,tileSize);
-
-      //draw wall times
-      for (int i=0;i<HEIGHT;i++)
-        for (int j=0;j<WIDTH;j++)
-         {
-            if (grid.isEmpty(i,j))   continue;
-            if (grid.isWall(i,j))    sTile.setTextureRect(blueTile);
-            if (grid.isNewWall(i,j)) sTile.setTextureRect(greenTile);
-            sTile.setPosition(j*tileSize,i*tileSize);
-            window.draw(sTile);
-         }
-
-      //draw player
-      sTile.setTextureRect(redTile);
-      sTile.setPosition(player.x*tileSize,player.y*tileSize);
-      window.draw(sTile);
-
-
-      sEnemy.rotate(10);
       
-      //draw enemy
-      for (int i=0;i<enemyCount;i++)
-       {
-        sEnemy.setPosition(enemies[i].x,enemies[i].y);
-        window.draw(sEnemy);
-       }
-
-      if (gameOver) window.draw(sGameover);
-
-      window.display();
     }
 
     return 0;
