@@ -238,19 +238,23 @@ int xonix()
       /////////draw//////////
       window.clear();
 
+      IntRect blueTile(0, 0, tileSize, tileSize);
+      IntRect greenTile(54, 0, tileSize, tileSize);
+      IntRect redTile(36,0,tileSize,tileSize);
+
       //draw wall times
       for (int i=0;i<HEIGHT;i++)
         for (int j=0;j<WIDTH;j++)
          {
             if (grid.isEmpty(i,j))   continue;
-            if (grid.isWall(i,j))    sTile.setTextureRect(IntRect(0, 0, tileSize, tileSize));
-            if (grid.isNewWall(i,j)) sTile.setTextureRect(IntRect(54,0,tileSize,tileSize));
+            if (grid.isWall(i,j))    sTile.setTextureRect(blueTile);
+            if (grid.isNewWall(i,j)) sTile.setTextureRect(greenTile);
             sTile.setPosition(j*tileSize,i*tileSize);
             window.draw(sTile);
          }
 
       //draw player
-      sTile.setTextureRect(IntRect(36,0,tileSize,tileSize));
+      sTile.setTextureRect(redTile);
       sTile.setPosition(player.x*tileSize,player.y*tileSize);
       window.draw(sTile);
 
