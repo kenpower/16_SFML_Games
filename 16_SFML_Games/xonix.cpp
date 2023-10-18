@@ -98,13 +98,27 @@ struct Enemy
    }
 };
 
+class StopWatch {
+	Clock clock;
+    float targetTime;
+
+public:
+    StopWatch(float targetTime):targetTime(targetTime) {}
+
+    bool isTimeUp() { 
+        return clock.getElapsedTime().asSeconds() > targetTime;
+    }
+    void reset() {
+		clock.restart();
+	}
+};
+
 class Player {
-    float timeSincePlayerMoved = 0;
     const float TIME_BETWEEN_PLAYER_MOVES = 0.07;
-    Clock clock;
+    StopWatch moveTimer;
 public:
     int x, y, dx, dy;
-    Player() {
+    Player(): moveTimer(TIME_BETWEEN_PLAYER_MOVES) {
         reset();
     }
 
@@ -112,7 +126,7 @@ public:
         x += dx;
         y += dy;
         constrain();
-        timeSincePlayerMoved = 0;
+        moveTimer.reset();
     }
 
     void constrain(){
@@ -151,9 +165,7 @@ public:
     }
 
     bool shouldMove() {
-        timeSincePlayerMoved += clock.getElapsedTime().asSeconds();
-        clock.restart();
-		return timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
+        return moveTimer.isTimeUp();
 	}
 };
 
