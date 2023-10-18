@@ -99,19 +99,20 @@ struct Enemy
 };
 
 class Player {
+    float timeSincePlayerMoved = 0;
+    const float TIME_BETWEEN_PLAYER_MOVES = 0.07;
+    Clock clock;
 public:
     int x, y, dx, dy;
     Player() {
-        x = 0;
-        y = 0;
-        dx = 0;
-        dy = 0;
+        reset();
     }
 
     void move() {
         x += dx;
         y += dy;
         constrain();
+        timeSincePlayerMoved = 0;
     }
 
     void constrain(){
@@ -128,6 +129,8 @@ public:
 
     void reset(){
         x = 10; y = 0;
+        dx = 0;
+        dy = 0;
     }
 
     void goLeft() {
@@ -147,6 +150,11 @@ public:
         dy = +1;
     }
 
+    bool shouldMove() {
+        timeSincePlayerMoved += clock.getElapsedTime().asSeconds();
+        clock.restart();
+		return timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
+	}
 };
 
 Player player;
@@ -193,7 +201,7 @@ public:
         sEnemy.setOrigin(20, 20);
     }
 
-    void drawFrame(bool gameOver) {
+    void drawFrame() {
         /////////draw//////////
         window.clear();
 
@@ -288,36 +296,22 @@ int xonix()
     srand(time(0));
 
     Screen screen;
-
-
-
-    float timeSincePlayerMoved = 0;
-    const float TIME_BETWEEN_PLAYER_MOVES=0.07; 
-    Clock clock;
+    gameReset();
 
     while (screen.isOpen())
     {
-        timeSincePlayerMoved += clock.getElapsedTime().asSeconds();
-        clock.restart();
 
         if (screen.handleEvents() == true) 
             gameReset();
-
-       
 
         if (gameOver) continue;
 
         controlPlayer();
 
         bool playerTouchedNewWall = false;
-        bool playerShouldMove = timeSincePlayerMoved > TIME_BETWEEN_PLAYER_MOVES;
-
-        if (playerShouldMove) {
+      
+        if (player.shouldMove())
             movePlayer(playerTouchedNewWall);
-            timeSincePlayerMoved = 0;
-        }
-        
-
 
         moveEnemies();
 
@@ -325,7 +319,7 @@ int xonix()
 
         gameOver = enemyTouchesNewWall() || playerTouchedNewWall;
 
-        screen.drawFrame(gameOver);
+        screen.drawFrame();
 
       
     }
