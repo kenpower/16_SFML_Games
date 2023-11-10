@@ -16,3 +16,11 @@ TEST(Grid, HasWallsAndInterior) {
 
 }
 
+TEST(Grid, CreateNewWall) {
+
+	Grid grid;
+
+	grid.newWall(10, 10);
+	EXPECT_EQ(Grid::tile::NEW_WALL, grid.cell(10, 10));
+
+}
