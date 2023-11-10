@@ -157,17 +157,18 @@ TEST(Player, ConstrainedVerticallyUp) {
 	EXPECT_EQ(10, p.x);
 }
 
-TEST(Player, ConstrainedVerticallyDown) {
+TEST(Player, ConstrainedDiagonallyFast) {
 
 	Player p;
 
 	p.x = 10, p.y = 10;
+	p.dx = 5;
+	p.dy = 6;
 
-	p.goDown();
-
+	
 	for (int i = 0; i < 100; i++)
 		p.move();
 
 	EXPECT_EQ(HEIGHT-1, p.y);
-	EXPECT_EQ(10, p.x);
+	EXPECT_EQ(WIDTH-1, p.x);
 }
