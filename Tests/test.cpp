@@ -5,6 +5,8 @@ const int WIDTH = 40;
 const int tileSize = 18;
 
 #include"../16_SFML_Games/Grid.h"
+#include"../16_SFML_Games/Player.h"
+
 
 TEST(Grid, HasWallsAndInterior) {
 
@@ -37,8 +39,6 @@ TEST(Grid, GridsIsClearedExceptForWalls) {
 	EXPECT_EQ(Grid::tile::WALL, grid.cell(24, 39));
 	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(10, 10));
 
-
-	EXPECT_TRUE(true);
 }
 
 //------------------------
@@ -72,8 +72,6 @@ TEST(Grid, GridsIsFilledWithHorizWall) {
 	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(11, 1));
 	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(23, 38));
 
-
-	EXPECT_TRUE(true);
 }
 
 //------------------------
@@ -111,7 +109,20 @@ TEST(Grid, GridsIsFilledWithHorizAndVertWall) {
 	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(23, 38));
 
 
+}
 
 
-	EXPECT_TRUE(true);
+TEST(Player, ConstrainedHorizontallyRight) {
+
+	Player p;
+
+	p.x = 10, p.y = 10;
+
+	p.goRight();
+
+	for (int i = 0; i < 100; i++)
+		p.move();
+
+	EXPECT_EQ(10, p.y);
+	EXPECT_EQ(WIDTH-1, p.x);
 }
