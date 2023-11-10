@@ -75,3 +75,43 @@ TEST(Grid, GridsIsFilledWithHorizWall) {
 
 	EXPECT_TRUE(true);
 }
+
+//------------------------
+//|                      |
+//|                      |
+//|        not filled    |
+//|                      |
+//|                      |
+//|-------------         |
+//|            |         |
+//|            |         |
+//|   filled   |         |
+//|            |         |
+//|            |         |
+//------------------------
+
+TEST(Grid, GridsIsFilledWithHorizAndVertWall) {
+
+	Grid grid;
+
+	for (int x = 1; x < 10; x++)
+		grid.newWall(10, x);
+	for (int y = 10; y < HEIGHT-1; y++)
+		grid.newWall(y, 10);
+
+	grid.markConnectedCellsNotToBeFilled(2, 2);
+
+	grid.fillEmptyCells();
+
+	EXPECT_EQ(Grid::tile::WALL, grid.cell(11, 1));
+	EXPECT_EQ(Grid::tile::WALL, grid.cell(23, 9));
+
+	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(1, 1));
+	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(9, 38));
+	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(23, 38));
+
+
+
+
+	EXPECT_TRUE(true);
+}
