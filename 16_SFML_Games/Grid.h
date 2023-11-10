@@ -1,7 +1,9 @@
 #pragma once
 class Grid {
+public: // so can be used by tests
     enum tile { EMPTY = 0, WALL = 1, NEW_WALL = 2, NOT_TO_BE_FILLED = -1 };
 
+private:
     tile grid[HEIGHT][WIDTH] = { EMPTY };
 
 
