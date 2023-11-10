@@ -126,3 +126,18 @@ TEST(Player, ConstrainedHorizontallyRight) {
 	EXPECT_EQ(10, p.y);
 	EXPECT_EQ(WIDTH-1, p.x);
 }
+
+TEST(Player, ConstrainedHorizontallyLeft) {
+
+	Player p;
+
+	p.x = 10, p.y = 10;
+
+	p.goLeft();
+
+	for (int i = 0; i < 100; i++)
+		p.move();
+
+	EXPECT_EQ(10, p.y);
+	EXPECT_EQ(0, p.x);
+}
