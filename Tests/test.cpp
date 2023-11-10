@@ -24,3 +24,19 @@ TEST(Grid, CreateNewWall) {
 	EXPECT_EQ(Grid::tile::NEW_WALL, grid.cell(10, 10));
 
 }
+
+
+TEST(Grid, GridsIsClearedExceptForWalls) {
+
+	Grid grid;
+
+	grid.newWall(10, 10);
+
+	grid.clear();
+	EXPECT_EQ(Grid::tile::WALL, grid.cell(0, 0));
+	EXPECT_EQ(Grid::tile::WALL, grid.cell(24, 39));
+	EXPECT_EQ(Grid::tile::EMPTY, grid.cell(10, 10));
+
+
+	EXPECT_TRUE(true);
+}
