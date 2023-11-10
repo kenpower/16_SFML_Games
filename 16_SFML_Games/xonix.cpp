@@ -45,61 +45,8 @@ public:
 	}
 };
 
-class Player {
-    const float TIME_BETWEEN_PLAYER_MOVES = 0.07;
-    StopWatch moveTimer;
-public:
-    int x, y, dx, dy;
-    Player(): moveTimer(TIME_BETWEEN_PLAYER_MOVES) {
-        reset();
-    }
+#include"Player.h"
 
-    void move() {
-        x += dx;
-        y += dy;
-        constrain();
-        moveTimer.reset();
-    }
-
-    void constrain(){
-        if (x < 0) x = 0;
-        if (x > WIDTH - 1) x = WIDTH - 1;
-        if (y < 0) y = 0;
-        if (y > HEIGHT - 1) y = HEIGHT - 1;
-    }
-
-    void stop() {
-		dx = 0;
-		dy = 0;
-	}
-
-    void reset(){
-        x = 10; y = 0;
-        dx = 0;
-        dy = 0;
-    }
-
-    void goLeft() {
-        dx = -1;
-        dy = 0;
-    }
-    void goRight() {
-        dx = +1;
-        dy = 0;
-    }
-    void goUp() {
-        dx = 0;
-        dy = -1;
-    }
-    void goDown() {
-        dx = 0;
-        dy = +1;
-    }
-
-    bool shouldMove() {
-        return moveTimer.isTimeUp();
-	}
-};
 
 Player player;
 const int enemyCount = 4;
@@ -242,6 +189,9 @@ int xonix()
     Screen screen;
     gameReset();
 
+    const float TIME_BETWEEN_PLAYER_MOVES = 0.07;
+    StopWatch playerMoveTimer(TIME_BETWEEN_PLAYER_MOVES);
+
     while (screen.isOpen())
     {
 
@@ -254,8 +204,10 @@ int xonix()
 
         bool playerTouchedNewWall = false;
       
-        if (player.shouldMove())
+        if (playerMoveTimer.isTimeUp()) {
             movePlayer(playerTouchedNewWall);
+            playerMoveTimer.reset();
+        }
 
         moveEnemies();
 
