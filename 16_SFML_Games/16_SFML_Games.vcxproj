@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connector.hpp" />
+    <ClInclude Include="Grid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
