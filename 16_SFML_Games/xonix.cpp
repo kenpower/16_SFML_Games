@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <optional>
 
 
 using namespace sf;
@@ -72,61 +73,60 @@ void moveEnemies() {
 class Screen {
     RenderWindow window;
     Texture t1, t2, t3;
-    //Sprite sTile(t1), sGameover(t2), sEnemy(t3);
-    Sprite sTile, sGameover, sEnemy;
+    std::optional<Sprite> sTile, sGameover, sEnemy;
 public:
 
-    Screen():window(VideoMode(WIDTH* tileSize, HEIGHT* tileSize), "Xonix Game!") {
-     
+    Screen():window(VideoMode({WIDTH* tileSize, HEIGHT* tileSize}), "Xonix Game!") {
+
         window.setFramerateLimit(60);
 
         t1.loadFromFile("images/xonix/tiles.png");
         t2.loadFromFile("images/xonix/gameover.png");
         t3.loadFromFile("images/xonix/enemy.png");
 
-        sTile.setTexture(t1);
-        sGameover.setTexture(t2);
-        sEnemy.setTexture(t3);
+        sTile.emplace(t1);
+        sGameover.emplace(t2);
+        sEnemy.emplace(t3);
 
-        sGameover.setPosition(100, 100);
-        sEnemy.setOrigin(20, 20);
+        sGameover->setPosition({100, 100});
+        sEnemy->setOrigin({20, 20});
     }
 
     void drawFrame() {
         /////////draw//////////
         window.clear();
 
-        IntRect blueTile(0, 0, tileSize, tileSize);
-        IntRect greenTile(54, 0, tileSize, tileSize);
-        IntRect redTile(36, 0, tileSize, tileSize);
+        IntRect blueTile({0, 0}, {tileSize, tileSize});
+        IntRect greenTile({54, 0}, {tileSize, tileSize});
+        IntRect redTile({36, 0}, {tileSize, tileSize});
 
         //draw wall times
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < WIDTH; j++)
             {
                 if (grid.isEmpty(i, j))   continue;
-                if (grid.isWall(i, j))    sTile.setTextureRect(blueTile);
-                if (grid.isNewWall(i, j)) sTile.setTextureRect(greenTile);
-                sTile.setPosition(j * tileSize, i * tileSize);
-                window.draw(sTile);
+                if (grid.isWall(i, j))    sTile->setTextureRect(blueTile);
+                if (grid.isNewWall(i, j)) sTile->setTextureRect(greenTile);
+                sTile->setPosition({static_cast<float>(j * tileSize), static_cast<float>(i * tileSize)});
+                window.draw(*sTile);
             }
 
         //draw player
-        sTile.setTextureRect(redTile);
-        sTile.setPosition(player.x * tileSize, player.y * tileSize);
-        window.draw(sTile);
+        sTile->setTextureRect(redTile);
+        sTile->setPosition({static_cast<float>(player.x * tileSize), static_cast<float>(player.y * tileSize)});
+        window.draw(*sTile);
 
 
-        sEnemy.rotate(10);
+        sEnemy->rotate(sf::degrees(10));
 
         //draw enemy
         for (int i = 0; i < enemyCount; i++)
         {
-            sEnemy.setPosition(enemies[i].x, enemies[i].y);
-            window.draw(sEnemy);
+            sEnemy->setPosition({static_cast<float>(enemies[i].x), static_cast<float>(enemies[i].y)});
+            window.draw(*sEnemy);
         }
 
-        if (gameOver) window.draw(sGameover);
+        if (gameOver) window.draw(*sGameover);
 
         window.display();
     }
@@ -136,15 +136,14 @@ public:
 	}
 
     bool handleEvents() {
-        Event e;
         bool shouldReset = false;
-        while (window.pollEvent(e))
+        while (const std::optional event = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 window.close();
 
-            if (e.type == Event::KeyPressed)
-                if (e.key.code == Keyboard::Escape)
+            if (const auto* keyPressed = event->getIf<Event::KeyPressed>())
+                if (keyPressed->code == Keyboard::Key::Escape)
                 {
 					shouldReset = true;
                 }
@@ -154,10 +153,10 @@ public:
 };
 
 void controlPlayer(){
-    if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft();
-    if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight();
-    if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp();
-    if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left)) player.goLeft();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right))   player.goRight();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up))  player.goUp();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Down))  player.goDown();
 }
 
 void movePlayer(bool& playerTouchedNewWall){

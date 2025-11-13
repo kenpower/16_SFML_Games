@@ -39,7 +39,7 @@ int snake()
 {  
     srand(time(0));
 
-    RenderWindow window(VideoMode(w, h), "Snake Game!");
+    RenderWindow window(VideoMode({static_cast<unsigned int>(w), static_cast<unsigned int>(h)}), "Snake Game!");
 
     Texture t1,t2;
     t1.loadFromFile("images/snake/white.png");
@@ -60,31 +60,30 @@ int snake()
         clock.restart();
         timer+=time; 
 
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional event = window.pollEvent())
         {
-            if (e.type == Event::Closed)      
+            if (event->is<Event::Closed>())
                 window.close();
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) dir=1;   
-        if (Keyboard::isKeyPressed(Keyboard::Right)) dir=2;    
-        if (Keyboard::isKeyPressed(Keyboard::Up)) dir=3;
-        if (Keyboard::isKeyPressed(Keyboard::Down)) dir=0;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left)) dir=1;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right)) dir=2;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Up)) dir=3;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Down)) dir=0;
 
         if (timer>delay) {timer=0; Tick();}
 
    ////// draw  ///////
     window.clear();
 
-    for (int i=0; i<N; i++) 
-      for (int j=0; j<M; j++) 
-        { sprite1.setPosition(i*sz, j*sz);  window.draw(sprite1); }
+    for (int i=0; i<N; i++)
+      for (int j=0; j<M; j++)
+        { sprite1.setPosition({static_cast<float>(i*sz), static_cast<float>(j*sz)});  window.draw(sprite1); }
 
     for (int i=0;i<num;i++)
-        { sprite2.setPosition(s[i].x*sz, s[i].y*sz);  window.draw(sprite2); }
-   
-    sprite2.setPosition(f.x*sz, f.y*sz);  window.draw(sprite2);    
+        { sprite2.setPosition({static_cast<float>(s[i].x*sz), static_cast<float>(s[i].y*sz)});  window.draw(sprite2); }
+
+    sprite2.setPosition({static_cast<float>(f.x*sz), static_cast<float>(f.y*sz)});  window.draw(sprite2);    
 
     window.display();
     }

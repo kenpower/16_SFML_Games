@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include <list>
+#include <optional>
 using namespace sf;
 
 const int W = 1200;
@@ -12,7 +13,7 @@ class Animation
 {
    public:
    float Frame, speed;
-   Sprite sprite;
+   std::optional<Sprite> sprite;
    std::vector<IntRect> frames;
 
    Animation(){}
@@ -23,11 +24,11 @@ class Animation
      speed = Speed;
 
      for (int i=0;i<count;i++)
-      frames.push_back( IntRect(x+i*w, y, w, h)  );
+      frames.push_back( IntRect({x+i*w, y}, {w, h})  );
 
-     sprite.setTexture(t);
-     sprite.setOrigin(w/2,h/2);
-     sprite.setTextureRect(frames[0]);
+     sprite.emplace(t);
+     sprite->setOrigin({w/2.f, h/2.f});
+     sprite->setTextureRect(frames[0]);
    }
 
 
@@ -36,7 +37,7 @@ class Animation
      Frame += speed;
      int n = frames.size();
      if (Frame >= n) Frame -= n;
-     if (n>0) sprite.setTextureRect( frames[int(Frame)] );
+     if (n>0 && sprite) sprite->setTextureRect( frames[int(Frame)] );
    }
 
    bool isEnd()
@@ -72,14 +73,16 @@ class Entity
 
    void draw(RenderWindow &app)
    {
-     anim.sprite.setPosition(x,y);
-     anim.sprite.setRotation(angle+90);
-     app.draw(anim.sprite);
+     if (anim.sprite) {
+       anim.sprite->setPosition({x, y});
+       anim.sprite->setRotation(sf::degrees(angle+90));
+       app.draw(*anim.sprite);
+     }
 
      CircleShape circle(R);
      circle.setFillColor(Color(255,0,0,170));
-     circle.setPosition(x,y);
-     circle.setOrigin(R,R);
+     circle.setPosition({x, y});
+     circle.setOrigin({R, R});
      //app.draw(circle);
    }
 
@@ -178,7 +181,7 @@ int asteroids()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(W, H), "Asteroids!");
+    RenderWindow app(VideoMode({W, H}), "Asteroids!");
     app.setFramerateLimit(60);
 
     Texture t1,t2,t3,t4,t5,t6,t7;
@@ -220,14 +223,13 @@ int asteroids()
     /////main loop/////
     while (app.isOpen())
     {
-        Event event;
-        while (app.pollEvent(event))
+        while (const std::optional event = app.pollEvent())
         {
-            if (event.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
 
-            if (event.type == Event::KeyPressed)
-             if (event.key.code == Keyboard::Space)
+            if (const auto* keyPressed = event->getIf<Event::KeyPressed>())
+             if (keyPressed->code == Keyboard::Key::Space)
               {
                 bullet *b = new bullet();
                 b->settings(sBullet,p->x,p->y,p->angle,10);
@@ -235,9 +237,9 @@ int asteroids()
               }
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Right)) p->angle+=3;
-    if (Keyboard::isKeyPressed(Keyboard::Left))  p->angle-=3;
-    if (Keyboard::isKeyPressed(Keyboard::Up)) p->thrust=true;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) p->angle+=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left))  p->angle-=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) p->thrust=true;
     else p->thrust=false;
 
 

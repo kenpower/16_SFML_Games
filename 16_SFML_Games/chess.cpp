@@ -1,12 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <vector>
+#include <optional>
 #include "Connector.hpp"
 using namespace sf;
 
 int size = 56;
 Vector2f os(28,28);
 
-Sprite f[32]; //figures
+std::vector<std::optional<Sprite>> f(32); //figures
 std::string position="";
 
 int board[8][8] = 
@@ -40,10 +42,10 @@ void move(std::string str)
     Vector2f newPos = toCoord(str[2],str[3]);
 
     for(int i=0;i<32;i++)
-     if (f[i].getPosition()==newPos) f[i].setPosition(-100,-100);
-        
+     if (f[i] && f[i]->getPosition()==newPos) f[i]->setPosition({-100, -100});
+
     for(int i=0;i<32;i++)
-     if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
+     if (f[i] && f[i]->getPosition()==oldPos) f[i]->setPosition(newPos);
 
     //castling       //if the king didn't move
     if (str=="e1g1") if (position.find("e1")==-1) move("h1f1"); 
@@ -62,8 +64,10 @@ void loadPosition()
        if (!n) continue;
        int x = abs(n)-1;
        int y = n>0?1:0;
-       f[k].setTextureRect( IntRect(size*x,size*y,size,size) );
-       f[k].setPosition(size*j,size*i);
+       if (f[k]) {
+         f[k]->setTextureRect( IntRect({size*x, size*y}, {size, size}) );
+         f[k]->setPosition({static_cast<float>(size*j), static_cast<float>(size*i)});
+       }
        k++;
      }
 
@@ -74,19 +78,19 @@ void loadPosition()
 
 int chess()
 {
-    RenderWindow window(VideoMode(504, 504), "The Chess! (press SPACE)");
-    
+    RenderWindow window(VideoMode({504, 504}), "The Chess! (press SPACE)");
+
     const wchar_t const* engine = L"stockfish.exe";
     wchar_t dst[14];
     wcscpy_s(dst, engine);
 
-    ConnectToEngine(dst);    
+    ConnectToEngine(dst);
 
     Texture t1,t2;
-    t1.loadFromFile("images/chess/figures.png"); 
+    t1.loadFromFile("images/chess/figures.png");
     t2.loadFromFile("images/chess/board.png");
 
-    for(int i=0;i<32;i++) f[i].setTexture(t1);
+    for(int i=0;i<32;i++) f[i].emplace(t1);
     Sprite sBoard(t2); 
 
     loadPosition();
@@ -101,76 +105,79 @@ int chess()
     {
         Vector2i pos = Mouse::getPosition(window) - Vector2i(os);
 
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional event = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 window.close();
 
             ////move back//////
-            if (e.type == Event::KeyPressed)
-                if (e.key.code == Keyboard::BackSpace)
+            if (const auto* keyPressed = event->getIf<Event::KeyPressed>())
+                if (keyPressed->code == Keyboard::Key::Backspace)
                 { if (position.length()>6) position.erase(position.length()-6,5); loadPosition();}
 
             /////drag and drop///////
-            if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+            if (const auto* mousePressed = event->getIf<Event::MouseButtonPressed>())
+                if (mousePressed->button == Mouse::Button::Left)
                   for(int i=0;i<32;i++)
-                  if (f[i].getGlobalBounds().contains(pos.x,pos.y))
+                  if (f[i] && f[i]->getGlobalBounds().contains(Vector2f(pos)))
                       {
                        isMove=true; n=i;
-                       dx=pos.x - f[i].getPosition().x;
-                       dy=pos.y - f[i].getPosition().y;
-                       oldPos  =  f[i].getPosition();
+                       dx=pos.x - f[i]->getPosition().x;
+                       dy=pos.y - f[i]->getPosition().y;
+                       oldPos  =  f[i]->getPosition();
                       }
 
-             if (e.type == Event::MouseButtonReleased)
-                if (e.key.code == Mouse::Left)
+             if (const auto* mouseReleased = event->getIf<Event::MouseButtonReleased>())
+                if (mouseReleased->button == Mouse::Button::Left)
                  {
                   isMove=false;
-                  Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
-                  newPos = Vector2f( size*int(p.x/size), size*int(p.y/size) );
-                  str = toChessNote(oldPos)+toChessNote(newPos);
-                  move(str); 
-                  if (oldPos!=newPos) position+=str+" ";
-                  f[n].setPosition(newPos);                   
-                 }                       
+                  if (f[n]) {
+                    Vector2f p = f[n]->getPosition() + Vector2f(size/2,size/2);
+                    newPos = Vector2f( size*int(p.x/size), size*int(p.y/size) );
+                    str = toChessNote(oldPos)+toChessNote(newPos);
+                    move(str);
+                    if (oldPos!=newPos) position+=str+" ";
+                    f[n]->setPosition(newPos);
+                  }
+                 }
         }
 
        //comp move
-       if (Keyboard::isKeyPressed(Keyboard::Space))
+       if (Keyboard::isKeyPressed(Keyboard::Key::Space))
        {
          str =  getNextMove(position);
-                   
+
          oldPos = toCoord(str[0],str[1]);
          newPos = toCoord(str[2],str[3]);
-         
-         for(int i=0;i<32;i++) if (f[i].getPosition()==oldPos) n=i;
+
+         for(int i=0;i<32;i++) if (f[i] && f[i]->getPosition()==oldPos) n=i;
          
          /////animation///////
          for(int k=0;k<50;k++)
           {
             Vector2f p = newPos - oldPos;
-            f[n].move(p.x/50, p.y/50); 
+            if (f[n]) f[n]->move({p.x/50, p.y/50});
             window.draw(sBoard);
-            for(int i=0;i<32;i++) f[i].move(os);
-            for(int i=0;i<32;i++) window.draw(f[i]); window.draw(f[n]);
-            for(int i=0;i<32;i++) f[i].move(-os);
+            for(int i=0;i<32;i++) if (f[i]) f[i]->move(os);
+            for(int i=0;i<32;i++) if (f[i]) window.draw(*f[i]);
+            if (f[n]) window.draw(*f[n]);
+            for(int i=0;i<32;i++) if (f[i]) f[i]->move(-os);
             window.display();
           }
 
         move(str);  position+=str+" ";
-        f[n].setPosition(newPos); 
+        if (f[n]) f[n]->setPosition(newPos); 
         }
 
-        if (isMove) f[n].setPosition(pos.x-dx,pos.y-dy);
+        if (isMove && f[n]) f[n]->setPosition({pos.x-dx, pos.y-dy});
 
     ////// draw  ///////
     window.clear();
     window.draw(sBoard);
-    for(int i=0;i<32;i++) f[i].move(os);
-    for(int i=0;i<32;i++) window.draw(f[i]); window.draw(f[n]);
-    for(int i=0;i<32;i++) f[i].move(-os);
+    for(int i=0;i<32;i++) if (f[i]) f[i]->move(os);
+    for(int i=0;i<32;i++) if (f[i]) window.draw(*f[i]);
+    if (f[n]) window.draw(*f[n]);
+    for(int i=0;i<32;i++) if (f[i]) f[i]->move(-os);
     window.display();
     }
 

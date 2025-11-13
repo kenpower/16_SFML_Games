@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <optional>
 using namespace sf;
 
 const int W=600;
@@ -36,42 +37,40 @@ int tron()
 {
     srand(time(0));
 
-    RenderWindow window(VideoMode(W, H), "The Tron Game!");
+    RenderWindow window(VideoMode({W, H}), "The Tron Game!");
     window.setFramerateLimit(60);
 
     Texture texture;
     texture.loadFromFile("images/tron/background.jpg");
     Sprite sBackground(texture);
 
-    player p1(Color::Red), p2(Color::Green); 
+    player p1(Color::Red), p2(Color::Green);
 
-    Sprite sprite;
     RenderTexture t;
-    t.create(W, H);
+    t.resize({W, H});
     t.setSmooth(true);
-    sprite.setTexture(t.getTexture());
+    Sprite sprite(t.getTexture());
     t.clear();  t.draw(sBackground);
 
     bool Game=1;
 
     while (window.isOpen())
     {
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional event = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 window.close();
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) if (p1.dir!=2) p1.dir=1;
-        if (Keyboard::isKeyPressed(Keyboard::Right)) if (p1.dir!=1)  p1.dir=2;
-        if (Keyboard::isKeyPressed(Keyboard::Up)) if (p1.dir!=0) p1.dir=3;
-        if (Keyboard::isKeyPressed(Keyboard::Down)) if (p1.dir!=3) p1.dir=0;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left)) if (p1.dir!=2) p1.dir=1;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right)) if (p1.dir!=1)  p1.dir=2;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Up)) if (p1.dir!=0) p1.dir=3;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Down)) if (p1.dir!=3) p1.dir=0;
 
-        if (Keyboard::isKeyPressed(Keyboard::A)) if (p2.dir!=2) p2.dir=1;
-        if (Keyboard::isKeyPressed(Keyboard::D)) if (p2.dir!=1)  p2.dir=2;
-        if (Keyboard::isKeyPressed(Keyboard::W)) if (p2.dir!=0) p2.dir=3;
-        if (Keyboard::isKeyPressed(Keyboard::S)) if (p2.dir!=3) p2.dir=0;
+        if (Keyboard::isKeyPressed(Keyboard::Key::A)) if (p2.dir!=2) p2.dir=1;
+        if (Keyboard::isKeyPressed(Keyboard::Key::D)) if (p2.dir!=1)  p2.dir=2;
+        if (Keyboard::isKeyPressed(Keyboard::Key::W)) if (p2.dir!=0) p2.dir=3;
+        if (Keyboard::isKeyPressed(Keyboard::Key::S)) if (p2.dir!=3) p2.dir=0;
 
         if (!Game)    continue;
 
@@ -84,8 +83,8 @@ int tron()
             field[p2.x][p2.y]=1;
     
             CircleShape c(3);
-            c.setPosition(p1.x,p1.y); c.setFillColor(p1.color);    t.draw(c);
-            c.setPosition(p2.x,p2.y); c.setFillColor(p2.color);    t.draw(c);
+            c.setPosition({static_cast<float>(p1.x), static_cast<float>(p1.y)}); c.setFillColor(p1.color);    t.draw(c);
+            c.setPosition({static_cast<float>(p2.x), static_cast<float>(p2.y)}); c.setFillColor(p2.color);    t.draw(c);
             t.display();    
         }
 

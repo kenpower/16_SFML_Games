@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/mnt/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" 16_SFML_Games.sln /p:Configuration=Debug /p:Platform=x86 /t:16_SFML_Games)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

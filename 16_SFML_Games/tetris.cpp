@@ -35,7 +35,7 @@ int tetris()
 {
     srand(time(0));     
 
-    RenderWindow window(VideoMode(320, 480), "The Game!");
+    RenderWindow window(VideoMode({320, 480}), "The Game!");
 
     Texture t1,t2,t3;
     t1.loadFromFile("images/tetris/tiles.png");
@@ -55,19 +55,18 @@ int tetris()
         clock.restart();
         timer+=time;
 
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional event = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 window.close();
 
-            if (e.type == Event::KeyPressed)
-              if (e.key.code==Keyboard::Up) rotate=true;
-              else if (e.key.code==Keyboard::Left) dx=-1;
-              else if (e.key.code==Keyboard::Right) dx=1;
+            if (const auto* keyPressed = event->getIf<Event::KeyPressed>())
+              if (keyPressed->code==Keyboard::Key::Up) rotate=true;
+              else if (keyPressed->code==Keyboard::Key::Left) dx=-1;
+              else if (keyPressed->code==Keyboard::Key::Right) dx=1;
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Down)) delay=0.05;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Down)) delay=0.05;
 
     //// <- Move -> ///
     for (int i=0;i<4;i++)  { b[i]=a[i]; a[i].x+=dx; }
@@ -131,17 +130,17 @@ int tetris()
      for (int j=0;j<N;j++)
        {
          if (field[i][j]==0) continue;
-         s.setTextureRect(IntRect(field[i][j]*18,0,18,18));
-         s.setPosition(j*18,i*18);
-         s.move(28,31); //offset
+         s.setTextureRect(IntRect({field[i][j]*18, 0}, {18, 18}));
+         s.setPosition({static_cast<float>(j*18), static_cast<float>(i*18)});
+         s.move({28, 31}); //offset
          window.draw(s);
        }
 
     for (int i=0;i<4;i++)
       {
-        s.setTextureRect(IntRect(colorNum*18,0,18,18));
-        s.setPosition(a[i].x*18,a[i].y*18);
-        s.move(28,31); //offset
+        s.setTextureRect(IntRect({colorNum*18, 0}, {18, 18}));
+        s.setPosition({static_cast<float>(a[i].x*18), static_cast<float>(a[i].y*18)});
+        s.move({28, 31}); //offset
         window.draw(s);
       }
 

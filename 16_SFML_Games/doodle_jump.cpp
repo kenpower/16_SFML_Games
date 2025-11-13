@@ -9,7 +9,7 @@ int doodle_jump()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(400, 533), "Doodle Game!");
+    RenderWindow app(VideoMode({400, 533}), "Doodle Game!");
     app.setFramerateLimit(60);
 
     Texture t1,t2,t3;
@@ -32,15 +32,14 @@ int doodle_jump()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional event = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Right)) x+=3;
-    if (Keyboard::isKeyPressed(Keyboard::Left)) x-=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) x+=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left)) x-=3;
 
     dy+=0.2;
     y+=dy;
@@ -58,13 +57,13 @@ int doodle_jump()
      if ((x+50>plat[i].x) && (x+20<plat[i].x+68)
       && (y+70>plat[i].y) && (y+70<plat[i].y+14) && (dy>0))  dy=-10;
 
-    sPers.setPosition(x,y);
+    sPers.setPosition({static_cast<float>(x), static_cast<float>(y)});
 
     app.draw(sBackground);
     app.draw(sPers);
     for (int i=0;i<10;i++)
     {
-    sPlat.setPosition(plat[i].x,plat[i].y);
+    sPlat.setPosition({static_cast<float>(plat[i].x), static_cast<float>(plat[i].y)});
     app.draw(sPlat);
     }
 

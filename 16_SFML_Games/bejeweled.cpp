@@ -24,7 +24,7 @@ int bejeweled()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(740,480), "Match-3 Game!");
+    RenderWindow app(VideoMode({740, 480}), "Match-3 Game!");
     app.setFramerateLimit(60);
 
     Texture t1,t2;
@@ -48,14 +48,13 @@ int bejeweled()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional event = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
-                   
-            if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+
+            if (const auto* mousePressed = event->getIf<Event::MouseButtonPressed>())
+                if (mousePressed->button == Mouse::Button::Left)
                 {
                    if (!isSwap && !isMoving) click++;
                    pos = Mouse::getPosition(app)-offset;
@@ -149,10 +148,10 @@ int bejeweled()
      for (int j=1;j<=8;j++)
       {
         piece p = grid[i][j];
-        gems.setTextureRect( IntRect(p.kind*49,0,49,49));
+        gems.setTextureRect( IntRect({p.kind*49, 0}, {49, 49}));
         gems.setColor(Color(255,255,255,p.alpha));
-        gems.setPosition(p.x,p.y);
-        gems.move(offset.x-ts,offset.y-ts);
+        gems.setPosition({static_cast<float>(p.x), static_cast<float>(p.y)});
+        gems.move({static_cast<float>(offset.x-ts), static_cast<float>(offset.y-ts)});
         app.draw(gems);
       }
 

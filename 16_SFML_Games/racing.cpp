@@ -36,7 +36,7 @@ struct Car
 
 int racing()
 {
-    RenderWindow app(VideoMode(640, 480), "Car Racing Game!");
+    RenderWindow app(VideoMode({640, 480}), "Car Racing Game!");
     app.setFramerateLimit(60);
 
     Texture t1,t2,t3;
@@ -46,9 +46,9 @@ int racing()
     t2.setSmooth(true);
 
     Sprite sBackground(t1), sCar(t2);
-    sBackground.scale(2,2);
+    sBackground.scale({2, 2});
 
-    sCar.setOrigin(22, 22);
+    sCar.setOrigin({22, 22});
     float R=22;
 
     const int N=5;
@@ -69,18 +69,17 @@ int racing()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional event = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
         }
 
     bool Up=0,Right=0,Down=0,Left=0;
-    if (Keyboard::isKeyPressed(Keyboard::Up)) Up=1;
-    if (Keyboard::isKeyPressed(Keyboard::Right)) Right=1;
-    if (Keyboard::isKeyPressed(Keyboard::Down)) Down=1;
-    if (Keyboard::isKeyPressed(Keyboard::Left)) Left=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) Up=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) Right=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Down)) Down=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left)) Left=1;
 
     //car movement
     if (Up && speed<maxSpeed)
@@ -128,15 +127,15 @@ int racing()
     if (car[0].x>320) offsetX = car[0].x-320;
     if (car[0].y>240) offsetY = car[0].y-240;
 
-    sBackground.setPosition(-offsetX,-offsetY);
+    sBackground.setPosition({static_cast<float>(-offsetX), static_cast<float>(-offsetY)});
     app.draw(sBackground);
 
     Color colors[10] = {Color::Red, Color::Green, Color::Magenta, Color::Blue, Color::White};
 
     for(int i=0;i<N;i++)
     {
-      sCar.setPosition(car[i].x-offsetX,car[i].y-offsetY);
-      sCar.setRotation(car[i].angle*180/3.141593);
+      sCar.setPosition({car[i].x-offsetX, car[i].y-offsetY});
+      sCar.setRotation(sf::degrees(car[i].angle*180/3.141593));
       sCar.setColor(colors[i]);
       app.draw(sCar);
     }

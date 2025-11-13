@@ -41,7 +41,7 @@ struct pipe
 
 pipe grid[N][N];
 pipe& cell(Vector2i v) {return grid[v.x][v.y];}
-bool isOut(Vector2i v) {return !IntRect(0,0,N,N).contains(v);}
+bool isOut(Vector2i v) {return !IntRect({0, 0}, {N, N}).contains(v);}
 
 
 void generatePuzzle()
@@ -88,7 +88,7 @@ int netwalk()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(390, 390), "Netwalk The Pipe Puzzle!");
+    RenderWindow app(VideoMode({390, 390}), "Netwalk The Pipe Puzzle!");
 
     Texture t1,t2,t3,t4;
     t1.loadFromFile("images/netwalk/background.png");
@@ -98,9 +98,9 @@ int netwalk()
     t4.setSmooth(true);
 
     Sprite sBackground(t1), sComp(t2), sServer(t3), sPipe(t4);
-    sPipe.setOrigin(27,27);
-    sComp.setOrigin(18,18);
-    sServer.setOrigin(20,20);
+    sPipe.setOrigin({27, 27});
+    sComp.setOrigin({18, 18});
+    sServer.setOrigin({20, 20});
 
 
     generatePuzzle();
@@ -129,14 +129,13 @@ int netwalk()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional event = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
 
-            if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+            if (const auto* mousePressed = event->getIf<Event::MouseButtonPressed>())
+                if (mousePressed->button == Mouse::Button::Left)
                   {
                     Vector2i pos = Mouse::getPosition(app) + Vector2i(tsz/2,tsz/2) - Vector2i(oset);
                     pos/=tsz;
@@ -166,15 +165,15 @@ int netwalk()
             p.angle+=5;
             if (p.angle>p.orientation*90) p.angle=p.orientation*90;
 
-            sPipe.setTextureRect(IntRect(tsz*kind,0,tsz,tsz));
-            sPipe.setRotation(p.angle);
-            sPipe.setPosition(j*tsz,i*tsz);sPipe.move(oset);
+            sPipe.setTextureRect(IntRect({tsz*kind, 0}, {tsz, tsz}));
+            sPipe.setRotation(sf::degrees(p.angle));
+            sPipe.setPosition({static_cast<float>(j*tsz), static_cast<float>(i*tsz)});sPipe.move(oset);
             app.draw(sPipe);
 
             if (kind==1)
-               { if (p.on) sComp.setTextureRect(IntRect(53,0,36,36));
-                 else sComp.setTextureRect(IntRect(0,0,36,36));
-                 sComp.setPosition(j*tsz,i*tsz);sComp.move(oset);
+               { if (p.on) sComp.setTextureRect(IntRect({53, 0}, {36, 36}));
+                 else sComp.setTextureRect(IntRect({0, 0}, {36, 36}));
+                 sComp.setPosition({static_cast<float>(j*tsz), static_cast<float>(i*tsz)});sComp.move(oset);
                  app.draw(sComp);
                }
            }
