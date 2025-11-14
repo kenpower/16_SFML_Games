@@ -1,0 +1,272 @@
+#include <SFML/Graphics.hpp>
+#include <time.h>
+using namespace sf;
+
+const int N = 6;
+int tsz = 54; //tile size
+Vector2f oset(65,55);
+
+Vector2i Up(0,-1);
+Vector2i Down(0,1);
+Vector2i Right(1,0);
+Vector2i Left(-1,0);
+
+Vector2i DIR[4] = {Up,Right,Down,Left};
+
+struct pipe
+{
+  std::vector<Vector2i> dirs;
+  int orientation;
+  float angle;
+  bool on;
+
+  pipe() {angle=0;}
+
+  void rotate()
+  {
+    for(int i=0;i<dirs.size();i++)
+    {
+      if (dirs[i]==Up)
+      {
+          dirs[i]=Right;
+      }
+      else if (dirs[i]==Right)
+      {
+          dirs[i]=Down;
+      }
+      else if (dirs[i]==Down)
+      {
+          dirs[i]=Left;
+      }
+      else if (dirs[i]==Left)
+      {
+          dirs[i]=Up;
+      }
+    }
+  }
+
+  bool isConnect(Vector2i dir)
+  {
+    for(auto d: dirs)
+    {
+     if (d==dir) return true;
+    }
+    return false;
+  }
+};
+
+
+pipe grid[N][N];
+pipe& cell(Vector2i v) {return grid[v.x][v.y];}
+bool isOut(Vector2i v) {return !IntRect({0, 0}, {N, N}).contains(v);}
+
+
+void generatePuzzle()
+{
+  std::vector<Vector2i> nodes;
+  nodes.push_back(Vector2i(rand()%N,rand()%N));
+
+  while(!nodes.empty())
+  {
+    int n = rand()%nodes.size();
+    Vector2i v = nodes[n];
+    Vector2i d = DIR[rand()%4];
+
+    if (cell(v).dirs.size()==3)
+    {
+        nodes.erase(nodes.begin() + n);
+        continue;
+    }
+    if (cell(v).dirs.size()==2)
+    {
+        if (rand()%50)
+        {
+            continue;
+        }
+    }
+
+    bool complete=1;
+    for(auto D:DIR)
+    {
+     bool outOfBounds = isOut(v+D);
+     bool neighborEmpty = !outOfBounds && cell(v+D).dirs.empty();
+     if (neighborEmpty) complete=0;
+    }
+    if (complete)
+    {
+        nodes.erase(nodes.begin() + n);
+        continue;
+    }
+
+    if (isOut(v+d)) continue;
+    if (!cell(v+d).dirs.empty()) continue;
+    cell(v).dirs.push_back(d);
+    cell(v+d).dirs.push_back(-d);
+    nodes.push_back(v+d);
+  }
+}
+
+
+void drop(Vector2i v)
+{
+   if (cell(v).on) return;
+   cell(v).on=true;
+
+   for(auto d:DIR)
+   {
+    if (!isOut(v+d))
+    {
+     bool currentCellConnects = cell(v).isConnect(d);
+     bool neighborConnects = cell(v+d).isConnect(-d);
+     if (currentCellConnects && neighborConnects)
+     {
+       drop(v+d);
+     }
+    }
+   }
+}
+
+
+int netwalk_messy()
+{
+    srand(time(0));
+
+    RenderWindow app(VideoMode({390, 390}), "Netwalk The Pipe Puzzle!");
+
+    Texture t1,t2,t3,t4;
+    t1.loadFromFile("images/netwalk/background.png");
+    t2.loadFromFile("images/netwalk/comp.png");
+    t3.loadFromFile("images/netwalk/server.png");
+    t4.loadFromFile("images/netwalk/pipes.png");
+    t4.setSmooth(true);
+
+    Sprite sBackground(t1), sComp(t2), sServer(t3), sPipe(t4);
+    sPipe.setOrigin({27, 27});
+    sComp.setOrigin({18, 18});
+    sServer.setOrigin({20, 20});
+
+
+    generatePuzzle();
+
+    for(int i=0;i<N;i++)
+    {
+     for(int j=0;j<N;j++)
+     {
+       pipe &p = grid[j][i];
+
+       for(int n=4;n>0;n--) //find orientation//
+       {
+        std::string s="";
+        for(auto d: DIR)
+        {
+            if (p.isConnect(d))
+            {
+                s=s+'1';
+            }
+            else
+            {
+                s=s+'0';
+            }
+        }
+        if (s=="0011" || s=="0111" || s=="0101" || s=="0010")
+        {
+            p.orientation=n;
+        }
+        p.rotate();
+       }
+
+       for(int n=0;n<rand()%4;n++) //shuffle//
+       {
+           grid[j][i].orientation++;
+           grid[j][i].rotate();
+       }
+     }
+    }
+
+    Vector2i servPos;
+    while(cell(servPos).dirs.size()==1)
+    {
+        servPos = Vector2i(rand()%N, rand()%N);
+    }
+    sServer.setPosition(Vector2f(servPos*tsz));
+    sServer.move(oset);
+
+    while (app.isOpen())
+    {
+        while (const std::optional event = app.pollEvent())
+        {
+            if (event->is<Event::Closed>())
+                app.close();
+
+            if (const auto* mousePressed = event->getIf<Event::MouseButtonPressed>())
+            {
+                if (mousePressed->button == Mouse::Button::Left)
+                {
+                    Vector2i pos = Mouse::getPosition(app) + Vector2i(tsz/2,tsz/2) - Vector2i(oset);
+                    pos=pos/tsz;
+                    if (isOut(pos)) continue;
+                    cell(pos).orientation++;
+                    cell(pos).rotate();
+
+                    for(int i=0;i<N;i++)
+                    {
+                     for(int j=0;j<N;j++)
+                     {
+                      grid[j][i].on=0;
+                     }
+                    }
+
+                    drop(servPos);
+                }
+            }
+        }
+
+        app.clear();
+        app.draw(sBackground);
+
+        for(int i=0;i<N;i++)
+        {
+         for(int j=0;j<N;j++)
+         {
+            pipe &p = grid[j][i];
+
+            int kind = p.dirs.size();
+            bool straightPipe = (kind==2 && p.dirs[0]==-p.dirs[1]);
+            if (straightPipe) kind=0;
+
+            p.angle=p.angle+5;
+            float targetAngle = p.orientation*90;
+            if (p.angle>targetAngle)
+            {
+                p.angle=targetAngle;
+            }
+
+            sPipe.setTextureRect(IntRect({tsz*kind, 0}, {tsz, tsz}));
+            sPipe.setRotation(sf::degrees(p.angle));
+            sPipe.setPosition({static_cast<float>(j*tsz), static_cast<float>(i*tsz)});
+            sPipe.move(oset);
+            app.draw(sPipe);
+
+            if (kind==1)
+            {
+               if (p.on)
+               {
+                   sComp.setTextureRect(IntRect({53, 0}, {36, 36}));
+               }
+               else
+               {
+                   sComp.setTextureRect(IntRect({0, 0}, {36, 36}));
+               }
+               sComp.setPosition({static_cast<float>(j*tsz), static_cast<float>(i*tsz)});
+               sComp.move(oset);
+               app.draw(sComp);
+            }
+           }
+        }
+
+        app.draw(sServer);
+        app.display();
+    }
+
+    return 0;
+}
