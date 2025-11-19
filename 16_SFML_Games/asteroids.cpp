@@ -24,7 +24,9 @@ class Animation
      speed = Speed;
 
      for (int i=0;i<count;i++)
+     {
       frames.push_back( IntRect({x+i*w, y}, {w, h})  );
+     }
 
      sprite.emplace(t);
      sprite->setOrigin({w/2.f, h/2.f});
@@ -34,10 +36,16 @@ class Animation
 
    void update()
    {
-     Frame += speed;
+     Frame = Frame + speed;
      int n = frames.size();
-     if (Frame >= n) Frame -= n;
-     if (n>0 && sprite) sprite->setTextureRect( frames[int(Frame)] );
+     if (Frame >= n)
+     {
+         Frame = Frame - n;
+     }
+     if (n>0 && sprite)
+     {
+         sprite->setTextureRect( frames[int(Frame)] );
+     }
    }
 
    bool isEnd()
@@ -64,7 +72,8 @@ class Entity
    void settings(Animation &a,int X,int Y,float Angle=0,int radius=1)
    {
      anim = a;
-     x=X; y=Y;
+     x=X;
+     y=Y;
      angle = Angle;
      R = radius;
    }
@@ -73,7 +82,8 @@ class Entity
 
    void draw(RenderWindow &app)
    {
-     if (anim.sprite) {
+     if (anim.sprite)
+     {
        anim.sprite->setPosition({x, y});
        anim.sprite->setRotation(sf::degrees(angle+90));
        app.draw(*anim.sprite);
@@ -102,11 +112,25 @@ class asteroid: public Entity
 
    void update()
    {
-     x+=dx;
-     y+=dy;
+     x=x+dx;
+     y=y+dy;
 
-     if (x>W) x=0;  if (x<0) x=W;
-     if (y>H) y=0;  if (y<0) y=H;
+     if (x>W)
+     {
+         x=0;
+     }
+     if (x<0)
+     {
+         x=W;
+     }
+     if (y>H)
+     {
+         y=0;
+     }
+     if (y<0)
+     {
+         y=H;
+     }
    }
 
 };
@@ -125,10 +149,13 @@ class bullet: public Entity
      dx=cos(angle*DEGTORAD)*6;
      dy=sin(angle*DEGTORAD)*6;
      // angle+=rand()%7-3;  /*try this*/
-     x+=dx;
-     y+=dy;
+     x=x+dx;
+     y=y+dy;
 
-     if (x>W || x<0 || y>H || y<0) life=0;
+     if (x>W || x<0 || y>H || y<0)
+     {
+         life=0;
+     }
    }
 
 };
@@ -147,23 +174,43 @@ class player: public Entity
    void update()
    {
      if (thrust)
-      { dx+=cos(angle*DEGTORAD)*0.2;
-        dy+=sin(angle*DEGTORAD)*0.2; }
+     {
+         dx = dx + cos(angle*DEGTORAD)*0.2;
+         dy = dy + sin(angle*DEGTORAD)*0.2;
+     }
      else
-      { dx*=0.99;
-        dy*=0.99; }
+     {
+         dx = dx * 0.99;
+         dy = dy * 0.99;
+     }
 
     int maxSpeed=15;
     float speed = sqrt(dx*dx+dy*dy);
     if (speed>maxSpeed)
-     { dx *= maxSpeed/speed;
-       dy *= maxSpeed/speed; }
+    {
+        dx = dx * maxSpeed/speed;
+        dy = dy * maxSpeed/speed;
+    }
 
-    x+=dx;
-    y+=dy;
+    x=x+dx;
+    y=y+dy;
 
-    if (x>W) x=0; if (x<0) x=W;
-    if (y>H) y=0; if (y<0) y=H;
+    if (x>W)
+    {
+        x=0;
+    }
+    if (x<0)
+    {
+        x=W;
+    }
+    if (y>H)
+    {
+        y=0;
+    }
+    if (y<0)
+    {
+        y=H;
+    }
    }
 
 };
@@ -171,13 +218,16 @@ class player: public Entity
 
 bool isCollide(Entity *a,Entity *b)
 {
-  return (b->x - a->x)*(b->x - a->x)+
-         (b->y - a->y)*(b->y - a->y)<
-         (a->R + b->R)*(a->R + b->R);
+  float distX = b->x - a->x;
+  float distY = b->y - a->y;
+  float distSq = distX*distX + distY*distY;
+  float radiusSum = a->R + b->R;
+  float radiusSumSq = radiusSum*radiusSum;
+  return distSq < radiusSumSq;
 }
 
 
-int asteroids()
+int asteroids_messy()
 {
     srand(time(0));
 
@@ -229,26 +279,43 @@ int asteroids()
                 app.close();
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>())
+            {
              if (keyPressed->code == Keyboard::Key::Space)
-              {
+             {
                 bullet *b = new bullet();
                 b->settings(sBullet,p->x,p->y,p->angle,10);
                 entities.push_back(b);
               }
+            }
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) p->angle+=3;
-    if (Keyboard::isKeyPressed(Keyboard::Key::Left))  p->angle-=3;
-    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) p->thrust=true;
-    else p->thrust=false;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right))
+    {
+        p->angle=p->angle+3;
+    }
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left))
+    {
+        p->angle=p->angle-3;
+    }
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up))
+    {
+        p->thrust=true;
+    }
+    else
+    {
+        p->thrust=false;
+    }
 
 
     for(auto a:entities)
+    {
      for(auto b:entities)
      {
-      if (a->name=="asteroid" && b->name=="bullet")
+      bool asteroidBulletCollision = (a->name=="asteroid" && b->name=="bullet");
+      if (asteroidBulletCollision)
+      {
        if ( isCollide(a,b) )
-           {
+       {
             a->life=false;
             b->life=false;
 
@@ -267,10 +334,13 @@ int asteroids()
             }
 
            }
+        }
 
-      if (a->name=="player" && b->name=="asteroid")
+      bool playerAsteroidCollision = (a->name=="player" && b->name=="asteroid");
+      if (playerAsteroidCollision)
+      {
        if ( isCollide(a,b) )
-           {
+       {
             b->life=false;
 
             Entity *e = new Entity();
@@ -279,25 +349,41 @@ int asteroids()
             entities.push_back(e);
 
             p->settings(sPlayer,W/2,H/2,0,20);
-            p->dx=0; p->dy=0;
+            p->dx=0;
+            p->dy=0;
            }
+        }
      }
+    }
 
 
-    if (p->thrust)  p->anim = sPlayer_go;
-    else   p->anim = sPlayer;
+    if (p->thrust)
+    {
+        p->anim = sPlayer_go;
+    }
+    else
+    {
+        p->anim = sPlayer;
+    }
 
 
     for(auto e:entities)
+    {
      if (e->name=="explosion")
-      if (e->anim.isEnd()) e->life=0;
+     {
+      if (e->anim.isEnd())
+      {
+          e->life=0;
+      }
+     }
+    }
 
     if (rand()%150==0)
-     {
+    {
        asteroid *a = new asteroid();
        a->settings(sRock, 0,rand()%H, rand()%360, 25);
        entities.push_back(a);
-     }
+    }
 
     for(auto i=entities.begin();i!=entities.end();)
     {
@@ -306,13 +392,23 @@ int asteroids()
       e->update();
       e->anim.update();
 
-      if (e->life==false) {i=entities.erase(i); delete e;}
-      else i++;
+      if (e->life==false)
+      {
+          i=entities.erase(i);
+          delete e;
+      }
+      else
+      {
+          i++;
+      }
     }
 
    //////draw//////
    app.draw(background);
-   for(auto i:entities) i->draw(app);
+   for(auto i:entities)
+   {
+       i->draw(app);
+   }
    app.display();
     }
 
