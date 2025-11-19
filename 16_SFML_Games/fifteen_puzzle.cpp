@@ -4,7 +4,7 @@
 
 using namespace sf;
 
-int fifteen_puzzle_messy()
+int fifteen_puzzle()
 {
     RenderWindow app(VideoMode({256, 256}), "15-Puzzle!");
     app.setFramerateLimit(60);

@@ -65,7 +65,7 @@ struct Line
 };
 
 
-int outrun_messy()
+int outrun()
 {
     RenderWindow app(VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}), "Outrun Racing!");
     app.setFramerateLimit(60);

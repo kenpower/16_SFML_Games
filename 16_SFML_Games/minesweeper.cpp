@@ -2,7 +2,7 @@
 #include <time.h>
 using namespace sf;
 
-int minesweeper_messy()
+int minesweeper()
 {
     srand(time(0));
 

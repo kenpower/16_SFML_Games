@@ -21,7 +21,7 @@ void swap(piece p1,piece p2)
 }
 
 
-int bejeweled_messy()
+int bejeweled()
 {
     srand(time(0));
 

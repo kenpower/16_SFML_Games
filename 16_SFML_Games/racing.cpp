@@ -53,7 +53,7 @@ struct Car
 };
 
 
-int racing_messy()
+int racing()
 {
     RenderWindow app(VideoMode({640, 480}), "Car Racing Game!");
     app.setFramerateLimit(60);

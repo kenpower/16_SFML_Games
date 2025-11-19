@@ -66,7 +66,7 @@ struct player
     }
 };
 
-int tron_messy()
+int tron()
 {
     srand(time(0));
 

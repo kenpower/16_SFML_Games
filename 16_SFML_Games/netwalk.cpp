@@ -127,7 +127,7 @@ void drop(Vector2i v)
 }
 
 
-int netwalk_messy()
+int netwalk()
 {
     srand(time(0));
 

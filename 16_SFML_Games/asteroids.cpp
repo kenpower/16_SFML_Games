@@ -12,7 +12,7 @@ float DEGTORAD = 0.017453f;
 class Animation
 {
    public:
-   float Frame, speed;
+   float Frame = 0, speed = 0;
    std::optional<Sprite> sprite;
    std::vector<IntRect> frames;
 
@@ -175,13 +175,13 @@ class player: public Entity
    {
      if (thrust)
      {
-         dx = dx + cos(angle*DEGTORAD)*0.2;
-         dy = dy + sin(angle*DEGTORAD)*0.2;
+         dx = dx + cos(angle*DEGTORAD)*0.2f;
+         dy = dy + sin(angle*DEGTORAD)*0.2f;
      }
      else
      {
-         dx = dx * 0.99;
-         dy = dy * 0.99;
+         dx = dx * 0.99f;
+         dy = dy * 0.99f;
      }
 
     int maxSpeed=15;
@@ -227,9 +227,9 @@ bool isCollide(Entity *a,Entity *b)
 }
 
 
-int asteroids_messy()
+int asteroids()
 {
-    srand(time(0));
+    srand((int)time(0));
 
     RenderWindow app(VideoMode({W, H}), "Asteroids!");
     app.setFramerateLimit(60);
@@ -249,9 +249,9 @@ int asteroids_messy()
     Sprite background(t2);
 
     Animation sExplosion(t3, 0,0,256,256, 48, 0.5);
-    Animation sRock(t4, 0,0,64,64, 16, 0.2);
-    Animation sRock_small(t6, 0,0,64,64, 16, 0.2);
-    Animation sBullet(t5, 0,0,32,64, 16, 0.8);
+    Animation sRock(t4, 0,0,64,64, 16, 0.2f);
+    Animation sRock_small(t6, 0,0,64,64, 16, 0.2f);
+    Animation sBullet(t5, 0,0,32,64, 16, 0.8f);
     Animation sPlayer(t1, 40,0,40,40, 1, 0);
     Animation sPlayer_go(t1, 40,40,40,40, 1, 0);
     Animation sExplosion_ship(t7, 0,0,192,192, 64, 0.5);
@@ -262,7 +262,7 @@ int asteroids_messy()
     for(int i=0;i<15;i++)
     {
       asteroid *a = new asteroid();
-      a->settings(sRock, rand()%W, rand()%H, rand()%360, 25);
+      a->settings(sRock, rand()%W, rand()%H, (float)(rand()%360), 25);
       entities.push_back(a);
     }
 
@@ -291,11 +291,11 @@ int asteroids_messy()
 
     if (Keyboard::isKeyPressed(Keyboard::Key::Right))
     {
-        p->angle=p->angle+3;
+        p->angle=p->angle+3.0f;
     }
     if (Keyboard::isKeyPressed(Keyboard::Key::Left))
     {
-        p->angle=p->angle-3;
+        p->angle=p->angle - 3.0f;
     }
     if (Keyboard::isKeyPressed(Keyboard::Key::Up))
     {
@@ -329,7 +329,7 @@ int asteroids_messy()
             {
              if (a->R==15) continue;
              Entity *e = new asteroid();
-             e->settings(sRock_small,a->x,a->y,rand()%360,15);
+             e->settings(sRock_small,a->x,a->y,(float)(rand()%360),15);
              entities.push_back(e);
             }
 

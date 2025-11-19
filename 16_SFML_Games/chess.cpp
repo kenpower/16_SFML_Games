@@ -115,7 +115,7 @@ void loadPosition()
 }
 
 
-int chess_messy()
+int chess()
 {
     RenderWindow window(VideoMode({504, 504}), "The Chess! (press SPACE)");
 

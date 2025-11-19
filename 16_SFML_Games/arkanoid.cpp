@@ -3,7 +3,7 @@
 #include <vector>
 using namespace sf;
 
-int arkanoid_messy()
+int arkanoid()
 {
     srand(time(0));
 
@@ -32,8 +32,8 @@ int arkanoid_messy()
 
     float a=6, b=5;
     float c=300, d=300;
-    int x1 = 300;
-    int y1 = 440;
+    float x1 = 300;
+    float y1 = 440;
     sPaddle.setPosition({x1, y1});
     int score = 0;  // not used yet
     bool gameOver = false;  // not used yet

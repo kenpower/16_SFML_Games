@@ -35,7 +35,7 @@ void Tick()
      if (s[0].x==s[i].x && s[0].y==s[i].y)  num=i;
  }
 
-int snake_messy()
+int snake()
 {
     srand(time(0));
 

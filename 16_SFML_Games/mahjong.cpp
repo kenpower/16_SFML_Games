@@ -33,7 +33,7 @@ bool isOpen(int x,int y,int z)
 }
 
 
-int mahjong_messy()
+int mahjong()
 {
     srand(time(0));
 

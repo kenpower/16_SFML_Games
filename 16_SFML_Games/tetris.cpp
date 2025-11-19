@@ -31,7 +31,7 @@ bool check()
 };
 
 
-int tetris_messy()
+int tetris()
 {
     srand(time(0));
 

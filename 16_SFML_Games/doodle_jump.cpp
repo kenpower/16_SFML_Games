@@ -5,7 +5,7 @@ using namespace sf;
 struct point
 { int x,y;};
 
-int doodle_jump_messy()
+int doodle_jump()
 {
     srand(time(0));
 
