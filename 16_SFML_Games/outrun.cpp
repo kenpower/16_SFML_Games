@@ -65,7 +65,7 @@ struct Line
 };
 
 
-int outrun()
+int outrun_messy()
 {
     RenderWindow app(VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}), "Outrun Racing!");
     app.setFramerateLimit(60);
@@ -115,16 +115,18 @@ int outrun()
      }
 
    int N = lines.size();
-   float playerX = 0;
+   float px = 0;  // player x position
    int pos = 0;
    int H = 1500;
 
    // Off-road state
-   bool isOffRoad = false;
-   const float OFF_ROAD_FRICTION = 0.98f;  // Gentler slowdown
-   const float CAR_WIDTH = 44.0f; // Width of car sprite
-   const int MAX_SPEED_ON_ROAD = 200;
-   const int MAX_SPEED_OFF_ROAD = 120;
+   bool offRoad = false;
+   float friction = 0.98f;
+   float carW = 44.0f;
+   int maxSpd1 = 200;
+   int maxSpd2 = 120;
+   int score = 0;  // not used yet
+   float lapTime = 0.0f;  // not used yet
 
     while (app.isOpen())
     {
@@ -134,67 +136,123 @@ int outrun()
                 app.close();
         }
 
-  static int speed=0;
-  const float baseTurnSpeed = 0.0005f;  // Base turning rate
+  static int spd=0;
+  float turnRate = 0.0005f;
 
-  // Different max speeds based on terrain (determined in previous frame)
-  int maxSpeed = isOffRoad ? MAX_SPEED_OFF_ROAD : MAX_SPEED_ON_ROAD;
+  // Different max speeds based on terrain
+  int maxSpd;
+  if (offRoad)
+  {
+      maxSpd = maxSpd2;
+  }
+  else
+  {
+      maxSpd = maxSpd1;
+  }
 
-  if (Keyboard::isKeyPressed(Keyboard::Key::Up)) speed = maxSpeed;
-  if (Keyboard::isKeyPressed(Keyboard::Key::Down)) speed = -maxSpeed;
-  if (Keyboard::isKeyPressed(Keyboard::Key::Tab)) speed *= 3;
-  if (Keyboard::isKeyPressed(Keyboard::Key::W)) H+=100;
-  if (Keyboard::isKeyPressed(Keyboard::Key::S)) H-=100;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Up))
+  {
+      spd = maxSpd;
+  }
+  if (Keyboard::isKeyPressed(Keyboard::Key::Down))
+  {
+      spd = -maxSpd;
+  }
+  if (Keyboard::isKeyPressed(Keyboard::Key::Tab))
+  {
+      spd = spd * 3;
+  }
+  if (Keyboard::isKeyPressed(Keyboard::Key::W))
+  {
+      H = H + 100;
+  }
+  if (Keyboard::isKeyPressed(Keyboard::Key::S))
+  {
+      H = H - 100;
+  }
 
-  // Turn speed proportional to forward speed (can't turn if not moving)
-  float effectiveTurnSpeed = baseTurnSpeed * abs(speed);
-  if (Keyboard::isKeyPressed(Keyboard::Key::Right)) playerX += effectiveTurnSpeed;
-  if (Keyboard::isKeyPressed(Keyboard::Key::Left)) playerX -= effectiveTurnSpeed;
+  // Turn speed proportional to forward speed
+  float ts = turnRate * abs(spd);
+  if (Keyboard::isKeyPressed(Keyboard::Key::Right))
+  {
+      px = px + ts;
+  }
+  if (Keyboard::isKeyPressed(Keyboard::Key::Left))
+  {
+      px = px - ts;
+  }
 
   // Apply road curve to player position
-  // If player doesn't steer, they go straight (off the curved road)
-  int startPosTemp = pos/segL;
-  if (speed != 0) {
-      playerX -= lines[startPosTemp % N].curve * 0.02f * (speed > 0 ? 1 : -1);
+  int sp = pos/segL;
+  if (spd != 0)
+  {
+      float curveDrift = lines[sp % N].curve * 0.02f;
+      if (spd > 0)
+      {
+          px = px - curveDrift;
+      }
+      else
+      {
+          px = px + curveDrift;
+      }
   }
 
-  // Apply gentle off-road friction (only when moving)
-  if (isOffRoad && abs(speed) > 5) {
-      speed *= OFF_ROAD_FRICTION;
+  // Apply off-road friction
+  if (offRoad)
+  {
+      int absSpeed = abs(spd);
+      if (absSpeed > 5)
+      {
+          spd = spd * friction;
+      }
   }
 
-  pos+=speed;
-  while (pos >= N*segL) pos-=N*segL;
-  while (pos < 0) pos += N*segL;
+  pos = pos + spd;
+  while (pos >= N*segL)
+  {
+      pos = pos - N*segL;
+  }
+  while (pos < 0)
+  {
+      pos = pos + N*segL;
+  }
 
   app.clear(Color(105,205,4));
   int startPos = pos/segL;
   int camH = lines[startPos].y + H;
 
-  // Move background based on player position, not road curve
-  sBackground.setPosition({-2000 - playerX * 200, 0});
+  // Move background
+  float bgX = -2000 - px * 200;
+  sBackground.setPosition({bgX, 0});
   app.draw(sBackground);
 
-  // Detect off-road: check a line ahead of the camera (where the car visually sits)
-  int checkLine = (startPos + 2) % N;  // Line slightly ahead
-  Line testLine = lines[checkLine];
-  testLine.project(playerX*roadW, camH, startPos*segL);
+  // Detect off-road
+  int cl = (startPos + 2) % N;
+  Line testLine = lines[cl];
+  testLine.project(px*roadW, camH, startPos*segL);
 
-  // Road boundaries on screen (road can move left/right based on playerX)
-  float roadCenterX = testLine.X;  // Where the road center appears on screen
-  float roadWidth = testLine.W;    // Half-width of the road on screen
-  float roadLeft = roadCenterX - roadWidth;
-  float roadRight = roadCenterX + roadWidth;
+  float rcx = testLine.X;
+  float rw = testLine.W;
+  float rl = rcx - rw;
+  float rr = rcx + rw;
 
-  // Car is always at screen center
-  float carScreenX = width / 2.0f;
-  float carLeft = carScreenX - CAR_WIDTH / 2;
-  float carRight = carScreenX + CAR_WIDTH / 2;
+  float csx = width / 2.0f;
+  float cl1 = csx - carW / 2;
+  float cr1 = csx + carW / 2;
 
-  // Check if car is outside road boundaries
-  isOffRoad = (carLeft < roadLeft || carRight > roadRight);
+  // Check if outside road
+  bool outsideLeft = cl1 < rl;
+  bool outsideRight = cr1 > rr;
+  if (outsideLeft || outsideRight)
+  {
+      offRoad = true;
+  }
+  else
+  {
+      offRoad = false;
+  }
 
-  std::cout << "Road: [" << roadLeft << " - " << roadRight << "], Car: [" << carLeft << " - " << carRight << "], Off: " << isOffRoad << "\n";
+  std::cout << "Road: [" << rl << " - " << rr << "], Car: [" << cl1 << " - " << cr1 << "], Off: " << offRoad << "\n";
 
   int maxy = height;
 
@@ -202,18 +260,40 @@ int outrun()
   for(int n = startPos; n<startPos+300; n++)
    {
     Line &l = lines[n%N];
-    // Don't compensate for curve - let road curve away if player doesn't steer
-    l.project(playerX*roadW, camH, startPos*segL - (n>=N?N*segL:0));
+    int zOffset;
+    if (n>=N)
+    {
+        zOffset = N*segL;
+    }
+    else
+    {
+        zOffset = 0;
+    }
+    l.project(px*roadW, camH, startPos*segL - zOffset);
 
     l.clip=maxy;
     if (l.Y>=maxy) continue;
     maxy = l.Y;
 
-    Color grass  = (n/3)%2?Color(16,200,16):Color(0,154,0);
-    Color rumble = (n/3)%2?Color(255,255,255):Color(0,0,0);
-    Color road   = (n/3)%2?Color(107,107,107):Color(105,105,105);
+    Color grass;
+    Color rumble;
+    Color road;
 
-    Line p = lines[(n-1)%N]; //previous line
+    int stripeCheck = (n/3)%2;
+    if (stripeCheck)
+    {
+        grass = Color(16,200,16);
+        rumble = Color(255,255,255);
+        road = Color(107,107,107);
+    }
+    else
+    {
+        grass = Color(0,154,0);
+        rumble = Color(0,0,0);
+        road = Color(105,105,105);
+    }
+
+    Line p = lines[(n-1)%N];
 
     drawQuad(app, grass, 0, p.Y, width, 0, l.Y, width);
     drawQuad(app, rumble,p.X, p.Y, p.W*1.2, l.X, l.Y, l.W*1.2);
@@ -222,21 +302,28 @@ int outrun()
 
     ////////draw objects////////
     for(int n=startPos+300; n>startPos; n--)
+    {
       lines[n%N].drawSprite(app);
+    }
 
     ////////draw player car////////
-    //float carScreenX = width/2;
-    float carScreenY = height - 100;
-    sCar.setPosition({carScreenX, carScreenY});
+    float carY = height - 100;
+    sCar.setPosition({csx, carY});
 
-    // Visual feedback for off-road
-    if (isOffRoad) {
-        sCar.setColor(Color(255, 150, 150)); // Red tint when off-road
-    } else {
+    // Visual feedback
+    if (offRoad)
+    {
+        int r = 255;
+        int g = 150;
+        int b = 150;
+        sCar.setColor(Color(r, g, b));
+    }
+    else
+    {
         sCar.setColor(Color::White);
     }
 
-    std::cout << "Offroad " << isOffRoad << "\n";
+    std::cout << "Offroad " << offRoad << "\n";
     app.draw(sCar);
 
     app.display();
