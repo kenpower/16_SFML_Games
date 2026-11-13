@@ -72,8 +72,15 @@ TEST(CatcherGame, FruitAwayFromBasketIsMissedAndCostsALife)
 {
     CatcherGame game(0);  // basket starts at x 160..240, so this fruit misses
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 0);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_EQ(0, game.score());
     EXPECT_EQ(2, game.lives());
@@ -406,14 +413,21 @@ TEST(CatcherGame, FruitAboveBasketIsCaught)
 {
     CatcherGame game(170);
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 50);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_EQ(1, game.score());
 }
 ```
 
-Some rules take many frames to happen. A fruit takes about 50 frames of 0.1 s to fall, so the test runs the game one frame at a time until the fruit is caught or missed. The frame limit (`frame < 100`) means a broken rule makes the test fail instead of running forever. The full set is in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp).
+Some rules take many frames to happen. A fruit takes about 50 frames of 0.1 s to fall, so the test runs the game one frame at a time until the fruit is caught or missed. The frame limit (`frame >= 100`) means a broken rule makes the test fail instead of running forever. The full set is in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp).
 
 ### How to find the tests you need
 

@@ -88,8 +88,15 @@ TEST(CatcherGame, FruitAboveBasketIsCaught)
 {
     CatcherGame game(170);  // basket starts at x 160..240, so this fruit lands in it
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 50);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_EQ(1, game.score());
     EXPECT_EQ(3, game.lives());
@@ -99,8 +106,15 @@ TEST(CatcherGame, CaughtFruitIsReplacedAtTopAtNextX)
 {
     CatcherGame game(170);
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 50);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_FLOAT_EQ(50, game.fruitX());
     EXPECT_FLOAT_EQ(0, game.fruitY());
@@ -110,8 +124,15 @@ TEST(CatcherGame, FruitAwayFromBasketIsMissedAndCostsALife)
 {
     CatcherGame game(0);  // basket starts at x 160..240, so this fruit misses
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 0);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_EQ(0, game.score());
     EXPECT_EQ(2, game.lives());
@@ -121,8 +142,15 @@ TEST(CatcherGame, FruitFallsFasterAfterEachCatch)
 {
     CatcherGame game(170);
 
-    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 170);
+        frame++;
+        // caught, missed, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.score() > 0 || game.lives() < 3 || frame >= 100;
+        if (finished) break;
+    }
 
     EXPECT_FLOAT_EQ(110, game.fruitSpeed());
 }
@@ -133,8 +161,15 @@ TEST(CatcherGame, ThreeMissesIsGameOver)
 {
     CatcherGame game(0);
 
-    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 0);
+        frame++;
+        // three misses, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.isGameOver() || frame >= 300;
+        if (finished) break;
+    }
 
     EXPECT_EQ(0, game.lives());
     EXPECT_TRUE(game.isGameOver());
@@ -143,8 +178,15 @@ TEST(CatcherGame, ThreeMissesIsGameOver)
 TEST(CatcherGame, NothingMovesAfterGameOver)
 {
     CatcherGame game(0);
-    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 0);
+        frame++;
+        // three misses, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.isGameOver() || frame >= 300;
+        if (finished) break;
+    }
     float fruitY = game.fruitY();
 
     game.update(1.0f, LEFT, 0);
@@ -156,8 +198,15 @@ TEST(CatcherGame, NothingMovesAfterGameOver)
 TEST(CatcherGame, RestartResetsScoreAndLives)
 {
     CatcherGame game(0);
-    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+    int frame = 0;
+    while (true)
+    {
         game.update(0.1f, NO_KEYS, 0);
+        frame++;
+        // three misses, or too many frames (the frame limit stops a runaway loop if the rule is broken)
+        bool finished = game.isGameOver() || frame >= 300;
+        if (finished) break;
+    }
 
     game.restart(42);
 
