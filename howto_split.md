@@ -72,7 +72,8 @@ TEST(CatcherGame, FruitAwayFromBasketIsMissedAndCostsALife)
 {
     CatcherGame game(0);  // basket starts at x 160..240, so this fruit misses
 
-    runUntilSomethingHappens(game, 0);
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 0);
 
     EXPECT_EQ(0, game.score());
     EXPECT_EQ(2, game.lives());
@@ -404,12 +405,15 @@ To make things happen, choose the inputs carefully. The basket starts at x 160..
 TEST(CatcherGame, FruitAboveBasketIsCaught)
 {
     CatcherGame game(170);
-    runUntilSomethingHappens(game, 50);   // small time steps until score or lives change
+
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 50);
+
     EXPECT_EQ(1, game.score());
 }
 ```
 
-A small helper like `runUntilSomethingHappens` is fine when a rule takes many frames to happen. The full set is in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp).
+Some rules take many frames to happen. A fruit takes about 50 frames of 0.1 s to fall, so the test runs the game one frame at a time until the fruit is caught or missed. The frame limit (`frame < 100`) means a broken rule makes the test fail instead of running forever. The full set is in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp).
 
 ### How to find the tests you need
 

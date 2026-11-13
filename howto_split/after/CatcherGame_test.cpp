@@ -80,22 +80,16 @@ TEST(CatcherGame, FruitFallsAt100PixelsPerSecondAtStart)
 
 // ---- Catching and missing ----
 
-// Helper: run the game in small steps until the score or lives change (or give up).
-void runUntilSomethingHappens(CatcherGame& game, float nextFruitX)
-{
-    int score = game.score(), lives = game.lives();
-    for (int frame = 0; frame < 1000; frame++)
-    {
-        game.update(0.1f, NO_KEYS, nextFruitX);
-        if (game.score() != score || game.lives() != lives) return;
-    }
-}
+// A fruit takes about 50 frames of 0.1 s to fall to the bottom, so these tests run the
+// game one frame at a time until something happens. The frame limit stops a test from
+// running forever if the rule is broken and nothing ever happens.
 
 TEST(CatcherGame, FruitAboveBasketIsCaught)
 {
     CatcherGame game(170);  // basket starts at x 160..240, so this fruit lands in it
 
-    runUntilSomethingHappens(game, 50);
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 50);
 
     EXPECT_EQ(1, game.score());
     EXPECT_EQ(3, game.lives());
@@ -105,7 +99,8 @@ TEST(CatcherGame, CaughtFruitIsReplacedAtTopAtNextX)
 {
     CatcherGame game(170);
 
-    runUntilSomethingHappens(game, 50);
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 50);
 
     EXPECT_FLOAT_EQ(50, game.fruitX());
     EXPECT_FLOAT_EQ(0, game.fruitY());
@@ -115,7 +110,8 @@ TEST(CatcherGame, FruitAwayFromBasketIsMissedAndCostsALife)
 {
     CatcherGame game(0);  // basket starts at x 160..240, so this fruit misses
 
-    runUntilSomethingHappens(game, 0);
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 0);
 
     EXPECT_EQ(0, game.score());
     EXPECT_EQ(2, game.lives());
@@ -125,7 +121,8 @@ TEST(CatcherGame, FruitFallsFasterAfterEachCatch)
 {
     CatcherGame game(170);
 
-    runUntilSomethingHappens(game, 170);
+    for (int frame = 0; frame < 100 && game.score() == 0 && game.lives() == 3; frame++)  // until caught or missed
+        game.update(0.1f, NO_KEYS, 170);
 
     EXPECT_FLOAT_EQ(110, game.fruitSpeed());
 }
@@ -136,8 +133,8 @@ TEST(CatcherGame, ThreeMissesIsGameOver)
 {
     CatcherGame game(0);
 
-    for (int i = 0; i < 3; i++)
-        runUntilSomethingHappens(game, 0);
+    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+        game.update(0.1f, NO_KEYS, 0);
 
     EXPECT_EQ(0, game.lives());
     EXPECT_TRUE(game.isGameOver());
@@ -146,8 +143,8 @@ TEST(CatcherGame, ThreeMissesIsGameOver)
 TEST(CatcherGame, NothingMovesAfterGameOver)
 {
     CatcherGame game(0);
-    for (int i = 0; i < 3; i++)
-        runUntilSomethingHappens(game, 0);
+    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+        game.update(0.1f, NO_KEYS, 0);
     float fruitY = game.fruitY();
 
     game.update(1.0f, LEFT, 0);
@@ -159,8 +156,8 @@ TEST(CatcherGame, NothingMovesAfterGameOver)
 TEST(CatcherGame, RestartResetsScoreAndLives)
 {
     CatcherGame game(0);
-    for (int i = 0; i < 3; i++)
-        runUntilSomethingHappens(game, 0);
+    for (int frame = 0; frame < 300 && !game.isGameOver(); frame++)  // until three fruits are missed
+        game.update(0.1f, NO_KEYS, 0);
 
     game.restart(42);
 
