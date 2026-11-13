@@ -1,40 +1,39 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 
 using namespace sf;
 
 int fifteen_puzzle()
 {
-    RenderWindow app(VideoMode(256,256), "15-Puzzle!");
+    RenderWindow app(VideoMode({256,256}), "15-Puzzle!");
     app.setFramerateLimit(60);
 
-    Texture t;
-    t.loadFromFile("images/fifteen_puzzle/15.png");
+    Texture t("images/fifteen_puzzle/15.png");
  
     int w = 64;
     int grid[6][6] = {0};
-    Sprite sprite[20];
+    std::vector<Sprite> sprite;
+    for (int i=0;i<20;i++) sprite.emplace_back(t);
 
     int n=0;
     for (int i=0;i<4;i++)
      for (int j=0;j<4;j++)
       {
         n++;
-        sprite[n].setTexture(t);
-        sprite[n].setTextureRect( IntRect(i*w,j*w,w,w) );
+        sprite[n].setTextureRect( IntRect({i*w,j*w},{w,w}) );
         grid[i+1][j+1]=n;
       }
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional e = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 app.close();
 
-               if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+               if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
+                if (mb->button == Mouse::Button::Left)
                   {
                      Vector2i pos = Mouse::getPosition(app);
                      int x = pos.x/w + 1;
@@ -53,11 +52,11 @@ int fifteen_puzzle()
                      grid[x+dx][y+dy] = n;
 
                      //animation
-                     sprite[16].move(-dx*w,-dy*w);
+                     sprite[16].move({float(-dx*w),float(-dy*w)});
                      float speed=3;
 
                      for (int i=0;i<w;i+=speed)
-                     {sprite[n].move(speed*dx,speed*dy);
+                     {sprite[n].move({speed*dx,speed*dy});
                       app.draw(sprite[16]);
                       app.draw(sprite[n]);
                       app.display(); }
@@ -70,7 +69,7 @@ int fifteen_puzzle()
         for (int j=0;j<4;j++)
          {
             int n = grid[i+1][j+1];
-            sprite[n].setPosition(i*w,j*w);
+            sprite[n].setPosition({float(i*w),float(j*w)});
             app.draw(sprite[n]);
           }
 

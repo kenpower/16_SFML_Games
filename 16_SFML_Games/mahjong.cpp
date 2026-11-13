@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <time.h>
+#include <vector>
 using namespace sf;
 
-int field[50][50][50] = {0};
+static int field[50][50][50] = {0};
 
 int& f(int x,int y,int z){return field[y+2][x+2][z];}
 int& f(Vector3i v){return f(v.x,v.y,v.z);}
@@ -27,11 +28,10 @@ int mahjong()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(740, 570), "Mahjong Solitaire!");
+    RenderWindow app(VideoMode({740, 570}), "Mahjong Solitaire!");
 
-    Texture t1,t2;
-    t1.loadFromFile("images/mahjong/tiles.png");
-    t2.loadFromFile("images/mahjong/background.png");
+    Texture t1("images/mahjong/tiles.png");
+    Texture t2("images/mahjong/background.png");
     Sprite s(t1), sBackground(t2);
     int w=48, h=66;
     int stepX=w/2-2, stepY=h/2-2;
@@ -77,15 +77,14 @@ int mahjong()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional e = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 app.close();
 
             //move back
-            if (e.type == Event::MouseButtonReleased)
-                if (e.key.code == Mouse::Right)
+            if (const auto* mr = e->getIf<Event::MouseButtonReleased>())
+                if (mr->button == Mouse::Button::Right)
                   {
                     int n = moves.size();
                     if (n==0) continue;
@@ -93,8 +92,8 @@ int mahjong()
                     f(moves[n-2])*=-1; moves.pop_back();
                   }
 
-               if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+               if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
+                if (mb->button == Mouse::Button::Left)
                   for(int z=0;z<10;z++)
                    {
                      Vector2i pos = Mouse::getPosition(app) - Vector2i(30,0); // 30 - desk offset
@@ -126,10 +125,10 @@ int mahjong()
          {
             int k = f(x,y,z)-1;
             if (k<0) continue;
-            s.setTextureRect(IntRect(k*w,0,w,h));
-            if (isOpen(x,y,z)) s.setTextureRect(IntRect(k*w,h,w,h));
-            s.setPosition(x*stepX + z*offX, y*stepY - z*offY);
-            s.move(30,0); //desk offset
+            s.setTextureRect(IntRect({k*w,0},{w,h}));
+            if (isOpen(x,y,z)) s.setTextureRect(IntRect({k*w,h},{w,h}));
+            s.setPosition({x*stepX + z*offX, y*stepY - z*offY});
+            s.move({30,0}); //desk offset
             app.draw(s);
           }
 

@@ -1,23 +1,6 @@
-#define SFML_STATIC
-#ifdef _DEBUG
-#pragma comment(lib,"sfml-graphics-s-d.lib")
-#pragma comment(lib,"sfml-audio-s-d.lib")
-#pragma comment(lib,"sfml-system-s-d.lib")
-#pragma comment(lib,"sfml-window-s-d.lib")
-#pragma comment(lib,"sfml-network-s-d.lib")
-#else
-#pragma comment(lib,"sfml-graphics-s.lib")
-#pragma comment(lib,"sfml-audio-s.lib")
-#pragma comment(lib,"sfml-system-s.lib")
-#pragma comment(lib,"sfml-window-s.lib")
-#pragma comment(lib,"sfml-network-s.lib")
-#endif
-#pragma comment(lib,"opengl32.lib")
-#pragma comment(lib,"glu32.lib")
-#pragma comment(lib,"winmm.lib")
-#pragma comment(lib,"freetype.lib")
-
+// Libraries are linked via CMake (see CMakeLists.txt).
 #include<iostream>
+#include<exception>
 
 int tetris();
 int doodle_jump();
@@ -65,6 +48,7 @@ int main()
 
         cin >> key;
 
+        try {
         switch (key) {
             case 'T':
             case 't':
@@ -130,6 +114,10 @@ int main()
             case 'E':
                 asteroids();
                 break;
+        }
+        } catch (const std::exception& ex) {
+            // SFML 3 throws when a resource (e.g. an image) cannot be loaded or a window cannot be created.
+            cerr << "Error: " << ex.what() << endl;
         }
 
     }

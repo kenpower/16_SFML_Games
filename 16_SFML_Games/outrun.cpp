@@ -1,4 +1,8 @@
 #include <SFML/Graphics.hpp>
+#include <cmath>
+#include <optional>
+#include <string>
+#include <vector>
 using namespace sf;
 
 int width = 1024;
@@ -23,7 +27,7 @@ struct Line
   float x,y,z; //3d center of line
   float X,Y,W; //screen coord
   float curve,spriteX,clip,scale;
-  Sprite sprite;
+  std::optional<Sprite> sprite; // empty when the line has no roadside object
 
   Line()
   {spriteX=curve=x=y=z=0;}
@@ -38,9 +42,10 @@ struct Line
 
   void drawSprite(RenderWindow &app)
   {
-    Sprite s = sprite;
-    int w = s.getTextureRect().width;
-    int h = s.getTextureRect().height;
+    if (!sprite) return;
+    Sprite s = *sprite;
+    int w = s.getTextureRect().size.x;
+    int h = s.getTextureRect().size.y;
 
     float destX = X + scale * spriteX * width/2;
     float destY = Y + 4;
@@ -54,9 +59,9 @@ struct Line
     if (clipH<0) clipH=0;
 
     if (clipH>=destH) return;
-    s.setTextureRect(IntRect(0,0,w,h-h*clipH/destH));
-    s.setScale(destW/w,destH/h);
-    s.setPosition(destX, destY);
+    s.setTextureRect(IntRect({0,0},{w,int(h-h*clipH/destH)}));
+    s.setScale({destW/w,destH/h});
+    s.setPosition({destX, destY});
     app.draw(s);
     }
 };
@@ -64,24 +69,24 @@ struct Line
 
 int outrun()
 {
-    RenderWindow app(VideoMode(width, height), "Outrun Racing!");
+    RenderWindow app(VideoMode({unsigned(width), unsigned(height)}), "Outrun Racing!");
     app.setFramerateLimit(60);
 
-    Texture t[50];
-    Sprite object[50];
+    Texture t[8];                 // t[0] is unused
+    std::vector<Sprite> object;   // Sprite has no default constructor, so fill it in order
+    object.emplace_back(t[0]);    // placeholder for index 0
     for(int i=1;i<=7;i++)
      {
-       t[i].loadFromFile("images/outrun/"+std::to_string(i)+".png");
+       t[i] = Texture("images/outrun/"+std::to_string(i)+".png");
        t[i].setSmooth(true);
-       object[i].setTexture(t[i]);
+       object.emplace_back(t[i]);
      }
 
-    Texture bg;
-    bg.loadFromFile("images/outrun/bg.png");
+    Texture bg("images/outrun/bg.png");
     bg.setRepeated(true);
     Sprite sBackground(bg);
-    sBackground.setTextureRect(IntRect(0,0,5000,411));
-    sBackground.setPosition(-2000,0);
+    sBackground.setTextureRect(IntRect({0,0},{5000,411}));
+    sBackground.setPosition({-2000,0});
 
     std::vector<Line> lines;
 
@@ -111,22 +116,21 @@ int outrun()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional e = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 app.close();
         }
 
   int speed=0;
 
-  if (Keyboard::isKeyPressed(Keyboard::Right)) playerX+=0.1;
-  if (Keyboard::isKeyPressed(Keyboard::Left)) playerX-=0.1;
-  if (Keyboard::isKeyPressed(Keyboard::Up)) speed=200;
-  if (Keyboard::isKeyPressed(Keyboard::Down)) speed=-200;
-  if (Keyboard::isKeyPressed(Keyboard::Tab)) speed*=3;
-  if (Keyboard::isKeyPressed(Keyboard::W)) H+=100;
-  if (Keyboard::isKeyPressed(Keyboard::S)) H-=100;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Right)) playerX+=0.1;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Left)) playerX-=0.1;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Up)) speed=200;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Down)) speed=-200;
+  if (Keyboard::isKeyPressed(Keyboard::Key::Tab)) speed*=3;
+  if (Keyboard::isKeyPressed(Keyboard::Key::W)) H+=100;
+  if (Keyboard::isKeyPressed(Keyboard::Key::S)) H-=100;
 
   pos+=speed;
   while (pos >= N*segL) pos-=N*segL;
@@ -136,8 +140,8 @@ int outrun()
   app.draw(sBackground);
   int startPos = pos/segL;
   int camH = lines[startPos].y + H;
-  if (speed>0) sBackground.move(-lines[startPos].curve*2,0);
-  if (speed<0) sBackground.move( lines[startPos].curve*2,0);
+  if (speed>0) sBackground.move({-lines[startPos].curve*2,0});
+  if (speed<0) sBackground.move({lines[startPos].curve*2,0});
 
   int maxy = height;
   float x=0,dx=0;

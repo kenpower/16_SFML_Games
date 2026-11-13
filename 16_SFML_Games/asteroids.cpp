@@ -1,12 +1,20 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include <list>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <optional>
 using namespace sf;
 
 const int W = 1200;
 const int H = 800;
 
 float DEGTORAD = 0.017453f;
+
+// Sprite has no default constructor in SFML 3, so default-constructed Animations
+// (e.g. inside Entity) point at this empty texture until settings() assigns a real one.
+static const Texture emptyTexture;
 
 class Animation
 {
@@ -15,18 +23,17 @@ class Animation
    Sprite sprite;
    std::vector<IntRect> frames;
 
-   Animation(){}
+   Animation() : Frame(0), speed(0), sprite(emptyTexture) {}
 
-   Animation (Texture &t, int x, int y, int w, int h, int count, float Speed)
+   Animation (Texture &t, int x, int y, int w, int h, int count, float Speed) : sprite(t)
    {
      Frame = 0;
      speed = Speed;
 
      for (int i=0;i<count;i++)
-      frames.push_back( IntRect(x+i*w, y, w, h)  );
+      frames.push_back( IntRect({x+i*w, y}, {w, h})  );
 
-     sprite.setTexture(t);
-     sprite.setOrigin(w/2,h/2);
+     sprite.setOrigin({float(w/2),float(h/2)});
      sprite.setTextureRect(frames[0]);
    }
 
@@ -72,14 +79,14 @@ class Entity
 
    void draw(RenderWindow &app)
    {
-     anim.sprite.setPosition(x,y);
-     anim.sprite.setRotation(angle+90);
+     anim.sprite.setPosition({x,y});
+     anim.sprite.setRotation(degrees(angle+90));
      app.draw(anim.sprite);
 
      CircleShape circle(R);
      circle.setFillColor(Color(255,0,0,170));
-     circle.setPosition(x,y);
-     circle.setOrigin(R,R);
+     circle.setPosition({x,y});
+     circle.setOrigin({R,R});
      //app.draw(circle);
    }
 
@@ -178,17 +185,16 @@ int asteroids()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(W, H), "Asteroids!");
+    RenderWindow app(VideoMode({W, H}), "Asteroids!");
     app.setFramerateLimit(60);
 
-    Texture t1,t2,t3,t4,t5,t6,t7;
-    t1.loadFromFile("images/asteroids/spaceship.png");
-    t2.loadFromFile("images/asteroids/background.jpg");
-    t3.loadFromFile("images/asteroids/explosions/type_C.png");
-    t4.loadFromFile("images/asteroids/rock.png");
-    t5.loadFromFile("images/asteroids/fire_blue.png");
-    t6.loadFromFile("images/asteroids/rock_small.png");
-    t7.loadFromFile("images/asteroids/explosions/type_B.png");
+    Texture t1("images/asteroids/spaceship.png");
+    Texture t2("images/asteroids/background.jpg");
+    Texture t3("images/asteroids/explosions/type_C.png");
+    Texture t4("images/asteroids/rock.png");
+    Texture t5("images/asteroids/fire_blue.png");
+    Texture t6("images/asteroids/rock_small.png");
+    Texture t7("images/asteroids/explosions/type_B.png");
 
     t1.setSmooth(true);
     t2.setSmooth(true);
@@ -220,14 +226,13 @@ int asteroids()
     /////main loop/////
     while (app.isOpen())
     {
-        Event event;
-        while (app.pollEvent(event))
+        while (const std::optional event = app.pollEvent())
         {
-            if (event.type == Event::Closed)
+            if (event->is<Event::Closed>())
                 app.close();
 
-            if (event.type == Event::KeyPressed)
-             if (event.key.code == Keyboard::Space)
+            if (const auto* key = event->getIf<Event::KeyPressed>())
+             if (key->code == Keyboard::Key::Space)
               {
                 bullet *b = new bullet();
                 b->settings(sBullet,p->x,p->y,p->angle,10);
@@ -235,9 +240,9 @@ int asteroids()
               }
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Right)) p->angle+=3;
-    if (Keyboard::isKeyPressed(Keyboard::Left))  p->angle-=3;
-    if (Keyboard::isKeyPressed(Keyboard::Up)) p->thrust=true;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) p->angle+=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left))  p->angle-=3;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) p->thrust=true;
     else p->thrust=false;
 
 

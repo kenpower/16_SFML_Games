@@ -5,7 +5,8 @@ using namespace sf;
 int ts = 54; //tile size
 Vector2i offset(48,24);
 
-struct piece
+// File-local (static) globals: several games define globals with the same name.
+static struct piece
 { int x,y,col,row,kind,match,alpha;
   piece(){match=0; alpha=255;}
 } grid[10][10];
@@ -24,12 +25,11 @@ int bejeweled()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(740,480), "Match-3 Game!");
+    RenderWindow app(VideoMode({740,480}), "Match-3 Game!");
     app.setFramerateLimit(60);
 
-    Texture t1,t2;
-    t1.loadFromFile("images/bejeweled/background.png");
-    t2.loadFromFile("images/bejeweled/gems.png");
+    Texture t1("images/bejeweled/background.png");
+    Texture t2("images/bejeweled/gems.png");
 
     Sprite background(t1), gems(t2);
 
@@ -48,14 +48,13 @@ int bejeweled()
 
     while (app.isOpen())
     {
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional e = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 app.close();
                    
-            if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+            if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
+                if (mb->button == Mouse::Button::Left)
                 {
                    if (!isSwap && !isMoving) click++;
                    pos = Mouse::getPosition(app)-offset;
@@ -149,10 +148,10 @@ int bejeweled()
      for (int j=1;j<=8;j++)
       {
         piece p = grid[i][j];
-        gems.setTextureRect( IntRect(p.kind*49,0,49,49));
-        gems.setColor(Color(255,255,255,p.alpha));
-        gems.setPosition(p.x,p.y);
-        gems.move(offset.x-ts,offset.y-ts);
+        gems.setTextureRect( IntRect({p.kind*49,0},{49,49}));
+        gems.setColor(Color(255,255,255,static_cast<std::uint8_t>(p.alpha)));
+        gems.setPosition({float(p.x),float(p.y)});
+        gems.move({float(offset.x-ts),float(offset.y-ts)});
         app.draw(gems);
       }
 

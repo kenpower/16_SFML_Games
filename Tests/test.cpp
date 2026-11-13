@@ -1,11 +1,7 @@
-#include "pch.h"
+#include <gtest/gtest.h>
 
-const int HEIGHT = 25;
-const int WIDTH = 40;
-const int tileSize = 18;
-
-#include"../16_SFML_Games/Grid.h"
-#include"../16_SFML_Games/Player.h"
+#include "Grid.h"
+#include "Player.h"
 
 
 TEST(Grid, HasWallsAndInterior) {

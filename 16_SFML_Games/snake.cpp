@@ -12,7 +12,7 @@ int dir,num=4;
 struct Snake 
 { int x,y;}  s[100];
 
-struct Fruit
+static struct Fruit
 { int x,y;} f;
 
 void Tick()
@@ -39,11 +39,10 @@ int snake()
 {  
     srand(time(0));
 
-    RenderWindow window(VideoMode(w, h), "Snake Game!");
+    RenderWindow window(VideoMode({unsigned(w), unsigned(h)}), "Snake Game!");
 
-    Texture t1,t2;
-    t1.loadFromFile("images/snake/white.png");
-    t2.loadFromFile("images/snake/red.png");
+    Texture t1("images/snake/white.png");
+    Texture t2("images/snake/red.png");
 
     Sprite sprite1(t1);
     Sprite sprite2(t2);
@@ -60,17 +59,16 @@ int snake()
         clock.restart();
         timer+=time; 
 
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional e = window.pollEvent())
         {
-            if (e.type == Event::Closed)      
+            if (e->is<Event::Closed>())
                 window.close();
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) dir=1;   
-        if (Keyboard::isKeyPressed(Keyboard::Right)) dir=2;    
-        if (Keyboard::isKeyPressed(Keyboard::Up)) dir=3;
-        if (Keyboard::isKeyPressed(Keyboard::Down)) dir=0;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left)) dir=1;   
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right)) dir=2;    
+        if (Keyboard::isKeyPressed(Keyboard::Key::Up)) dir=3;
+        if (Keyboard::isKeyPressed(Keyboard::Key::Down)) dir=0;
 
         if (timer>delay) {timer=0; Tick();}
 
@@ -79,12 +77,12 @@ int snake()
 
     for (int i=0; i<N; i++) 
       for (int j=0; j<M; j++) 
-        { sprite1.setPosition(i*sz, j*sz);  window.draw(sprite1); }
+        { sprite1.setPosition({float(i*sz), float(j*sz)});  window.draw(sprite1); }
 
     for (int i=0;i<num;i++)
-        { sprite2.setPosition(s[i].x*sz, s[i].y*sz);  window.draw(sprite2); }
+        { sprite2.setPosition({float(s[i].x*sz), float(s[i].y*sz)});  window.draw(sprite2); }
    
-    sprite2.setPosition(f.x*sz, f.y*sz);  window.draw(sprite2);    
+    sprite2.setPosition({float(f.x*sz), float(f.y*sz)});  window.draw(sprite2);    
 
     window.display();
     }

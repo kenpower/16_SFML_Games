@@ -6,14 +6,13 @@ int minesweeper()
 {
     srand(time(0));
 
-    RenderWindow app(VideoMode(400, 400), "Minesweeper!");
+    RenderWindow app(VideoMode({400, 400}), "Minesweeper!");
 
     int w=32;
     int grid[12][12];
     int sgrid[12][12]; //for showing
 
-    Texture t;
-    t.loadFromFile("images/minesweeper/tiles.jpg");
+    Texture t("images/minesweeper/tiles.jpg");
     Sprite s(t);
 
     for (int i=1;i<=10;i++)
@@ -46,15 +45,14 @@ int minesweeper()
         int x = pos.x/w;
         int y = pos.y/w;
 
-        Event e;
-        while (app.pollEvent(e))
+        while (const std::optional e = app.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 app.close();
 
-            if (e.type == Event::MouseButtonPressed)
-              if (e.key.code == Mouse::Left) sgrid[x][y]=grid[x][y];
-              else if (e.key.code == Mouse::Right) sgrid[x][y]=11;
+            if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
+              if (mb->button == Mouse::Button::Left) sgrid[x][y]=grid[x][y];
+              else if (mb->button == Mouse::Button::Right) sgrid[x][y]=11;
         }
 
         app.clear(Color::White);
@@ -63,8 +61,8 @@ int minesweeper()
          for (int j=1;j<=10;j++)
           {
            if (sgrid[x][y]==9) sgrid[i][j]=grid[i][j];
-           s.setTextureRect(IntRect(sgrid[i][j]*w,0,w,w));
-           s.setPosition(i*w, j*w);
+           s.setTextureRect(IntRect({sgrid[i][j]*w,0},{w,w}));
+           s.setPosition({float(i*w), float(j*w)});
            app.draw(s);
           }
 

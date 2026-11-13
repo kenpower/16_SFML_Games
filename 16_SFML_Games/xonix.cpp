@@ -1,16 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <optional>
 
 
 using namespace sf;
 
-const int HEIGHT = 25;
-const int WIDTH = 40;
-const int tileSize = 18; 
+#include "XonixConstants.h"
+#include "Grid.h"
 
-#include"Grid.h"
-
-Grid grid;
+static Grid grid;
 
 struct Enemy
 {
@@ -72,33 +70,28 @@ void moveEnemies() {
 class Screen {
     RenderWindow window;
     Texture t1, t2, t3;
-    //Sprite sTile(t1), sGameover(t2), sEnemy(t3);
     Sprite sTile, sGameover, sEnemy;
 public:
 
-    Screen():window(VideoMode(WIDTH* tileSize, HEIGHT* tileSize), "Xonix Game!") {
-     
+    Screen():window(VideoMode({WIDTH* tileSize, HEIGHT* tileSize}), "Xonix Game!"),
+             t1("images/xonix/tiles.png"),
+             t2("images/xonix/gameover.png"),
+             t3("images/xonix/enemy.png"),
+             sTile(t1), sGameover(t2), sEnemy(t3) {
+
         window.setFramerateLimit(60);
 
-        t1.loadFromFile("images/xonix/tiles.png");
-        t2.loadFromFile("images/xonix/gameover.png");
-        t3.loadFromFile("images/xonix/enemy.png");
-
-        sTile.setTexture(t1);
-        sGameover.setTexture(t2);
-        sEnemy.setTexture(t3);
-
-        sGameover.setPosition(100, 100);
-        sEnemy.setOrigin(20, 20);
+        sGameover.setPosition({100, 100});
+        sEnemy.setOrigin({20, 20});
     }
 
     void drawFrame() {
         /////////draw//////////
         window.clear();
 
-        IntRect blueTile(0, 0, tileSize, tileSize);
-        IntRect greenTile(54, 0, tileSize, tileSize);
-        IntRect redTile(36, 0, tileSize, tileSize);
+        IntRect blueTile({0, 0}, {tileSize, tileSize});
+        IntRect greenTile({54, 0}, {tileSize, tileSize});
+        IntRect redTile({36, 0}, {tileSize, tileSize});
 
         //draw wall times
         for (int i = 0; i < HEIGHT; i++)
@@ -107,22 +100,22 @@ public:
                 if (grid.isEmpty(i, j))   continue;
                 if (grid.isWall(i, j))    sTile.setTextureRect(blueTile);
                 if (grid.isNewWall(i, j)) sTile.setTextureRect(greenTile);
-                sTile.setPosition(j * tileSize, i * tileSize);
+                sTile.setPosition({float(j * tileSize), float(i * tileSize)});
                 window.draw(sTile);
             }
 
         //draw player
         sTile.setTextureRect(redTile);
-        sTile.setPosition(player.x * tileSize, player.y * tileSize);
+        sTile.setPosition({float(player.x * tileSize), float(player.y * tileSize)});
         window.draw(sTile);
 
 
-        sEnemy.rotate(10);
+        sEnemy.rotate(degrees(10));
 
         //draw enemy
         for (int i = 0; i < enemyCount; i++)
         {
-            sEnemy.setPosition(enemies[i].x, enemies[i].y);
+            sEnemy.setPosition({float(enemies[i].x), float(enemies[i].y)});
             window.draw(sEnemy);
         }
 
@@ -136,15 +129,14 @@ public:
 	}
 
     bool handleEvents() {
-        Event e;
         bool shouldReset = false;
-        while (window.pollEvent(e))
+        while (const std::optional e = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 window.close();
 
-            if (e.type == Event::KeyPressed)
-                if (e.key.code == Keyboard::Escape)
+            if (const auto* key = e->getIf<Event::KeyPressed>())
+                if (key->code == Keyboard::Key::Escape)
                 {
 					shouldReset = true;
                 }
@@ -154,10 +146,10 @@ public:
 };
 
 void controlPlayer(){
-    if (Keyboard::isKeyPressed(Keyboard::Left)) player.goLeft();
-    if (Keyboard::isKeyPressed(Keyboard::Right))   player.goRight();
-    if (Keyboard::isKeyPressed(Keyboard::Up))  player.goUp();
-    if (Keyboard::isKeyPressed(Keyboard::Down))  player.goDown();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left)) player.goLeft();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right))   player.goRight();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up))  player.goUp();
+    if (Keyboard::isKeyPressed(Keyboard::Key::Down))  player.goDown();
 }
 
 void movePlayer(bool& playerTouchedNewWall){

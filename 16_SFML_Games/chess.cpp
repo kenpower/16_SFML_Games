@@ -1,12 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include <vector>
+#include <optional>
 #include "Connector.hpp"
 using namespace sf;
 
 int size = 56;
 Vector2f os(28,28);
 
-Sprite f[32]; //figures
+static std::vector<Sprite> f; //figures (Sprite has no default constructor, so filled in chess())
 std::string position="";
 
 int board[8][8] = 
@@ -40,7 +42,7 @@ void move(std::string str)
     Vector2f newPos = toCoord(str[2],str[3]);
 
     for(int i=0;i<32;i++)
-     if (f[i].getPosition()==newPos) f[i].setPosition(-100,-100);
+     if (f[i].getPosition()==newPos) f[i].setPosition({-100,-100});
         
     for(int i=0;i<32;i++)
      if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
@@ -62,8 +64,8 @@ void loadPosition()
        if (!n) continue;
        int x = abs(n)-1;
        int y = n>0?1:0;
-       f[k].setTextureRect( IntRect(size*x,size*y,size,size) );
-       f[k].setPosition(size*j,size*i);
+       f[k].setTextureRect( IntRect({size*x,size*y},{size,size}) );
+       f[k].setPosition({float(size*j),float(size*i)});
        k++;
      }
 
@@ -74,17 +76,18 @@ void loadPosition()
 
 int chess()
 {
-    RenderWindow window(VideoMode(504, 504), "The Chess! (press SPACE)");
+    RenderWindow window(VideoMode({504, 504}), "The Chess! (press SPACE)");
     
-    const wchar_t const* engine = L"stockfish.exe";
-    wchar_t dst[14];
-    wcscpy_s(dst, engine);
+#if defined(_WIN32)
+    ConnectToEngine("stockfish.exe");             // bundled next to the executable
+#elif defined(SFML_GAMES_STOCKFISH_PATH)
+    ConnectToEngine(SFML_GAMES_STOCKFISH_PATH);   // located by CMake at configure time
+#else
+    ConnectToEngine("stockfish");                 // fall back to searching PATH at runtime
+#endif
 
-    ConnectToEngine(dst);    
-
-    Texture t1,t2;
-    t1.loadFromFile("images/chess/figures.png"); 
-    t2.loadFromFile("images/chess/board.png");
+    Texture t1("images/chess/figures.png");
+    Texture t2("images/chess/board.png");
 
     for(int i=0;i<32;i++) f[i].setTexture(t1);
     Sprite sBoard(t2); 
@@ -101,22 +104,21 @@ int chess()
     {
         Vector2i pos = Mouse::getPosition(window) - Vector2i(os);
 
-        Event e;
-        while (window.pollEvent(e))
+        while (const std::optional e = window.pollEvent())
         {
-            if (e.type == Event::Closed)
+            if (e->is<Event::Closed>())
                 window.close();
 
             ////move back//////
-            if (e.type == Event::KeyPressed)
-                if (e.key.code == Keyboard::BackSpace)
+            if (const auto* key = e->getIf<Event::KeyPressed>())
+                if (key->code == Keyboard::Key::Backspace)
                 { if (position.length()>6) position.erase(position.length()-6,5); loadPosition();}
 
             /////drag and drop///////
-            if (e.type == Event::MouseButtonPressed)
-                if (e.key.code == Mouse::Left)
+            if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
+                if (mb->button == Mouse::Button::Left)
                   for(int i=0;i<32;i++)
-                  if (f[i].getGlobalBounds().contains(pos.x,pos.y))
+                  if (f[i].getGlobalBounds().contains(Vector2f(pos)))
                       {
                        isMove=true; n=i;
                        dx=pos.x - f[i].getPosition().x;
@@ -124,8 +126,8 @@ int chess()
                        oldPos  =  f[i].getPosition();
                       }
 
-             if (e.type == Event::MouseButtonReleased)
-                if (e.key.code == Mouse::Left)
+             if (const auto* mr = e->getIf<Event::MouseButtonReleased>())
+                if (mr->button == Mouse::Button::Left)
                  {
                   isMove=false;
                   Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
@@ -138,7 +140,7 @@ int chess()
         }
 
        //comp move
-       if (Keyboard::isKeyPressed(Keyboard::Space))
+       if (Keyboard::isKeyPressed(Keyboard::Key::Space))
        {
          str =  getNextMove(position);
                    
@@ -151,7 +153,7 @@ int chess()
          for(int k=0;k<50;k++)
           {
             Vector2f p = newPos - oldPos;
-            f[n].move(p.x/50, p.y/50); 
+            f[n].move({p.x/50, p.y/50}); 
             window.draw(sBoard);
             for(int i=0;i<32;i++) f[i].move(os);
             for(int i=0;i<32;i++) window.draw(f[i]); window.draw(f[n]);
@@ -163,7 +165,7 @@ int chess()
         f[n].setPosition(newPos); 
         }
 
-        if (isMove) f[n].setPosition(pos.x-dx,pos.y-dy);
+        if (isMove) f[n].setPosition({pos.x-dx,pos.y-dy});
 
     ////// draw  ///////
     window.clear();
@@ -175,5 +177,6 @@ int chess()
     }
 
     CloseConnection();
+    f.clear(); // sprites reference the local textures
     return 0;
 }
