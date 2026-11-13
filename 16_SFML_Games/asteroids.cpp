@@ -1,3 +1,20 @@
+// __        ___    ____  _   _ ___ _   _  ____
+// \ \      / / \  |  _ \| \ | |_ _| \ | |/ ___|
+//  \ \ /\ / / _ \ | |_) |  \| || ||  \| | |  _
+//   \ V  V / ___ \|  _ <| |\  || || |\  | |_| |
+//    \_/\_/_/   \_\_| \_\_| \_|___|_| \_|\____|
+//
+//  ADVANCED GAME - ATTEMPT WITH CAUTION
+//
+//  Asteroids is much harder to refactor than most games in this collection.
+//  The game logic is spread across a class hierarchy (Entity and its subclasses),
+//  entities are created with new and owned through raw pointers in a std::list,
+//  and some game state lives inside Animation, which holds an SFML Sprite.
+//  Extracting an SFML-free class here needs a redesign, not just a move.
+//
+//  Only choose this game if you are confident. Otherwise pick a simpler one.
+// ===========================================================================
+
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include <list>

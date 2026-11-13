@@ -1,3 +1,20 @@
+// __        ___    ____  _   _ ___ _   _  ____
+// \ \      / / \  |  _ \| \ | |_ _| \ | |/ ___|
+//  \ \ /\ / / _ \ | |_) |  \| || ||  \| | |  _
+//   \ V  V / ___ \|  _ <| |\  || || |\  | |_| |
+//    \_/\_/_/   \_\_| \_\_| \_|___|_| \_|\____|
+//
+//  ADVANCED GAME - ATTEMPT WITH CAUTION
+//
+//  Bejeweled is much harder to refactor than it looks.
+//  The game rules (matching, swapping back, dropping and refilling) are driven
+//  by the animation: each piece stores its pixel position and fade, and the
+//  rules only run when nothing is moving. Separating the rules from the
+//  animation is the hard part of extracting an SFML-free class here.
+//
+//  Only choose this game if you are very confident. Otherwise pick a simpler one.
+// ===========================================================================
+
 #include <SFML/Graphics.hpp>
 #include <time.h>
 using namespace sf;
