@@ -32,7 +32,7 @@ By the end of this lab you should be able to:
 
 ## Step 0 – Build, run and debug
 
-Follow the [README](https://github.com/kenpower/16_SFML_Games/blob/master/README.md) to configure and build the project with CMake. Then:
+Follow the [README](https://github.com/kenpower/16_SFML_Games/blob/main/README.md) to configure and build the project with CMake. Then:
 
 - Run the launcher **from its own folder** (`build/bin`, or `build/bin/Debug` with Visual Studio). The games load images using relative paths, so if you run it from anywhere else the textures won't load.
 - Open the project in your IDE (Visual Studio: *File → Open → Folder*; VS Code: the CMake Tools extension). Build the **Debug** configuration.
