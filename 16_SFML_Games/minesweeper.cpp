@@ -17,9 +17,9 @@ int minesweeper()
     // ---- GAME STATE: grid = the hidden answer, sgrid = what the player sees ----
     // HINT: the rules (mines, neighbour counts, reveal) need no SFML - could they live in a separate Board class?
     int w=32;
-    int grid[12][12];
+    int grid[12][12] = {};
     // HINT: what do the values 0-11 in sgrid mean? Look at the tile image in images/minesweeper.
-    int sgrid[12][12]; //for showing
+    int sgrid[12][12] = {}; //for showing
 
     Texture t("images/minesweeper/tiles.jpg");
     Sprite s(t);
