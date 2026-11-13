@@ -15,6 +15,72 @@ The example game is **Catcher**: move a basket left and right to catch falling f
 
 Read the two `catcher.cpp` files side by side before you go on. They play exactly the same.
 
+### Playing Catcher
+
+Each version is its own CMake target, built by the same project as the 16 games: `catcher_before`, `catcher_after`, and `CatcherTests` for the unit tests. Configure the project as the [README](README.md) describes, then:
+
+```sh
+cmake --build build --config Release --target catcher_before catcher_after CatcherTests
+```
+
+The executables go in `build/bin/` (or `build/bin/Release/` with Visual Studio). Catcher needs no image files, so you can run it from any folder:
+
+```sh
+build/bin/catcher_before      # Windows: build\bin\Release\catcher_before.exe
+build/bin/catcher_after
+```
+
+In Visual Studio or VS Code (CMake Tools), pick `catcher_before` or `catcher_after` as the startup / launch target instead.
+
+**Controls:** Left and Right arrows move the basket. Space restarts after game over. The score and lives are shown in the window title.
+
+The tests run with the rest of the suite (`ctest --test-dir build -C Release --output-on-failure`). To run only the Catcher tests, add `-R "^Catcher\."`.
+
+---
+
+## Why the "before" version can't be tested
+
+Try writing one test for [before/catcher.cpp](howto_split/before/catcher.cpp). Take a simple rule: *a fruit that falls past the bottom costs a life.* A unit test has three parts. Set up a situation, run the code once, and check the result. Every part runs into a problem:
+
+| To test it you need to... | But in the before version... |
+|------------------|------------------------------|
+| **Call the rule** | There's nothing to call. The rule is a few lines in the middle of `main()`'s `while` loop. Calling `main()` opens a window and loops until a person closes it. You can't run "one frame". |
+| **Set up the situation** (fruit just above the bottom, 3 lives) | `lives` and `score` are local variables inside `main()`, so nothing outside can set them. The fruit's position isn't even a variable: it lives inside an SFML `CircleShape`. |
+| **Control the input** (no keys pressed) | The code asks the real keyboard (`Keyboard::isKeyPressed`). A test can't press or release keys. |
+| **Control time** | `dt` comes from a real `Clock`, so how far the fruit falls in one frame depends on how fast the computer is. Run it twice and you get different numbers. |
+| **Predict what happens next** | After a catch or miss, the fruit moves to `rand() % 380`. The test can't know where it will be, so it can't check it. |
+| **Check the result** (lives is now 2) | The only place `lives` is shown is the window title and the screen. A test would have to read text out of a window. |
+| **Run without graphics** | Every line needs SFML and a window. The `Tests` project doesn't link SFML (on purpose), and a test machine may not even have a screen. |
+
+None of these problems is about the rule itself. The rule is just `if (y > 500) lives--;`, which is easy. The problem is what the rule is *tangled with*: the window, the keyboard, the clock, `rand()` and SFML shapes.
+
+Each step below removes one of these problems:
+
+| Problem | Removed by |
+|---------|-----------|
+| State hidden in SFML objects | Step 1: take the state out of SFML objects |
+| Real keyboard | Step 3: turn input into plain data |
+| Real clock, `rand()` | Step 4: pass in time and randomness |
+| SFML types in the rules (`getGlobalBounds`, `FloatRect`) | Step 5: replace SFML types with your own |
+| No way to call one frame | Step 6: gather the rules into one function |
+| Local variables nothing can set or read; needs SFML to compile | Step 7: move it into its own header and make it a class |
+
+After that, the same test is a few lines long. This one is from [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp):
+
+```cpp
+TEST(CatcherGame, FruitAwayFromBasketIsMissedAndCostsALife)
+{
+    CatcherGame game(0);  // basket starts at x 160..240, so this fruit misses
+
+    runUntilSomethingHappens(game, 0);
+
+    EXPECT_EQ(0, game.score());
+    EXPECT_EQ(2, game.lives());
+}
+```
+
+No window, no keyboard, no clock, no `rand()`. The fruit's starting x is passed in (`0`), so the test knows it will miss.
+
 ---
 
 ## The idea

@@ -125,6 +125,26 @@ if(WIN32 AND SFML_FOUND AND NOT SFML_STATIC_LIBRARIES)
 endif()
 
 # ---------------------------------------------------------------------------
+# Catcher: the worked example in howto_split.md, before and after the split
+# ---------------------------------------------------------------------------
+set(CATCHER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/howto_split)
+
+add_executable(catcher_before ${CATCHER_DIR}/before/catcher.cpp)
+add_executable(catcher_after  ${CATCHER_DIR}/after/catcher.cpp ${CATCHER_DIR}/after/CatcherGame.h)
+
+foreach(catcher catcher_before catcher_after)
+    target_link_libraries(${catcher} PRIVATE SFML::Graphics SFML::Window SFML::System)
+    set_target_properties(${catcher} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    if(WIN32 AND SFML_FOUND AND NOT SFML_STATIC_LIBRARIES)
+        add_custom_command(TARGET ${catcher} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_RUNTIME_DLLS:${catcher}> $<TARGET_FILE_DIR:${catcher}>
+            COMMAND_EXPAND_LISTS
+        )
+    endif()
+endforeach()
+
+# ---------------------------------------------------------------------------
 # Unit tests (GoogleTest)
 # ---------------------------------------------------------------------------
 if(SFML_GAMES_BUILD_TESTS)
@@ -144,6 +164,11 @@ if(SFML_GAMES_BUILD_TESTS)
     target_include_directories(Tests PRIVATE ${GAME_DIR})
     target_link_libraries(Tests PRIVATE GTest::gtest_main)
 
+    add_executable(CatcherTests ${CATCHER_DIR}/after/CatcherGame_test.cpp)
+    target_include_directories(CatcherTests PRIVATE ${CATCHER_DIR}/after)
+    target_link_libraries(CatcherTests PRIVATE GTest::gtest_main)
+
     include(GoogleTest)
     gtest_discover_tests(Tests)
+    gtest_discover_tests(CatcherTests TEST_PREFIX "Catcher.")
 endif()
