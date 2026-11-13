@@ -82,7 +82,7 @@ These were verified by reading the code, not by running it. None are flagged in 
 
 | Game | Location | Bug |
 |------|----------|-----|
-| Minesweeper | minesweeper.cpp:20, 43-50 | `grid` is uninitialised, and neighbour counting reads border rows/columns 0 and 11, which are never set. Counts on edge cells can be wrong. This will make neighbour-count tests flaky until it's fixed. |
+| Minesweeper | minesweeper.cpp:19-21 | **Fixed in the starter code (2026-11-13):** `grid` and `sgrid` were uninitialised, so neighbour counts on edge cells read garbage from border rows/columns 0 and 11. Both are now zero-initialised. |
 | Minesweeper | minesweeper.cpp:57-68 | The cell comes from `pos.x/w` with no bounds check. A click at x ≥ 384 (or y ≥ 384) gives index 12 and writes out of bounds. |
 | Racing | racing.cpp:133 | `car[i].x+=dy/10.0;` should update `y`. Collision push-apart is lopsided. `dx` and `dy` are `int`s, so small separations truncate to 0. |
 | Snake | snake.cpp:43-44 | Wrapping tests `> N` / `< 0` and wraps to `N`, so the head can sit at column N (or row M), one cell off-screen. |
