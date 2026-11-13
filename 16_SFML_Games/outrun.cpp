@@ -8,7 +8,7 @@ using namespace sf;
 // Entry point: int outrun(), near the bottom. The globals at the top (width, height, roadW, segL, camD) are shared settings.
 // State that survives between frames: the `lines` vector (the whole track, built once), plus playerX, pos, H, isOffRoad
 // and the static speed declared before/inside the loop.
-// Suggested reading order: Line::project, then the SETUP in outrun(), then INPUT/UPDATE, then the road loop, then the car.
+// Suggested reading order: Line::project, then drawSprite, then the SETUP in outrun(), then INPUT/UPDATE, then the road loop, then the car.
 // =====
 
 int width = 1024;
@@ -29,16 +29,16 @@ void drawQuad(RenderWindow &w, Color c, int x1,int y1,int w1,int x2,int y2,int w
     w.draw(shape);
 }
 
-// ---- DATA: one slice of the track - 3D position, screen position, curve and optional sprite ----
+// ---- DATA: one slice of the track - 3D position, screen position, curve and optional roadside object ----
 struct Line
 {
   float x,y,z; //3d center of line
   float X,Y,W; //screen coord
   float curve,spriteX,clip,scale;
-  std::optional<Sprite> sprite; // empty when the line has no roadside object
+  int object; // which roadside picture (1-7) stands here, 0 for none
 
   Line()
-  {spriteX=curve=x=y=z=0;}
+  {spriteX=curve=x=y=z=0; object=0;}
 
   // ---- Line::project: turns the 3D world position into screen coordinates ----
   void project(int camX,int camY,int camZ)
@@ -48,25 +48,26 @@ struct Line
     Y = (1 - scale*(y - camY)) * height/2;
     W = scale * roadW  * width/2;
   }
+};
 
-  // ---- Line::drawSprite: draws the roadside object (if any), scaled and clipped ----
-  void drawSprite(RenderWindow &app)
-  {
-    if (!sprite) return;
-    Sprite s = *sprite;
+// ---- HELPER: draws a line's roadside object (if any), scaled and clipped ----
+void drawSprite(RenderWindow &app, const Line &l, const std::vector<Sprite> &objects)
+{
+    if (!l.object) return;
+    Sprite s = objects[l.object];
     int w = s.getTextureRect().size.x;
     int h = s.getTextureRect().size.y;
 
-    float destX = X + scale * spriteX * width/2;
-    float destY = Y + 4;
-    float destW  = w * W / 266;
-    float destH  = h * W / 266;
+    float destX = l.X + l.scale * l.spriteX * width/2;
+    float destY = l.Y + 4;
+    float destW  = w * l.W / 266;
+    float destH  = h * l.W / 266;
 
-    destX += destW * spriteX; //offsetX
+    destX += destW * l.spriteX; //offsetX
     destY += destH * (-1);    //offsetY
 
     // HINT: put a breakpoint here and watch clip and destY+destH - when does the sprite get cut off or skipped?
-    float clipH = destY+destH-clip;
+    float clipH = destY+destH-l.clip;
     if (clipH<0) clipH=0;
 
     if (clipH>=destH) return;
@@ -74,8 +75,7 @@ struct Line
     s.setScale({destW/w,destH/h});
     s.setPosition({destX, destY});
     app.draw(s);
-    }
-};
+}
 
 
 int outrun()
@@ -118,11 +118,11 @@ int outrun()
        if (i>300 && i<700) line.curve=0.5;
        if (i>1100) line.curve=-0.7;
 
-       if (i<300 && i%20==0) {line.spriteX=-2.5; line.sprite=object[5];}
-       if (i%17==0)          {line.spriteX=2.0; line.sprite=object[6];}
-       if (i>300 && i%20==0) {line.spriteX=-0.7; line.sprite=object[4];}
-       if (i>800 && i%20==0) {line.spriteX=-1.2; line.sprite=object[1];}
-       if (i==400)           {line.spriteX=-1.2; line.sprite=object[7];}
+       if (i<300 && i%20==0) {line.spriteX=-2.5; line.object=5;}
+       if (i%17==0)          {line.spriteX=2.0; line.object=6;}
+       if (i>300 && i%20==0) {line.spriteX=-0.7; line.object=4;}
+       if (i>800 && i%20==0) {line.spriteX=-1.2; line.object=1;}
+       if (i==400)           {line.spriteX=-1.2; line.object=7;}
 
        if (i>750) line.y = sin(i/30.0)*1500;
 
@@ -245,7 +245,7 @@ int outrun()
     // ---- DRAW: roadside sprites, far to near ----
     ////////draw objects////////
     for(int n=startPos+300; n>startPos; n--)
-      lines[n%N].drawSprite(app);
+      drawSprite(app, lines[n%N], object);
 
     // ---- DRAW: the player's car, tinted red when off-road ----
     ////////draw player car////////

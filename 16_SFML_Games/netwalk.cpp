@@ -13,18 +13,30 @@ const int N = 6;
 int tsz = 54; //tile size
 Vector2f oset(65,55);
 
-// ---- DATA: direction vectors used throughout ----
-Vector2i Up(0,-1);
-Vector2i Down(0,1);
-Vector2i Right(1,0);
-Vector2i Left(-1,0);
+// ---- DATA: a cell on the board, or a step from one cell to the next ----
+struct GridPos
+{
+  int x,y;
+  GridPos() : x(0), y(0) {}
+  GridPos(int x,int y) : x(x), y(y) {}
+};
 
-Vector2i DIR[4] = {Up,Right,Down,Left};
+GridPos operator+(GridPos a, GridPos b) {return GridPos(a.x+b.x, a.y+b.y);}
+GridPos operator-(GridPos a) {return GridPos(-a.x, -a.y);}
+bool operator==(GridPos a, GridPos b) {return a.x==b.x && a.y==b.y;}
+
+// ---- DATA: direction vectors used throughout ----
+GridPos Up(0,-1);
+GridPos Down(0,1);
+GridPos Right(1,0);
+GridPos Left(-1,0);
+
+GridPos DIR[4] = {Up,Right,Down,Left};
 
 // ---- DATA: one pipe tile - which sides it connects to, plus rotation state ----
 struct pipe
 {
-  std::vector<Vector2i> dirs;
+  std::vector<GridPos> dirs;
   int orientation;
   float angle; bool on;
 
@@ -39,7 +51,7 @@ struct pipe
       else if (dirs[i]==Left)  dirs[i]=Up;
   }
 
-  bool isConnect(Vector2i dir)
+  bool isConnect(GridPos dir)
   {
     for(auto d: dirs)
      if (d==dir) return true;
@@ -50,21 +62,21 @@ struct pipe
 
 // ---- DATA: the board, with small helpers to access it ----
 static pipe grid[N][N];
-pipe& cell(Vector2i v) {return grid[v.x][v.y];}
-bool isOut(Vector2i v) {return !IntRect({0,0},{N,N}).contains(v);}
+pipe& cell(GridPos v) {return grid[v.x][v.y];}
+bool isOut(GridPos v) {return !(v.x>=0 && v.x<N && v.y>=0 && v.y<N);}
 
 
 // ---- SETUP helper: randomly grows a connected network of pipes ----
 void generatePuzzle()
 {
-  std::vector<Vector2i> nodes;
-  nodes.push_back(Vector2i(rand()%N,rand()%N));
+  std::vector<GridPos> nodes;
+  nodes.push_back(GridPos(rand()%N,rand()%N));
 
   while(!nodes.empty())
   {
     int n = rand()%nodes.size();
-    Vector2i v = nodes[n];
-    Vector2i d = DIR[rand()%4];
+    GridPos v = nodes[n];
+    GridPos d = DIR[rand()%4];
 
     if (cell(v).dirs.size()==3) {nodes.erase(nodes.begin() + n); continue;}
     if (cell(v).dirs.size()==2) if (rand()%50) continue;
@@ -84,7 +96,7 @@ void generatePuzzle()
 
 
 // ---- UPDATE helper: marks every cell reachable from the server ----
-void drop(Vector2i v)
+void drop(GridPos v)
 {
    if (cell(v).on) return;
    cell(v).on=true;
@@ -137,9 +149,9 @@ int netwalk()
        }
 
     // ---- SETUP: place the server ----
-    Vector2i servPos;
-    while(cell(servPos).dirs.size()==1) {servPos = Vector2i(rand()%N, rand()%N);}
-    sServer.setPosition(Vector2f(servPos*tsz));
+    GridPos servPos;
+    while(cell(servPos).dirs.size()==1) {servPos = GridPos(rand()%N, rand()%N);}
+    sServer.setPosition({float(servPos.x*tsz), float(servPos.y*tsz)});
     sServer.move(oset);
 
     while (app.isOpen())
@@ -156,9 +168,10 @@ int netwalk()
                     // HINT: step through with the debugger - how do mouse pixels become a grid cell? Watch pos before and after the divide.
                     Vector2i pos = Mouse::getPosition(app) + Vector2i(tsz/2,tsz/2) - Vector2i(oset);
                     pos/=tsz;
-                    if (isOut(pos)) continue;
-                    cell(pos).orientation++;
-                    cell(pos).rotate();
+                    GridPos clicked(pos.x,pos.y);
+                    if (isOut(clicked)) continue;
+                    cell(clicked).orientation++;
+                    cell(clicked).rotate();
 
                     for(int i=0;i<N;i++)
                      for(int j=0;j<N;j++)

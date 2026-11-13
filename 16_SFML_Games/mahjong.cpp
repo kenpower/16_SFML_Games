@@ -12,9 +12,19 @@ using namespace sf;
 // ---- DATA: the board - one int per (x, y, layer) position ----
 static int field[50][50][50] = {0};
 
+// ---- DATA: one board position (x, y, layer) ----
+struct TilePos
+{
+  int x,y,z;
+  TilePos() : x(0), y(0), z(0) {}
+  TilePos(int x,int y,int z) : x(x), y(y), z(z) {}
+};
+
+bool operator==(TilePos a, TilePos b) {return a.x==b.x && a.y==b.y && a.z==b.z;}
+
 // ---- HELPERS: f(...) reads or writes one board cell ----
 int& f(int x,int y,int z){return field[y+2][x+2][z];}
-int& f(Vector3i v){return f(v.x,v.y,v.z);}
+int& f(TilePos v){return f(v.x,v.y,v.z);}
 
 
 // ---- RULE: is this tile free to be picked? ----
@@ -46,8 +56,8 @@ int mahjong()
     int w=48, h=66;
     int stepX=w/2-2, stepY=h/2-2;
     float offX=4.6, offY=7.1; // z offset
-    Vector3i v1,v2;
-    std::vector<Vector3i> moves;
+    TilePos v1,v2;
+    std::vector<TilePos> moves;
 
 
     // ---- SETUP: read the layout from map.txt ----
@@ -67,11 +77,11 @@ int mahjong()
     ////create map//////
     for(int k=1;;k++)
     {
-     std::vector<Vector3i> opens;
+     std::vector<TilePos> opens;
      for(int z=0;z<10;z++)
       for(int y=0;y<18;y++)
        for(int x=0;x<30;x++)
-        if (f(x,y,z)>0 && isOpen(x,y,z)) opens.push_back(Vector3i(x,y,z));
+        if (f(x,y,z)>0 && isOpen(x,y,z)) opens.push_back(TilePos(x,y,z));
 
      // HINT: breakpoint here and watch k, n and opens.size() - how many passes does it take, and why does k change as it does?
      int n=opens.size();
@@ -119,7 +129,7 @@ int mahjong()
                      for(int i=0;i<2;i++)
                       for(int j=0;j<2;j++)
                         if (f(x-i,y-j,z)>0 && isOpen(x-i,y-j,z))
-                           v1=Vector3i(x-i,y-j,z);
+                           v1=TilePos(x-i,y-j,z);
 
                      if (v1==v2) continue;
 

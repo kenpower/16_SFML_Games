@@ -4,8 +4,8 @@ using namespace sf;
 
 // ===== GUIDE: Tron =====
 // Entry point is int tron(). State that survives between frames: the globals W, H, speed and field[][] (the trail map),
-// plus the locals p1, p2, t (a RenderTexture holding the picture of the trails) and Game, declared before the loop.
-// Suggested reading order: struct player, then SETUP in tron(), then the loop: INPUT, UPDATE, DRAW.
+// plus the locals p1, p2 (and their colours), t (a RenderTexture holding the picture of the trails) and Game, declared before the loop.
+// Suggested reading order: struct Bike, then SETUP in tron(), then the loop: INPUT, UPDATE, DRAW.
 // =====
 // ---- GLOBAL STATE: arena size, speed, trail map ----
 const int W=600;
@@ -13,15 +13,13 @@ const int H=480;
 int speed = 4;
 static bool field[W][H]={0};
 
-// ---- DATA + BEHAVIOUR: a player has a position, direction, colour and moves itself ----
-struct player
+// ---- DATA + BEHAVIOUR: a player's bike has a position and direction, and moves itself ----
+struct Bike
 { int x,y,dir;
-  Color color;
-  player(Color c)
+  Bike()
   {
     x=rand() % W;
     y=rand() % H;
-    color=c;
     dir=rand() % 4;
   }
   // ---- UPDATE: move one pixel and wrap round the edges ----
@@ -36,10 +34,6 @@ struct player
     if (x>=W) x=0;  if (x<0) x=W-1;
     if (y>=H) y=0;  if (y<0) y=H-1;
   }
-
-  // ---- HELPER: colour as a Vector3f ----
-  Vector3f getColor()
-  {return Vector3f(color.r,color.g,color.b);}
 };
 
 int tron()
@@ -53,7 +47,8 @@ int tron()
     Texture texture("images/tron/background.jpg");
     Sprite sBackground(texture);
 
-    player p1(Color::Red), p2(Color::Green); 
+    Bike p1, p2;
+    Color p1Color = Color::Red, p2Color = Color::Green;
 
     RenderTexture t({W, H});
     t.setSmooth(true);
@@ -97,8 +92,8 @@ int tron()
             field[p2.x][p2.y]=1;
     
             CircleShape c(3);
-            c.setPosition({float(p1.x),float(p1.y)}); c.setFillColor(p1.color);    t.draw(c);
-            c.setPosition({float(p2.x),float(p2.y)}); c.setFillColor(p2.color);    t.draw(c);
+            c.setPosition({float(p1.x),float(p1.y)}); c.setFillColor(p1Color);    t.draw(c);
+            c.setPosition({float(p2.x),float(p2.y)}); c.setFillColor(p2Color);    t.draw(c);
             t.display();    
         }
 

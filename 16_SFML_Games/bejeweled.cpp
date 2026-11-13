@@ -3,13 +3,13 @@
 using namespace sf;
 
 // ===== GUIDE: Bejeweled =====
-// Entry point: int bejeweled(). Globals: ts, offset, and the 10x10 grid of piece structs (only 1..8 are used).
-// State that survives between frames: grid, plus click, x0, y0, x, y, pos, isSwap, isMoving declared before the loop.
+// Entry point: int bejeweled(). Globals: ts, offsetX, offsetY, and the 10x10 grid of piece structs (only 1..8 are used).
+// State that survives between frames: grid, plus click, x0, y0, x, y, posX, posY, isSwap, isMoving declared before the loop.
 // Suggested reading order: piece / grid -> swap() -> setup -> the loop: click, match, animate, refill, draw.
 // =====
 // ---- CONSTANTS: tile size and board offset in pixels ----
 int ts = 54; //tile size
-Vector2i offset(48,24);
+int offsetX=48, offsetY=24;
 
 // File-local (static) globals: several games define globals with the same name.
 // ---- DATA: one piece per board cell ----
@@ -55,7 +55,7 @@ int bejeweled()
       }
 
     // ---- GAME STATE: click tracking and animation flags ----
-    int x0,y0,x,y; int click=0; Vector2i pos;
+    int x0,y0,x,y; int click=0; int posX=0, posY=0;
     bool isSwap=false, isMoving=false;
 
     while (app.isOpen())
@@ -70,7 +70,9 @@ int bejeweled()
                 if (mb->button == Mouse::Button::Left)
                 {
                    if (!isSwap && !isMoving) click++;
-                   pos = Mouse::getPosition(app)-offset;
+                   Vector2i mouse = Mouse::getPosition(app);
+                   posX = mouse.x-offsetX;
+                   posY = mouse.y-offsetY;
                 }
          }
     
@@ -78,13 +80,13 @@ int bejeweled()
    // mouse click
    if (click==1)
     {
-      x0=pos.x/ts+1;
-      y0=pos.y/ts+1;
+      x0=posX/ts+1;
+      y0=posY/ts+1;
     }
    if (click==2)
     {
-      x=pos.x/ts+1;
-      y=pos.y/ts+1;
+      x=posX/ts+1;
+      y=posY/ts+1;
       if (abs(x-x0)+abs(y-y0)==1)
         {swap(grid[y0][x0],grid[y][x]); isSwap=1; click=0;}
       else click=1;
@@ -174,7 +176,7 @@ int bejeweled()
         gems.setTextureRect( IntRect({p.kind*49,0},{49,49}));
         gems.setColor(Color(255,255,255,static_cast<std::uint8_t>(p.alpha)));
         gems.setPosition({float(p.x),float(p.y)});
-        gems.move({float(offset.x-ts),float(offset.y-ts)});
+        gems.move({float(offsetX-ts),float(offsetY-ts)});
         app.draw(gems);
       }
 
