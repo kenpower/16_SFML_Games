@@ -19,21 +19,34 @@ Read the two `catcher.cpp` files side by side before you go on. They play exactl
 
 ## The idea
 
-```
-BEFORE                                  AFTER
 
-+----------------------------+          +---------------------------+         +------------------------+
-| while (window.isOpen())    |          | game file (uses SFML)     |  plain  | CatcherGame (no SFML)  |
-|   keyboard                 |          |   keyboard  -> Input      | ------> |   update(dt, input, x) |
-|   clock                    |          |   clock     -> dt         |  data   |   restart(x)           |
-|   rand()                   |   --->   |   rand()    -> x          |         |                        |
-|   rules  <- trapped here   |          |                           | <------ |   score(), lives(),    |
-|   drawing                  |          |   drawing reads getters   | getters |   basketX(), ...       |
-+----------------------------+          +---------------------------+         +------------------------+
-                                                                                        ^
-                                                                                        |
-                                                                              tests call it directly
+
+```mermaid
+flowchart LR;
+    subgraph BEFORE["BEFORE"]
+        direction TB
+        B["while (window.isOpen())<br/>keyboard<br/>clock<br/>rand()<br/>rules ← trapped here<br/>drawing"]
+    end
+
+    subgraph AFTER["AFTER"]
+        direction LR
+        S["game file (uses SFML)<br/>keyboard → Input<br/>clock → dt<br/>rand() → x<br/>drawing reads getters"]
+        C["CatcherGame (no SFML)<br/>update(dt, input, x)<br/>restart(x)<br/>score(), lives(),<br/>basketX(), ..."]
+        T(["tests call it directly"])
+
+        S -- "plain data<br/>float dt, Input{left, right}, float x<br/>(no SFML types)" --> C
+        C -- "getters" --> S
+        T --> C
+    end
+
+    BEFORE ==> AFTER
+
+    style B fill:#fde2e2,stroke:#c0392b
+    style S fill:#e8f0fe,stroke:#1a73e8
+    style C fill:#e6f4ea,stroke:#188038
+    style T fill:#fff8e1,stroke:#f9a825
 ```
+
 
 The game file becomes a thin **shell** around the class. Everything SFML (the window, the keyboard, the clock, the shapes) stays in the shell. Everything that decides *what happens* moves into the class. The two talk only through **plain data**: `float`, `int`, `bool` and small structs you write yourself.
 
