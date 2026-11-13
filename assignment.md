@@ -45,7 +45,12 @@ Take a screenshot of the breakpoint being hit. If you can't get this working, as
 
 The repository contains 16 classic arcade games. Play some of them and look at the source code of a few. Choose **one** game to work on.
 
-I recommend one of **Tetris, Minesweeper, Arkanoid, Racing or Bejeweled**. You can choose another game, but it may be too simple or too complex for this assignment. You **cannot** choose Xonix: it is the worked example of refactoring and testing (see `Grid.h`, `Player.h` and `Tests/test.cpp`).
+I recommend one of **Tetris, Minesweeper, Arkanoid, Racing, Tron or Netwalk**. You can choose another game, but it may be too complex for this assignment.
+
+You **cannot** choose:
+
+- **Xonix**: it is the worked example of refactoring and testing (see `Grid.h`, `Player.h` and `Tests/test.cpp`).
+- **Fifteen Puzzle, Snake or Doodle Jump**: they are too simple. Their logic is already almost separate from SFML, so there is not enough to extract.
 
 ## Step 2 – Read and map the code
 
@@ -139,7 +144,8 @@ Your class must:
 | Minesweeper | Placing mines, counting neighbours, revealing cells |
 | Arkanoid | Ball movement and bouncing, brick collisions (use your own simple rectangle struct, not `sf::FloatRect`) |
 | Racing | Car movement, AI steering towards checkpoints, car-to-car collision |
-| Bejeweled | The gem grid, finding matches, swapping, gravity and refill |
+| Tron | The bikes, the trail map, steering, crash detection |
+| Netwalk | The pipe grid, rotating pipes, finding which cells connect to the server, puzzle generation |
 
 Drawing and input stay in the game file, because they are the parts that need SFML. The game file reads from your class to draw, and calls your class's methods when input happens.
 
