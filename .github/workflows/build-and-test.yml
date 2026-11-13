@@ -1,0 +1,39 @@
+name: Build and test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Fast check (about a minute): builds and runs the unit tests only.
+  # SFML is not available here, so a class under test that includes SFML fails to compile.
+  unit-tests:
+    name: Unit tests (no SFML)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DSFML_GAMES_BUILD_GAME=OFF
+
+      - name: Build tests
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+  # Slower check: the whole game still compiles (SFML is downloaded and built).
+  game:
+    name: Game builds (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DSFML_GAMES_BUILD_TESTS=OFF
+
+      - name: Build game
+        run: cmake --build build --config Release --parallel

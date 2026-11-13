@@ -42,13 +42,19 @@ The executable is placed in `build/bin/` (`build/bin/Release/` with multi-config
 
 ### Using an installed SFML
 
-By default CMake looks for an installed SFML 3 first and only downloads one if none is found. To point it at a specific install:
+By default CMake looks for an installed SFML 3 first and only downloads one if none is found. It looks in:
+
+- `-DSFML_DIR=<sfml>/lib/cmake/SFML`, `-DSFML_ROOT=<sfml>` or the `SFML_ROOT` environment variable
+- `-DCMAKE_PREFIX_PATH=<sfml>` or the `CMAKE_PREFIX_PATH` environment variable
+- `-DSFML_SDK=<folder>` or the `SFML_SDK` environment variable, pointing at an SFML SDK folder or at a folder containing `SFML-3*` SDKs
+- on Windows, `C:\SFML-3*` (also the nested `C:\SFML-3.0.2\SFML-3.0.2` that "Extract All" creates), `C:\SFML\SFML-3*` and `C:\SFML` (newest version first)
+- CMake's standard locations (`PATH`, `Program Files`, `/usr`, `/usr/local`, Homebrew)
 
 ```sh
-cmake -S . -B build -DSFML_DIR=/path/to/sfml/lib/cmake/SFML
-# or
-cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/sfml
+cmake -S . -B build -DSFML_SDK=C:/SFML-3.0.2
 ```
+
+Before using an installed SFML, CMake builds a tiny test program against it. If that fails (for example, a 32-bit SDK or one built for a different compiler), the install is ignored and SFML is downloaded instead. The configure output says which one was used.
 
 To always download and build SFML instead, use `-DSFML_GAMES_FETCH_SFML=ON`. For an installed static SFML, also pass `-DSFML_STATIC_LIBRARIES=ON`. On Windows with an installed shared SFML, the DLLs are copied next to the executable automatically.
 
@@ -72,8 +78,22 @@ Chess talks to a [Stockfish](https://stockfishchess.org/) engine (press Space fo
 
 ## Tests
 
-The unit tests (GoogleTest, for the xonix `Grid` and `Player` classes) are built by default; disable them with `-DSFML_GAMES_BUILD_TESTS=OFF`.
+The unit tests (GoogleTest, for the xonix `Grid` and `Player` classes) are built by default; disable them with `-DSFML_GAMES_BUILD_TESTS=OFF`. Every `.cpp` file in `Tests/` is part of the test program, so a new test file only needs CMake to be re-run.
 
 ```sh
 ctest --test-dir build -C Release --output-on-failure
 ```
+
+To build only the tests, without downloading or building SFML (this is what CI does):
+
+```sh
+cmake -S . -B build-tests -DSFML_GAMES_BUILD_GAME=OFF
+cmake --build build-tests
+ctest --test-dir build-tests --output-on-failure
+```
+
+The test program does not link SFML, so classes under test must not include it.
+
+## Continuous integration
+
+`.github/workflows/build-and-test.yml` runs on every push: a quick Linux job builds and runs the unit tests without SFML, and a Windows job checks the whole game builds.

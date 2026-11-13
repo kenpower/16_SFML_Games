@@ -11,7 +11,7 @@ This is a collection of 16 classic games implemented in C++ using SFML (Simple a
 - **Build**: CMake 3.21+ (`/CMakeLists.txt`), Windows (MSVC), Linux (GCC/Clang) and macOS
 - **Targets**: `16_SFML_Games` (the launcher with all games) and `Tests` (GoogleTest)
 - **C++ Standard**: C++17
-- **SFML Version**: 3 - an installed SFML 3 is used if found, otherwise CMake fetches and builds SFML 3.0.2 (static, no audio/network)
+- **SFML Version**: 3 - an installed SFML 3 is used if found (also searches `SFML_SDK` and `C:\SFML-3*`) and a probe build in `cmake/sfml_check/` links against it; otherwise CMake fetches and builds SFML 3.0.2 (static, no audio/network)
 
 See `README.md` for full setup instructions, including Linux packages.
 
