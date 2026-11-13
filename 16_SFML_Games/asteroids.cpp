@@ -7,6 +7,11 @@
 #include <optional>
 using namespace sf;
 
+// ===== GUIDE: Asteroids =====
+// Entry point is int asteroids() at the bottom. State that survives between frames: the entities list (every rock, bullet,
+// explosion and the ship), the player pointer p, and the Animation objects, all declared before the loop.
+// Suggested reading order: Animation, Entity and its subclasses, isCollide, then asteroids(): SETUP, INPUT, UPDATE, DRAW.
+// =====
 const int W = 1200;
 const int H = 800;
 
@@ -16,6 +21,7 @@ float DEGTORAD = 0.017453f;
 // (e.g. inside Entity) point at this empty texture until settings() assigns a real one.
 static const Texture emptyTexture;
 
+// ---- HELPER CLASS: steps through the frames (sub-rectangles) of a sprite sheet ----
 class Animation
 {
    public:
@@ -54,6 +60,7 @@ class Animation
 };
 
 
+// ---- BASE CLASS: anything that moves and is drawn (position, velocity, radius, life flag) ----
 class Entity
 {
    public:
@@ -94,6 +101,7 @@ class Entity
 };
 
 
+// ---- SUBCLASS: a drifting rock that wraps round the screen ----
 class asteroid: public Entity
 {
    public:
@@ -116,6 +124,7 @@ class asteroid: public Entity
 };
 
 
+// ---- SUBCLASS: a bullet, removed when it leaves the screen ----
 class bullet: public Entity
 {
    public:
@@ -126,6 +135,7 @@ class bullet: public Entity
 
    void  update()
    {
+     // HINT: angle is in degrees but cos/sin want radians - find where the conversion happens and work out which way angle 0 points.
      dx=cos(angle*DEGTORAD)*6;
      dy=sin(angle*DEGTORAD)*6;
      // angle+=rand()%7-3;  /*try this*/
@@ -138,6 +148,7 @@ class bullet: public Entity
 };
 
 
+// ---- SUBCLASS: the player's ship (thrust, drag, speed limit) ----
 class player: public Entity
 {
    public:
@@ -150,6 +161,7 @@ class player: public Entity
 
    void update()
    {
+     // HINT: 0.2, 0.99, 15 and the other tuning numbers here are good candidates for named constants.
      if (thrust)
       { dx+=cos(angle*DEGTORAD)*0.2;
         dy+=sin(angle*DEGTORAD)*0.2; }
@@ -173,6 +185,7 @@ class player: public Entity
 };
 
 
+// ---- HELPER: circle-versus-circle collision test ----
 bool isCollide(Entity *a,Entity *b)
 {
   return (b->x - a->x)*(b->x - a->x)+
@@ -183,6 +196,7 @@ bool isCollide(Entity *a,Entity *b)
 
 int asteroids()
 {
+    // ---- SETUP: window, textures, animations, starting entities ----
     srand(time(0));
 
     RenderWindow app(VideoMode({W, H}), "Asteroids!");
@@ -226,6 +240,7 @@ int asteroids()
     /////main loop/////
     while (app.isOpen())
     {
+        // ---- INPUT: window events (close, fire a bullet) ----
         while (const std::optional event = app.pollEvent())
         {
             if (event->is<Event::Closed>())
@@ -240,12 +255,15 @@ int asteroids()
               }
         }
 
+    // ---- INPUT: steering and thrust keys ----
     if (Keyboard::isKeyPressed(Keyboard::Key::Right)) p->angle+=3;
     if (Keyboard::isKeyPressed(Keyboard::Key::Left))  p->angle-=3;
     if (Keyboard::isKeyPressed(Keyboard::Key::Up)) p->thrust=true;
     else p->thrust=false;
 
 
+    // ---- UPDATE: collisions between entities ----
+    // HINT: put a breakpoint inside this nested loop - how many pairs get tested each frame, and how many reach isCollide?
     for(auto a:entities)
      for(auto b:entities)
      {
@@ -287,6 +305,7 @@ int asteroids()
      }
 
 
+    // ---- UPDATE: ship image, expiring explosions, spawning new rocks ----
     if (p->thrust)  p->anim = sPlayer_go;
     else   p->anim = sPlayer;
 
@@ -302,6 +321,8 @@ int asteroids()
        entities.push_back(a);
      }
 
+    // ---- UPDATE: move everything and remove dead entities ----
+    // HINT: why is erase() assigned back to i, and why is there no i++ in the for header? Step through it in the debugger.
     for(auto i=entities.begin();i!=entities.end();)
     {
       Entity *e = *i;
@@ -314,6 +335,7 @@ int asteroids()
     }
 
    //////draw//////
+   // ---- DRAW ----
    app.draw(background);
    for(auto i:entities) i->draw(app);
    app.display();

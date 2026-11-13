@@ -4,6 +4,11 @@
 #include <string>
 #include <vector>
 using namespace sf;
+// ===== GUIDE: Outrun Racing =====
+// Entry point: int outrun(), near the bottom. The globals at the top (width, height, roadW, segL, camD) are shared settings.
+// State that survives between frames: the `lines` vector (the whole track, built once), plus playerX, pos and H declared before the loop.
+// Suggested reading order: Line::project, then the SETUP in outrun(), then the road loop, then drawQuad and Line::drawSprite.
+// =====
 
 int width = 1024;
 int height = 768;
@@ -11,6 +16,7 @@ int roadW = 2000;
 int segL = 200; //segment length
 float camD = 0.84; //camera depth
 
+// ---- HELPER: draws one four-sided strip (grass, rumble or road) on screen ----
 void drawQuad(RenderWindow &w, Color c, int x1,int y1,int w1,int x2,int y2,int w2)
 {
     ConvexShape shape(4);
@@ -22,6 +28,7 @@ void drawQuad(RenderWindow &w, Color c, int x1,int y1,int w1,int x2,int y2,int w
     w.draw(shape);
 }
 
+// ---- DATA: one slice of the track - 3D position, screen position, curve and optional sprite ----
 struct Line
 {
   float x,y,z; //3d center of line
@@ -32,6 +39,7 @@ struct Line
   Line()
   {spriteX=curve=x=y=z=0;}
 
+  // ---- Line::project: turns the 3D world position into screen coordinates ----
   void project(int camX,int camY,int camZ)
   {
     scale = camD/(z-camZ);
@@ -40,6 +48,7 @@ struct Line
     W = scale * roadW  * width/2;
   }
 
+  // ---- Line::drawSprite: draws the roadside object (if any), scaled and clipped ----
   void drawSprite(RenderWindow &app)
   {
     if (!sprite) return;
@@ -55,6 +64,7 @@ struct Line
     destX += destW * spriteX; //offsetX
     destY += destH * (-1);    //offsetY
 
+    // HINT: put a breakpoint here and watch clip and destY+destH - when does the sprite get cut off or skipped?
     float clipH = destY+destH-clip;
     if (clipH<0) clipH=0;
 
@@ -69,6 +79,7 @@ struct Line
 
 int outrun()
 {
+    // ---- SETUP: window and images ----
     RenderWindow app(VideoMode({unsigned(width), unsigned(height)}), "Outrun Racing!");
     app.setFramerateLimit(60);
 
@@ -88,6 +99,7 @@ int outrun()
     sBackground.setTextureRect(IntRect({0,0},{5000,411}));
     sBackground.setPosition({-2000,0});
 
+    // ---- SETUP: build the track, one Line per segment ----
     std::vector<Line> lines;
 
     for(int i=0;i<1600;i++)
@@ -95,6 +107,7 @@ int outrun()
        Line line;
        line.z = i*segL;
 
+       // HINT: these index ranges and curve values describe the track layout - could they be data instead of if statements?
        if (i>300 && i<700) line.curve=0.5;
        if (i>1100) line.curve=-0.7;
 
@@ -122,6 +135,7 @@ int outrun()
                 app.close();
         }
 
+  // ---- INPUT: keys change playerX, speed and camera height ----
   int speed=0;
 
   if (Keyboard::isKeyPressed(Keyboard::Key::Right)) playerX+=0.1;
@@ -132,10 +146,12 @@ int outrun()
   if (Keyboard::isKeyPressed(Keyboard::Key::W)) H+=100;
   if (Keyboard::isKeyPressed(Keyboard::Key::S)) H-=100;
 
+  // ---- UPDATE: move along the track, wrapping at the ends ----
   pos+=speed;
   while (pos >= N*segL) pos-=N*segL;
   while (pos < 0) pos += N*segL;
 
+  // ---- DRAW: background first, then the road ----
   app.clear(Color(105,205,4));
   app.draw(sBackground);
   int startPos = pos/segL;
@@ -150,6 +166,7 @@ int outrun()
   for(int n = startPos; n<startPos+300; n++)  
    {
     Line &l = lines[n%N];
+    // HINT: put a breakpoint in this loop and watch x, dx and l.curve change per iteration - how do bends appear on screen?
     l.project(playerX*roadW-x, camH, startPos*segL - (n>=N?N*segL:0));
     x+=dx;
     dx+=l.curve;
@@ -158,6 +175,7 @@ int outrun()
     if (l.Y>=maxy) continue;
     maxy = l.Y;
 
+    // HINT: three colours chosen by the same test (n/3)%2 - could a small struct or named constants tidy this?
     Color grass  = (n/3)%2?Color(16,200,16):Color(0,154,0);
     Color rumble = (n/3)%2?Color(255,255,255):Color(0,0,0);
     Color road   = (n/3)%2?Color(107,107,107):Color(105,105,105);
@@ -169,6 +187,7 @@ int outrun()
     drawQuad(app, road,  p.X, p.Y, p.W, l.X, l.Y, l.W);
    }
 
+    // ---- DRAW: roadside sprites, far to near ----
     ////////draw objects////////
     for(int n=startPos+300; n>startPos; n--)
       lines[n%N].drawSprite(app);

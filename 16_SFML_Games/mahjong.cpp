@@ -3,15 +3,24 @@
 #include <time.h>
 #include <vector>
 using namespace sf;
+// ===== GUIDE: Mahjong Solitaire =====
+// Entry point: int mahjong(), near the bottom. The board is the global 3D array `field`, accessed through f(x,y,z).
+// State that survives between frames: field, plus v1, v2, moves and the layout numbers declared before the loop.
+// Suggested reading order: f and isOpen, then SETUP in mahjong(), then the INPUT section, then DRAW.
+// =====
 
+// ---- DATA: the board - one int per (x, y, layer) position ----
 static int field[50][50][50] = {0};
 
+// ---- HELPERS: f(...) reads or writes one board cell ----
 int& f(int x,int y,int z){return field[y+2][x+2][z];}
 int& f(Vector3i v){return f(v.x,v.y,v.z);}
 
 
+// ---- RULE: is this tile free to be picked? ----
 bool isOpen(int x,int y,int z)
 {
+  // HINT: what is this loop checking? Draw tiles at x-2, x and x+2 on paper and see which ones block.
   for(int i=-1;i<=1;i++)
    for(int j=-1;j<=1;j++)
     if (f(x+2,y+i,z)>0 && f(x-2,y+j,z)>0) return 0;
@@ -28,6 +37,7 @@ int mahjong()
 {
     srand(time(0));
 
+    // ---- SETUP: window, images and layout numbers ----
     RenderWindow app(VideoMode({740, 570}), "Mahjong Solitaire!");
 
     Texture t1("images/mahjong/tiles.png");
@@ -40,6 +50,7 @@ int mahjong()
     std::vector<Vector3i> moves;
 
 
+    // ---- SETUP: read the layout from map.txt ----
     ////load from file////
     std::fstream myfile("images/mahjong/map.txt");
     for(int y=0;y<18;y++)
@@ -52,6 +63,7 @@ int mahjong()
           else f(x,y,z)=1;
       }
 
+    // ---- SETUP: deal out tile faces in matching pairs ----
     ////create map//////
     for(int k=1;;k++)
     {
@@ -61,6 +73,7 @@ int mahjong()
        for(int x=0;x<30;x++)
         if (f(x,y,z)>0 && isOpen(x,y,z)) opens.push_back(Vector3i(x,y,z));
 
+     // HINT: breakpoint here and watch k, n and opens.size() - how many passes does it take, and why does k change as it does?
      int n=opens.size();
      if (n<2) break;
      int a=0,b=0;
@@ -82,6 +95,7 @@ int mahjong()
             if (e->is<Event::Closed>())
                 app.close();
 
+            // ---- INPUT: right click undoes the last pair ----
             //move back
             if (const auto* mr = e->getIf<Event::MouseButtonReleased>())
                 if (mr->button == Mouse::Button::Right)
@@ -92,10 +106,12 @@ int mahjong()
                     f(moves[n-2])*=-1; moves.pop_back();
                   }
 
+              // ---- INPUT: left click picks tiles and removes a matching pair ----
                if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
                 if (mb->button == Mouse::Button::Left)
                   for(int z=0;z<10;z++)
                    {
+                     // HINT: this is pixel maths turning the mouse into a tile position - the draw code does the reverse, could both be functions?
                      Vector2i pos = Mouse::getPosition(app) - Vector2i(30,0); // 30 - desk offset
                      int x = (pos.x-z*offX)/stepX;
                      int y = (pos.y+z*offY)/stepY;
@@ -108,6 +124,7 @@ int mahjong()
                      if (v1==v2) continue;
 
                      int a=f(v1),b=f(v2);
+                    // HINT: which tile numbers can match each other? Compare these ranges with the faces in images/mahjong/tiles.png.
                      if ( a==b || (a>34 && a<39 && b>34 && b<39) || (a>=39 && b>=39) )
                         {
                          f(v1)*=-1; moves.push_back(v1);
@@ -117,6 +134,7 @@ int mahjong()
                    }
         }
 
+       // ---- DRAW: layer by layer, back to front ----
        app.clear();
        app.draw(sBackground);
        for(int z=0;z<10;z++)

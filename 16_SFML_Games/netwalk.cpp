@@ -3,11 +3,17 @@
 #include <vector>
 #include <string>
 using namespace sf;
+// ===== GUIDE: Netwalk =====
+// Entry point: int netwalk(), at the bottom. The board is the global `grid` (N x N pipes) and the helpers above work on it.
+// State that survives between frames: grid, plus servPos and the sprites declared before the loop in netwalk().
+// Suggested reading order: struct pipe, then generatePuzzle, then drop, then netwalk() from SETUP downwards.
+// =====
 
 const int N = 6;
 int tsz = 54; //tile size
 Vector2f oset(65,55);
 
+// ---- DATA: direction vectors used throughout ----
 Vector2i Up(0,-1);
 Vector2i Down(0,1);
 Vector2i Right(1,0);
@@ -15,6 +21,7 @@ Vector2i Left(-1,0);
 
 Vector2i DIR[4] = {Up,Right,Down,Left};
 
+// ---- DATA: one pipe tile - which sides it connects to, plus rotation state ----
 struct pipe
 {
   std::vector<Vector2i> dirs;
@@ -41,11 +48,13 @@ struct pipe
 };
 
 
+// ---- DATA: the board, with small helpers to access it ----
 static pipe grid[N][N];
 pipe& cell(Vector2i v) {return grid[v.x][v.y];}
 bool isOut(Vector2i v) {return !IntRect({0,0},{N,N}).contains(v);}
 
 
+// ---- SETUP helper: randomly grows a connected network of pipes ----
 void generatePuzzle()
 {
   std::vector<Vector2i> nodes;
@@ -74,11 +83,13 @@ void generatePuzzle()
 }
 
 
+// ---- UPDATE helper: marks every cell reachable from the server ----
 void drop(Vector2i v)
 {
    if (cell(v).on) return;
    cell(v).on=true;
 
+   // HINT: drop() calls itself - trace it on paper for a tiny grid. When does the recursion stop?
    for(auto d:DIR)
     if (!isOut(v+d))
      if (cell(v).isConnect(d) && cell(v+d).isConnect(-d))
@@ -88,6 +99,7 @@ void drop(Vector2i v)
 
 int netwalk()
 {
+    // ---- SETUP: window, images and sprites ----
     srand(time(0));
 
     RenderWindow app(VideoMode({390, 390}), "Netwalk The Pipe Puzzle!");
@@ -104,6 +116,7 @@ int netwalk()
     sServer.setOrigin({20,20});
 
 
+    // ---- SETUP: build the puzzle, work out each tile's orientation, then shuffle ----
     generatePuzzle();
 
     for(int i=0;i<N;i++)
@@ -123,6 +136,7 @@ int netwalk()
           {grid[j][i].orientation++; grid[j][i].rotate();}
        }
 
+    // ---- SETUP: place the server ----
     Vector2i servPos;
     while(cell(servPos).dirs.size()==1) {servPos = Vector2i(rand()%N, rand()%N);}
     sServer.setPosition(Vector2f(servPos*tsz));
@@ -130,6 +144,7 @@ int netwalk()
 
     while (app.isOpen())
     {
+        // ---- INPUT: close the window, or click to rotate a pipe and re-check connections ----
         while (const std::optional e = app.pollEvent())
         {
             if (e->is<Event::Closed>())
@@ -138,6 +153,7 @@ int netwalk()
             if (const auto* mb = e->getIf<Event::MouseButtonPressed>())
                 if (mb->button == Mouse::Button::Left)
                   {
+                    // HINT: step through with the debugger - how do mouse pixels become a grid cell? Watch pos before and after the divide.
                     Vector2i pos = Mouse::getPosition(app) + Vector2i(tsz/2,tsz/2) - Vector2i(oset);
                     pos/=tsz;
                     if (isOut(pos)) continue;
@@ -152,6 +168,7 @@ int netwalk()
                   }
         }
 
+        // ---- DRAW: background, every pipe (animating its rotation), then the server ----
         app.clear();
         app.draw(sBackground);
 
@@ -160,6 +177,7 @@ int netwalk()
            {
             pipe &p = grid[j][i];
 
+            // HINT: kind picks which image to use from pipes.png - what do 0, 1, 2 and 3 correspond to?
             int kind = p.dirs.size();
             if (kind==2 && p.dirs[0]==-p.dirs[1]) kind=0;
 
@@ -172,6 +190,7 @@ int netwalk()
             app.draw(sPipe);
 
             if (kind==1)
+               // HINT: these numbers are texture coordinates and sizes - good candidates for named constants.
                { if (p.on) sComp.setTextureRect(IntRect({53,0},{36,36}));
                  else sComp.setTextureRect(IntRect({0,0},{36,36}));
                  sComp.setPosition({float(j*tsz),float(i*tsz)});sComp.move(oset);

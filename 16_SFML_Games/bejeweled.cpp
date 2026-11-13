@@ -2,15 +2,24 @@
 #include <time.h>
 using namespace sf;
 
+// ===== GUIDE: Bejeweled =====
+// Entry point: int bejeweled(). Globals: ts, offset, and the 10x10 grid of piece structs (only 1..8 are used).
+// State that survives between frames: grid, plus click, x0, y0, x, y, pos, isSwap, isMoving declared before the loop.
+// Suggested reading order: piece / grid -> swap() -> setup -> the loop: click, match, animate, refill, draw.
+// =====
+// ---- CONSTANTS: tile size and board offset in pixels ----
 int ts = 54; //tile size
 Vector2i offset(48,24);
 
 // File-local (static) globals: several games define globals with the same name.
+// ---- DATA: one piece per board cell ----
 static struct piece
 { int x,y,col,row,kind,match,alpha;
   piece(){match=0; alpha=255;}
 } grid[10][10];
 
+// ---- HELPER: swap() exchanges two pieces' positions in grid ----
+// HINT: swap takes its arguments by value - trace what is copied and what is written back into grid.
 void swap(piece p1,piece p2)
 {
   std::swap(p1.col,p2.col);
@@ -23,6 +32,7 @@ void swap(piece p1,piece p2)
 
 int bejeweled()
 {
+    // ---- SETUP: window, textures, sprites ----
     srand(time(0));
 
     RenderWindow app(VideoMode({740,480}), "Match-3 Game!");
@@ -33,6 +43,7 @@ int bejeweled()
 
     Sprite background(t1), gems(t2);
 
+    // ---- SETUP: fill the board ----
     for (int i=1;i<=8;i++)
      for (int j=1;j<=8;j++)
       {
@@ -43,11 +54,13 @@ int bejeweled()
           grid[i][j].y = i*ts;
       }
 
+    // ---- GAME STATE: click tracking and animation flags ----
     int x0,y0,x,y; int click=0; Vector2i pos;
     bool isSwap=false, isMoving=false;
 
     while (app.isOpen())
     {
+        // ---- INPUT: events (counts clicks, records mouse position) ----
         while (const std::optional e = app.pollEvent())
         {
             if (e->is<Event::Closed>())
@@ -61,6 +74,7 @@ int bejeweled()
                 }
          }
     
+   // ---- UPDATE: two clicks make a swap ----
    // mouse click
    if (click==1)
     {
@@ -76,7 +90,9 @@ int bejeweled()
       else click=1;
     }
 
+   // ---- UPDATE: find matches ----
    //Match finding
+   // HINT: put a breakpoint inside this loop and watch grid[i][j].match - what becomes non-zero, and when is it reset?
    for(int i=1;i<=8;i++)
    for(int j=1;j<=8;j++)
    {
@@ -89,6 +105,7 @@ int bejeweled()
      for(int n=-1;n<=1;n++) grid[i][j+n].match++;
    }
 
+   // ---- UPDATE: slide pieces towards their cells ----
    //Moving animation
    isMoving=false;
    for (int i=1;i<=8;i++)
@@ -104,12 +121,14 @@ int bejeweled()
        if (dx||dy) isMoving=1;
      }
 
+   // ---- UPDATE: fade out matched pieces ----
    //Deleting amimation
    if (!isMoving)
     for (int i=1;i<=8;i++)
     for (int j=1;j<=8;j++)
     if (grid[i][j].match) if (grid[i][j].alpha>10) {grid[i][j].alpha-=10; isMoving=true;}
 
+   // ---- UPDATE: score, and swap back if nothing matched ----
    //Get score
    int score=0;
    for (int i=1;i<=8;i++)
@@ -120,9 +139,11 @@ int bejeweled()
    if (isSwap && !isMoving)
       {if (!score) swap(grid[y0][x0],grid[y][x]); isSwap=0;}
 
+   // ---- UPDATE: drop pieces down and refill from the top ----
    //Update grid
    if (!isMoving)
     {
+      // HINT: two passes follow - what does the first do to matched cells, and what does the second do with them? Try a tiny example on paper.
       for(int i=8;i>0;i--)
        for(int j=1;j<=8;j++)
          if (grid[i][j].match)
@@ -141,6 +162,7 @@ int bejeweled()
      }
 
 
+    // ---- DRAW ----
     //////draw///////
     app.draw(background);
 
@@ -148,6 +170,7 @@ int bejeweled()
      for (int j=1;j<=8;j++)
       {
         piece p = grid[i][j];
+        // HINT: 49, ts and the offsets are pixel sizes from the art - named constants?
         gems.setTextureRect( IntRect({p.kind*49,0},{49,49}));
         gems.setColor(Color(255,255,255,static_cast<std::uint8_t>(p.alpha)));
         gems.setPosition({float(p.x),float(p.y)});

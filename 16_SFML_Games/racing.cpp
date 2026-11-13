@@ -3,6 +3,12 @@
 #include <optional>
 using namespace sf;
 
+// ===== GUIDE: Racing =====
+// Entry point: int racing(). Globals: num and points[] (checkpoints), and the Car struct above the entry function.
+// State that survives between frames: car[], the player's speed and angle, the tuning values, offsetX / offsetY.
+// Suggested reading order: points -> Car -> racing() setup -> player controls -> AI cars -> collision -> camera and draw.
+// =====
+// ---- DATA: checkpoints the AI cars drive between ----
 const int num=8; //checkpoints
 int points[num][2] = {300, 610,
                       1270,430,
@@ -13,6 +19,7 @@ int points[num][2] = {300, 610,
                       2560,3150,
                       500, 3300};
 
+// ---- STRUCT: Car holds position, speed, angle; move() drives, findTarget() steers the AI ----
 struct Car
 {
   float x,y,speed,angle; int n;
@@ -29,6 +36,7 @@ struct Car
   {
     float tx=points[n][0];
     float ty=points[n][1];
+    // HINT: this decides whether to turn left or right - what do atan2 and sin(beta) tell you? Try printing beta.
     float beta = angle-atan2(tx-x,-ty+y);
     if (sin(beta)<0) angle+=0.005*speed; else angle-=0.005*speed;
     if ((x-tx)*(x-tx)+(y-ty)*(y-ty)<25*25) n=(n+1)%num;
@@ -38,6 +46,7 @@ struct Car
 
 int racing()
 {
+    // ---- SETUP: window, textures, sprites ----
     RenderWindow app(VideoMode({640, 480}), "Car Racing Game!");
     app.setFramerateLimit(60);
 
@@ -52,6 +61,7 @@ int racing()
     sCar.setOrigin({22, 22});
     float R=22;
 
+    // ---- SETUP: create the cars ----
     const int N=5;
     Car car[N];
     for(int i=0;i<N;i++)
@@ -61,6 +71,7 @@ int racing()
       car[i].speed=7+i;
     }
 
+   // ---- GAME STATE: the player's speed, angle and tuning values ----
    float speed=0,angle=0;
    float maxSpeed=12.0;
    float acc=0.2, dec=0.3;
@@ -70,18 +81,21 @@ int racing()
 
     while (app.isOpen())
     {
+        // ---- INPUT: window events ----
         while (const std::optional e = app.pollEvent())
         {
             if (e->is<Event::Closed>())
                 app.close();
         }
 
+    // ---- INPUT: keyboard ----
     bool Up=0,Right=0,Down=0,Left=0;
     if (Keyboard::isKeyPressed(Keyboard::Key::Up)) Up=1;
     if (Keyboard::isKeyPressed(Keyboard::Key::Right)) Right=1;
     if (Keyboard::isKeyPressed(Keyboard::Key::Down)) Down=1;
     if (Keyboard::isKeyPressed(Keyboard::Key::Left)) Left=1;
 
+    // ---- UPDATE: player speed and steering ----
     //car movement
     if (Up && speed<maxSpeed)
         if (speed < 0)  speed += dec;
@@ -96,15 +110,18 @@ int racing()
         else if (speed + dec < 0) speed += dec;
         else speed = 0;
 
+    // HINT: put a breakpoint here, hold Up, then release - watch speed and angle as they change.
     if (Right && speed!=0)  angle += turnSpeed * speed/maxSpeed;
     if (Left && speed!=0)   angle -= turnSpeed * speed/maxSpeed;
 
+    // ---- UPDATE: move every car (cars 1 and up steer towards checkpoints) ----
     car[0].speed = speed;
     car[0].angle = angle;
 
     for(int i=0;i<N;i++) car[i].move();
     for(int i=1;i<N;i++) car[i].findTarget();
 
+    // ---- UPDATE: collision between cars ----
     //collision
     for(int i=0;i<N;i++)
     for(int j=0;j<N;j++)
@@ -123,8 +140,11 @@ int racing()
     }
 
 
+    // ---- DRAW ----
     app.clear(Color::White);
 
+    // ---- CAMERA: scroll the background to follow car 0 ----
+    // HINT: 320 and 240 are tied to the window size - named constants (or derived values) would help.
     if (car[0].x>320) offsetX = car[0].x-320;
     if (car[0].y>240) offsetY = car[0].y-240;
 

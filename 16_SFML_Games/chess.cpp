@@ -4,6 +4,11 @@
 #include <optional>
 #include "Connector.hpp"
 using namespace sf;
+// ===== GUIDE: Chess =====
+// Entry point: int chess(), at the bottom. It uses Connector.hpp to ask the Stockfish engine for the computer's move.
+// State that survives between frames: the globals f (32 sprites), position (the move history string) and board, plus isMove, dx, dy, oldPos, newPos, str and n.
+// Suggested reading order: toChessNote and toCoord, then move, then loadPosition, then chess() from SETUP downwards.
+// =====
 
 int size = 56;
 Vector2f os(28,28);
@@ -11,6 +16,7 @@ Vector2f os(28,28);
 static std::vector<Sprite> f; //figures (Sprite has no default constructor, so filled in chess())
 std::string position="";
 
+// ---- DATA: starting layout - numbers encode piece type and colour, 0 is an empty square ----
 int board[8][8] = 
     {-1,-2,-3,-4,-5,-3,-2,-1,
      -6,-6,-6,-6,-6,-6,-6,-6,
@@ -21,9 +27,11 @@ int board[8][8] =
       6, 6, 6, 6, 6, 6, 6, 6,
       1, 2, 3, 4, 5, 3, 2, 1};
 
+// ---- HELPERS: convert between pixel positions and chess notation such as "e2" ----
 std::string toChessNote(Vector2f p)
 {
   std::string s = "";
+  // HINT: the 97 and 49 are ASCII codes - which characters are they, and why is y flipped with 7-y?
   s += char(p.x/size+97);
   s += char(7-p.y/size+49);
   return s;
@@ -36,6 +44,7 @@ Vector2f toCoord(char a,char b)
    return Vector2f(x*size,y*size);
 }
 
+// ---- HELPER: applies one move string such as "e2e4" to the sprites ----
 void move(std::string str)
 {
     Vector2f oldPos = toCoord(str[0],str[1]);
@@ -47,6 +56,7 @@ void move(std::string str)
     for(int i=0;i<32;i++)
      if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
 
+    // HINT: how does the code know the king has not moved before? Check what `position` holds.
     //castling       //if the king didn't move
     if (str=="e1g1") if (position.find("e1")==-1) move("h1f1"); 
     if (str=="e8g8") if (position.find("e8")==-1) move("h8f8");
@@ -54,6 +64,7 @@ void move(std::string str)
     if (str=="e8c8") if (position.find("e8")==-1) move("a8d8");
 }
 
+// ---- HELPER: resets the sprites to the start layout, then replays the move history ----
 void loadPosition()
 {
     int k=0;
@@ -76,6 +87,7 @@ void loadPosition()
 
 int chess()
 {
+    // ---- SETUP: window and engine connection ----
     RenderWindow window(VideoMode({504, 504}), "The Chess! (press SPACE)");
     
 #if defined(_WIN32)
@@ -94,6 +106,7 @@ int chess()
 
     loadPosition();
 
+    // ---- SETUP: variables for drag and drop, kept across frames ----
     bool isMove=false;
     float dx=0, dy=0;
     Vector2f oldPos,newPos;
@@ -102,6 +115,7 @@ int chess()
 
     while (window.isOpen())
     {
+        // ---- INPUT: mouse position and window events ----
         Vector2i pos = Mouse::getPosition(window) - Vector2i(os);
 
         while (const std::optional e = window.pollEvent())
@@ -130,6 +144,7 @@ int chess()
                 if (mr->button == Mouse::Button::Left)
                  {
                   isMove=false;
+                  // HINT: put a breakpoint here, drop a piece and watch str and position - what text gets built up?
                   Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
                   newPos = Vector2f( size*int(p.x/size), size*int(p.y/size) );
                   str = toChessNote(oldPos)+toChessNote(newPos);
@@ -139,6 +154,7 @@ int chess()
                  }                       
         }
 
+       // ---- UPDATE: computer move while SPACE is held ----
        //comp move
        if (Keyboard::isKeyPressed(Keyboard::Key::Space))
        {
@@ -150,6 +166,7 @@ int chess()
          for(int i=0;i<32;i++) if (f[i].getPosition()==oldPos) n=i;
          
          /////animation///////
+          // HINT: this draw code is very like the draw code at the bottom of the loop - could it be one function?
          for(int k=0;k<50;k++)
           {
             Vector2f p = newPos - oldPos;
@@ -165,8 +182,10 @@ int chess()
         f[n].setPosition(newPos); 
         }
 
+        // ---- UPDATE: a dragged piece follows the mouse ----
         if (isMove) f[n].setPosition({pos.x-dx,pos.y-dy});
 
+    // ---- DRAW ----
     ////// draw  ///////
     window.clear();
     window.draw(sBoard);

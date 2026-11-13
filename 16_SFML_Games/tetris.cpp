@@ -2,14 +2,22 @@
 #include <time.h>
 using namespace sf;
 
+// ===== GUIDE: Tetris =====
+// Entry point: int tetris(). Almost everything happens inside its while (window.isOpen()) loop.
+// State that survives between frames: globals field, a, b (below), plus dx, rotate, colorNum, timer, delay (declared before the loop).
+// Suggested reading order: field and figures -> check() -> setup in tetris() -> the loop, top to bottom.
+// =====
 const int M = 20;
 const int N = 10;
 
+// ---- SHARED STATE: field = landed blocks, a[] = falling piece, b[] = its previous position ----
 static int field[M][N] = {0};
 
 struct Point
 {int x,y;} a[4], b[4];
 
+// ---- DATA: the seven piece shapes ----
+// HINT: each number is a cell index in a 2-column grid - look at how the numbers are decoded when a new piece spawns.
 int figures[7][4] =
 {
     1,3,5,7, // I
@@ -21,6 +29,7 @@ int figures[7][4] =
     2,3,4,5, // O
 };
 
+// ---- HELPER: check() asks whether the falling piece a[] is in a legal place ----
 bool check()
 {
    for (int i=0;i<4;i++)
@@ -33,6 +42,7 @@ bool check()
 
 int tetris()
 {
+    // ---- SETUP: window, textures, sprites ----
     srand(time(0));     
 
     RenderWindow window(VideoMode({320, 480}), "The Game!");
@@ -43,6 +53,7 @@ int tetris()
 
     Sprite s(t1), background(t2), frame(t3);
 
+    // ---- GAME STATE: lives across frames, changed by input and the timer ----
     int dx=0; bool rotate=0; int colorNum=1;
     float timer=0,delay=0.3; 
 
@@ -50,10 +61,12 @@ int tetris()
 
     while (window.isOpen())
     {
+        // ---- TIMING: how long since the last frame ----
         float time = clock.getElapsedTime().asSeconds();
         clock.restart();
         timer+=time;
 
+        // ---- INPUT: events set the dx / rotate flags ----
         while (const std::optional e = window.pollEvent())
         {
             if (e->is<Event::Closed>())
@@ -67,13 +80,16 @@ int tetris()
 
     if (Keyboard::isKeyPressed(Keyboard::Key::Down)) delay=0.05;
 
+    // ---- UPDATE: move sideways ----
     //// <- Move -> ///
     for (int i=0;i<4;i++)  { b[i]=a[i]; a[i].x+=dx; }
     if (!check()) for (int i=0;i<4;i++) a[i]=b[i];
 
+    // ---- UPDATE: rotate ----
     //////Rotate//////
     if (rotate)
       {
+        // HINT: this rotation uses a[1] as a pivot - try it on paper with a T piece.
         Point p = a[1]; //center of rotation
         for (int i=0;i<4;i++)
           {
@@ -85,6 +101,7 @@ int tetris()
            if (!check()) for (int i=0;i<4;i++) a[i]=b[i];
       }
 
+    // ---- UPDATE: gravity tick - drop, lock in place, spawn next piece ----
     ///////Tick//////
     if (timer>delay)
       {
@@ -106,7 +123,9 @@ int tetris()
          timer=0;
       }
 
+    // ---- UPDATE: clear completed lines ----
     ///////check lines//////////
+    // HINT: put a breakpoint here and watch k and i - why do they sometimes differ?
     int k=M-1;
     for (int i=M-1;i>0;i--)
     {
@@ -119,8 +138,10 @@ int tetris()
         if (count<N) k--;
     }
 
+    // ---- RESET: per-frame inputs go back to defaults ----
     dx=0; rotate=0; delay=0.3;
 
+    // ---- DRAW ----
     /////////draw//////////
     window.clear(Color::White);    
     window.draw(background);
@@ -129,6 +150,7 @@ int tetris()
      for (int j=0;j<N;j++)
        {
          if (field[i][j]==0) continue;
+         // HINT: 18 and the offset (28, 31) are pixel sizes - good candidates for named constants.
          s.setTextureRect(IntRect({field[i][j]*18,0},{18,18}));
          s.setPosition({float(j*18),float(i*18)});
          s.move({28,31}); //offset
