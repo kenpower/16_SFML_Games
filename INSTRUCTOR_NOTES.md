@@ -1,8 +1,8 @@
-# Instructor notes: extracting testable logic (lab part 1, step 5)
+# Instructor notes: extracting testable logic (week 2, step 6)
 
 Instructor only. Do not commit this to the repository students clone.
 
-How hard it is to split each game into an SFML-free, testable class, for students relatively new to C++. Ratings are 1 (trivial) to 10 (very hard). Line numbers are as of 2026-11-13.
+How hard it is to split each game into an SFML-free, testable class, for students relatively new to C++. Ratings are 1 (trivial) to 10 (very hard). Line numbers are as of 2026-11-17.
 
 ## Summary
 
@@ -35,27 +35,29 @@ How hard it is to split each game into an SFML-free, testable class, for student
 
 ## Recommended
 
-**Racing (4).** `Car` (racing.cpp:23) is already SFML-free, so extracting `Car` on its own is **not enough** for step 5. Expect a world or track class that owns:
+**Racing (4).** `Car` (racing.cpp:30) is already SFML-free, so extracting `Car` on its own is **not enough** for the week 2 class. Expect a world or track class that owns:
 - the checkpoints (global `points[]`, which `Car::findTarget` reads directly)
-- the player's acceleration and steering (racing.cpp:98-117, currently locals in `racing()`)
-- car-to-car collision (racing.cpp:127-140)
+- the player's acceleration and steering (racing.cpp:98-115, currently locals in `racing()`)
+- car-to-car collision (racing.cpp:126-140)
+
+The starter's speed and steering rules read `Keyboard::isKeyPressed` directly (changed 2026-11-17, behaviour unchanged) so that `input-data` is available as a second seam refactoring besides `de-global`.
 
 Tests need float tolerances.
 
-**Arkanoid (4).** Replace `sf::FloatRect` with their own rect struct and the `x=-100` sentinel with an alive flag. Inject the paddle-bounce RNG (`rand()%5+2`, arkanoid.cpp:87). Block and paddle sizes come from texture sizes, so they must become constructor parameters. Blocks are resolved in separate X and Y passes (arkanoid.cpp:65-75). The ball never leaves through the bottom, so there is no lose state.
+**Arkanoid (4).** Replace `sf::FloatRect` with their own rect struct and the `x=-100` sentinel with an alive flag. Inject the paddle-bounce RNG (`rand()%5+2`, arkanoid.cpp:98). Block and paddle sizes come from texture sizes, so they must become constructor parameters. Blocks are resolved in separate X and Y passes (arkanoid.cpp:76-86). The ball never leaves through the bottom, so there is no lose state.
 
-**Tron (4).** `Bike` is nearly pure apart from `rand()` in its constructor. Make the global `field[W][H]`, `speed`, `W` and `H` members. Separate the step loop from the per-step `RenderTexture` drawing (tron.cpp:85-98). Two-player input is duplicated, so a `setDirection(player, dir)` that rejects 180° reversals is a natural method.
+**Tron (4).** `Bike` is nearly pure apart from `rand()` in its constructor. Make the global `field[W][H]`, `speed`, `W` and `H` members. Separate the step loop from the per-step `RenderTexture` drawing (tron.cpp:96-109). Two-player input is duplicated, so a `setDirection(player, dir)` that rejects 180° reversals is a natural method.
 
-**Minesweeper (4).** The rules are small, but revealing happens inside the draw loop (minesweeper.cpp:79), which tests `sgrid[x][y]` for the hover cell. Mine placement needs an RNG. The eight neighbour checks (minesweeper.cpp:43-50) are duplicated.
+**Minesweeper (4).** The rules are small, but revealing happens inside the draw loop (minesweeper.cpp:88), which tests `sgrid[x][y]` for the hover cell. Mine placement needs an RNG. The eight neighbour checks (minesweeper.cpp:52-59) are duplicated.
 
 **Netwalk (4–5).** Mostly grid and graph code. `GridPos` has no SFML, and `drop()` is a recursive flood fill. The work is:
 - turning the global `grid` into an instance
-- injecting the RNG into generation and shuffling (netwalk.cpp:70-95, 147, 153)
+- injecting the RNG into generation and shuffling (netwalk.cpp:79-104, 156, 162)
 - moving `pipe.angle`, which is animation state, out of the model
 
 A good test: an unshuffled generated board is fully connected from the server. There is no win check.
 
-**Tetris (5).** The board, collision, rotation and line-clear are all pure, but they are spread over the globals `field`, `a` and `b`, and `check()` reads those globals. The `timer > delay` accumulator becomes `step(dt)`, and the next shape and colour must be injected (tetris.cpp:114-115). Rotation restores from `b`, which is saved before the sideways move, so a failed rotation also undoes that frame's sideways move.
+**Tetris (5).** The board, collision, rotation and line-clear are all pure, but they are spread over the globals `field`, `a` and `b`, and `check()` reads those globals. The `timer > delay` accumulator becomes `step(dt)`, and the next shape and colour must be injected (tetris.cpp:123-124). Rotation restores from `b`, which is saved before the sideways move, so a failed rotation also undoes that frame's sideways move.
 
 ## Stretch
 
@@ -82,10 +84,10 @@ These were verified by reading the code, not by running it. None are flagged in 
 
 | Game | Location | Bug |
 |------|----------|-----|
-| Minesweeper | minesweeper.cpp:19-21 | **Fixed in the starter code (2026-11-13):** `grid` and `sgrid` were uninitialised, so neighbour counts on edge cells read garbage from border rows/columns 0 and 11. Both are now zero-initialised. |
-| Minesweeper | minesweeper.cpp:57-68 | The cell comes from `pos.x/w` with no bounds check. A click at x ≥ 384 (or y ≥ 384) gives index 12 and writes out of bounds. |
+| Minesweeper | minesweeper.cpp:28-31 | **Fixed in the starter code (2026-11-13):** `grid` and `sgrid` were uninitialised, so neighbour counts on edge cells read garbage from border rows/columns 0 and 11. Both are now zero-initialised. |
+| Minesweeper | minesweeper.cpp:66-78 | The cell comes from `pos.x/w` with no bounds check. A click at x ≥ 384 (or y ≥ 384) gives index 12 and writes out of bounds. |
 | Racing | racing.cpp:133 | `car[i].x+=dy/10.0;` should update `y`. Collision push-apart is lopsided. `dx` and `dy` are `int`s, so small separations truncate to 0. |
 | Snake | snake.cpp:43-44 | Wrapping tests `> N` / `< 0` and wraps to `N`, so the head can sit at column N (or row M), one cell off-screen. |
 | Snake | snake.cpp:20, 41 | `s[100]` has no bounds check as `num` grows. Fruit can spawn on the body. |
-| Tetris | tetris.cpp:129-139 | Line-clear never copies row 0 down and doesn't clear the rows freed at the top. This only shows when the stack reaches the top row. |
-| Tron | tron.cpp:89-92 | Both bikes are checked against `field` before either is written, so a head-on move into the same cell in one step is not detected. |
+| Tetris | tetris.cpp:138-148 | Line-clear never copies row 0 down and doesn't clear the rows freed at the top. This only shows when the stack reaches the top row. |
+| Tron | tron.cpp:100-103 | Both bikes are checked against `field` before either is written, so a head-on move into the same cell in one step is not detected. |
