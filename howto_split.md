@@ -18,7 +18,7 @@ Read the two `catcher.cpp` files side by side before you go on. They play exactl
 
 ### Playing Catcher
 
-Each version is its own CMake target, built by the same project as the 16 games: `catcher_before`, `catcher_step1` to `catcher_step6` (one per step, in `howto_split/steps/`), `catcher_after`, and `CatcherTests` for the unit tests. Configure the project as the [README](README.md) describes, then:
+Each version is its own CMake target, built by the same project as the 16 games: `catcher_before`, `catcher_step1` to `catcher_step6` (one per step, in `howto_split/steps/`), `catcher_after`, and `CatcherTests` for the unit tests. Configure the project as the [README](https://github.com/kenpower/16_SFML_Games/blob/main/README.md) describes, then:
 
 ```sh
 cmake --build build --config Release --target catcher_before catcher_step1 catcher_step2 catcher_step3 catcher_step4 catcher_step5 catcher_step6 catcher_after CatcherTests

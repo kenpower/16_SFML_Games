@@ -2,7 +2,7 @@
 
 > **DRAFT – this brief may change before session 2.** It shows the plan so you can see where week 1 is heading. Numbers, timings and marks are not final. This notice is removed when the brief is final.
 
-Part of the three-week project **Refactor, test and extend an SFML game**. See [assignment.md](assignment.md) for the overview, marking and rules.
+Part of the three-week project **Refactor, test and extend an SFML game**. See [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md) for the overview, marking and rules.
 
 > **Goal:** by the end of this week, *my game's rules live in a tested class with no SFML.*
 >
@@ -41,7 +41,7 @@ You also get a short sheet of example rows for your game. Use them if you can't 
 
 If you finish early, carry on with the home steps.
 
-During the lab, the only AI tool allowed is [cs50.ai/chat](https://cs50.ai/chat), for technical questions. See the AI rule in [assignment.md](assignment.md#rules).
+During the lab, the only AI tool allowed is [cs50.ai/chat](https://cs50.ai/chat)[^duck], for technical questions. See the AI rule in [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md#rules).
 
 ## At home
 
@@ -182,3 +182,7 @@ git push origin week2
 - [ ] `week2` tag pushed
 
 In week 3 you'll be given a feature to add to your class, test first, in the lab. You'll do it fastest if your class is clean, its tests pass, and you know how to add a method and a test for it.
+
+---
+
+[^duck]: You sign in to cs50.ai with a **GitHub account**. Use the same account you use for this project, and check you can sign in before your first lab.

@@ -8,9 +8,9 @@ This is a **solo** project that runs for **three weeks**, with **one 100-minute 
 
 | Week  | Brief                                      | Goal: by the end of the week...                                       | In the lab                                           |
 | ----- | ------------------------------------------ | --------------------------------------------------------------------- | ---------------------------------------------------- |
-| **1** | [assignment_week1.md](assignment_week1.md) | **...I understand my game, and I have refactored it towards a seam.** | Build and debug check-off. Start refactoring.        |
-| **2** | [assignment_week2.md](assignment_week2.md) *(draft)* | **...my game's rules live in a tested class with no SFML.**           | **Test task**, given at the start of the session.    |
-| **3** | [assignment_week3.md](assignment_week3.md) *(draft)* | **...I have added a new feature to my class, test first.**            | **Feature task**, given at the start of the session. |
+| **1** | [assignment_week1.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week1.md) | **...I understand my game, and I have refactored it towards a seam.** | Build and debug check-off. Start refactoring.        |
+| **2** | [assignment_week2.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week2.md) *(draft)* | **...my game's rules live in a tested class with no SFML.**           | **Test task**, given at the start of the session.    |
+| **3** | [assignment_week3.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week3.md) *(draft)* | **...I have added a new feature to my class, test first.**            | **Feature task**, given at the start of the session. |
 
 > **The week 2 and week 3 briefs are drafts.** They show the plan, so you can see where week 1 is heading, but details (including the numbers of tests and the marking) may change. Check back before each session: the draft notice is removed when a brief is final.
 
@@ -60,14 +60,14 @@ What a top mark looks like for each part is in that week's brief.
 
 ### Tags
 
-You push a tag at two points each week:
+You push a tag[^tag] at two points each week:
 
 | Tag | When | What it shows |
 |-----|------|---------------|
 | `session1`, `session2`, `session3` | at the **end of each lab session**, before you leave | what you did in the lab. The in-lab tasks are marked from `session2` and `session3`. |
 | `week1`, `week2` | **before the next session** starts | what you did at home |
 
-To tag and push (replace `session1` with the tag you need). [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md) has these commands, how to check a tag reached GitHub, and how to fix a wrong tag:
+To tag and push (replace `session1` with the tag you need). [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md) has these commands, how to check a tag reached GitHub, and how to fix a wrong tag:
 
 ```sh
 git push
@@ -95,7 +95,7 @@ Work you can't explain may not be marked. You can't prepare a script for this. U
 - You don't need to edit `CMakeLists.txt`. A header-only class (like `Grid.h`) in the `16_SFML_Games/` folder is already found by both the game and the `Tests` project, and any `.cpp` in `Tests/` is added to the test program. If you add a `.cpp` file for your class, you will need to add it to `CMakeLists.txt`.
 - This is individual work. You can discuss ideas with classmates, but every commit must be your own.
 - **AI tools:** you may use them to _explain_ code or concepts, not to write your changes. Record each use in an **AI use** section of `NOTES.md` (one line each, e.g. "asked what `std::array` is"). Honest declarations are not penalised.
-- **In the lab, including during the in-lab tasks,** the only AI tool you may use is the CS50 Duck, [cs50.ai/chat](https://cs50.ai/chat), and only for technical questions (e.g. "what does this compiler error mean?", "how do I use `EXPECT_FLOAT_EQ`?"). It is designed to help you learn rather than hand you answers. Don't paste in your task and ask it to do it. Record what you asked in **AI use**, as above.
+- **In the lab, including during the in-lab tasks,** the only AI tool you may use is the CS50 Duck, [cs50.ai/chat](https://cs50.ai/chat)[^duck], and only for technical questions (e.g. "what does this compiler error mean?", "how do I use `EXPECT_TRUE`?"). It is designed to help you learn rather than hand you answers. Don't paste in your task and ask it to do it. Record what you asked in **AI use**, as above.
 - If you miss a session, tell Ken or Ben as soon as you can.
 
 ## Submission
@@ -103,3 +103,9 @@ Work you can't explain may not be marked. You can't prepare a script for this. U
 Just push regularly. There is nothing else to upload. Your repository is marked as it is at the end of your week 3 session, together with your tags (`session1`–`session3`, `week1`, `week2`).
 
 At the end of week 3, you will be asked to fill in a short **self-assessment** form. This is your chance to explain what you did and how you did it. So it is important to keep your `NOTES.md` up to date, and to push your work regularly.
+
+---
+
+[^tag]: A **git tag** is a name, like `session1`, attached to one commit, like a bookmark. It records exactly what your repository looked like at that moment, even after you make more commits, so it is what the markers look at. `git push` on its own does **not** send tags to GitHub: push each one with `git push origin <tag>`. See [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md).
+
+[^duck]: You sign in to cs50.ai with a **GitHub account**. Use the same account you use for this project, and check you can sign in before your first lab.

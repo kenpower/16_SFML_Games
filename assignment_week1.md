@@ -1,6 +1,6 @@
 # Week 1 – Understand the game and refactor it towards a seam
 
-Part of the three-week project **Refactor, test and extend an SFML game**. See [assignment.md](assignment.md) for the overview, marking and rules.
+Part of the three-week project **Refactor, test and extend an SFML game**. See [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md) for the overview, marking and rules.
 
 > **Goal:** by the end of this week, *I understand my game, and I have refactored it towards a seam.*
 >
@@ -13,7 +13,7 @@ Part of the three-week project **Refactor, test and extend an SFML game**. See [
 
 Read `seams_lecture_notes.md` before the lab, or at least sections 1–3.
 
-In the lab you may use [cs50.ai/chat](https://cs50.ai/chat) for technical questions, such as build errors or debugger problems. See the AI rule in [assignment.md](assignment.md#rules).
+In the lab you may use [cs50.ai/chat](https://cs50.ai/chat)[^duck] for technical questions, such as build errors or debugger problems. See the AI rule in [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md#rules).
 
 ## In the lab (100 minutes)
 
@@ -24,7 +24,7 @@ In the lab you may use [cs50.ai/chat](https://cs50.ai/chat) for technical questi
 | 30–55 | 2 Read and map the code (start `NOTES.md`) |
 | 55–70 | 3 Manual test script |
 | 70–95 | 4 First refactorings: get at least 2 done and pushed |
-| 95–100 | Push, and push the `session1` tag (see [Tags](assignment.md#tags)) |
+| 95–100 | Push, and push the `session1` tag[^tag] (see [Tags](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md#tags)) |
 
 ## At home
 
@@ -38,11 +38,11 @@ In the lab you may use [cs50.ai/chat](https://cs50.ai/chat) for technical questi
 
 ## Step 0 – Build, run and debug
 
-Follow the [README](README.md#build-and-test-quick-version) to build the project. **If you use Visual Studio, build, run and test in the IDE**, not on the command line. (Tags need the terminal: see [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md).) If you get stuck, [BUILDING.md](BUILDING.md) has the full details.
+Follow the [README](https://github.com/kenpower/16_SFML_Games/blob/main/README.md#build-and-test-quick-version) to build the project. **If you use Visual Studio, build, run and test in the IDE**, not on the command line. (Tags need the terminal: see [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md).) If you get stuck, [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md) has the full details.
 
 1. **Open** the repository folder: in Visual Studio use *File → Open → Folder…*; in VS Code use the CMake Tools extension. Choose the **Debug** configuration.
 2. **Build** everything (*Build → Build All* in Visual Studio).
-3. **Run the launcher** under the debugger: choose `16_SFML_Games.exe` as the startup item and press **F5**. Play a game for a moment. If the images don't load, the debugger is running the game from the wrong folder: see [BUILDING.md](BUILDING.md#visual-studio).
+3. **Run the launcher** under the debugger: choose `16_SFML_Games.exe` as the startup item and press **F5**. Play a game for a moment. If the images don't load, the debugger is running the game from the wrong folder: see [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md#visual-studio).
 4. **Set a breakpoint** inside the game loop of any game, start it under the debugger, and check that the breakpoint is hit.
 5. **Run the tests:** *Test → Test Explorer → Run All Tests* in Visual Studio (on the command line, `ctest --test-dir build-debug --output-on-failure`). The Xonix tests and the placeholder test for each game (`Tests/tetris_test.cpp` and so on) should all pass.
 
@@ -152,7 +152,7 @@ So `refactor(state-out-of-sfml):` means "a refactoring of type state-out-of-sfml
 These rules apply to every refactoring in this project:
 
 - **One refactoring per commit.** Start each message with `refactor(<type>):`, using a type from the table below, e.g. `refactor(rename): rename field to board`.
-- **After every refactoring**, build, run your manual test script, commit, and **push**. [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md) shows how, in Visual Studio and on the command line.
+- **After every refactoring**, build, run your manual test script, commit, and **push**. [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md) shows how, in Visual Studio and on the command line.
 - Keep each commit small enough to review in a minute or two. "Rename `a` to `currentPiece`" is one commit. "Rename everything and extract three functions" is too much.
 - If a step breaks the game and you can't see why within a few minutes, undo it (`git restore .`) and take a smaller step.
 
@@ -267,3 +267,9 @@ git push origin week1
 - [ ] `session1` tag pushed at the end of the lab, and `week1` tag pushed before session 2
 
 In session 2 you move your `update()` and state `struct` into your class, then do a test task. The faster the move, the more time you have for the task.
+
+---
+
+[^tag]: A **git tag** is a name, like `session1`, attached to one commit, like a bookmark. It records exactly what your repository looked like at that moment, even after you make more commits, so it is what the markers look at. `git push` on its own does **not** send tags to GitHub: push each one with `git push origin <tag>`. See [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md).
+
+[^duck]: You sign in to cs50.ai with a **GitHub account**. Use the same account you use for this project, and check you can sign in before your first lab.

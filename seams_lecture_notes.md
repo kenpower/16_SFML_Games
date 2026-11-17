@@ -1,6 +1,6 @@
 # Lecture notes: Seams, and splitting a small app so it can be tested
 
-These notes cover the ideas behind [howto_split.md](howto_split.md). That guide is the step-by-step recipe for one game (Catcher). These notes are the *why* and the general method, so you can apply it to any small interactive program, including the 16 games in this repository.
+These notes cover the ideas behind [howto_split.md](https://github.com/kenpower/16_SFML_Games/blob/main/howto_split.md). That guide is the step-by-step recipe for one game (Catcher). These notes are the *why* and the general method, so you can apply it to any small interactive program, including the 16 games in this repository.
 
 Running example throughout: **Catcher** ([before](howto_split/before/catcher.cpp), [after](howto_split/after/catcher.cpp), [CatcherGame.h](howto_split/after/CatcherGame.h), [tests](howto_split/after/CatcherGame_test.cpp)).
 
@@ -458,7 +458,7 @@ Notice the grid games convert the mouse into **cell coordinates in the shell** (
 
 ## 7. How to implement the split
 
-The full recipe is in [howto_split.md](howto_split.md). The order matters – each step makes the next one easy:
+The full recipe is in [howto_split.md](https://github.com/kenpower/16_SFML_Games/blob/main/howto_split.md). The order matters – each step makes the next one easy:
 
 1. **Take state out of SFML objects** into plain variables.
 2. **Name the magic numbers.**

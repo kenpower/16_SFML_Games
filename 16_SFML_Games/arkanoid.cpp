@@ -7,16 +7,6 @@ using namespace sf;
 // Entry point: int arkanoid(). No globals; the game is the while (app.isOpen()) loop.
 // State that survives between frames: the block vector (and n), the ball's x, y, dx, dy, and the paddle's paddleX, paddleY.
 // Suggested reading order: block setup -> ball variables -> the loop (ball, walls, paddle, draw).
-// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
-//   SEAM sfml-type          - the block and paddle collisions build FloatRects and call findIntersection (see plain::Rect, plain::overlaps)
-//   SEAM state-out-of-sfml  - blockW, blockH, paddleW, paddleH are read from the textures with getSize()
-//   SEAM input-data         - Keyboard::isKeyPressed moves paddleX in the middle of the update
-//   SEAM inject             - rand() chooses dy in the paddle bounce
-//   rename                  - x, y, dx, dy, n, t1..t4, app
-//   constant                - 43, 20, 6, 12, 3, 520, 450, 300, 440
-//   dedupe                  - the two near-identical loops over block[] (one for x, one for y)
-//   struct                  - the ball's x, y, dx, dy as one object
-//   explain-var             - the long collision conditions
 // =====
 
 // ---- DATA: one block, by the pixel position of its top-left corner ----
@@ -39,7 +29,6 @@ int arkanoid()
     Sprite sBackground(t2), sBall(t3), sPaddle(t4), sBlock(t1);
 
     // ---- SETUP: block and paddle sizes in pixels, taken from their images ----
-    // HINT: the image sizes are block 42 x 20, paddle 90 x 9, ball 12 x 12. A class without SFML can't ask a texture, so it needs these numbers.
     float blockW = t1.getSize().x, blockH = t1.getSize().y;
     float paddleW = t4.getSize().x, paddleH = t4.getSize().y;
 

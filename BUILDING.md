@@ -1,6 +1,6 @@
 # Building, running and testing
 
-Full setup instructions for the 16 SFML Games project. For a short version, see the [README](README.md).
+Full setup instructions for the 16 SFML Games project. For a short version, see the [README](https://github.com/kenpower/16_SFML_Games/blob/main/README.md).
 
 ## Requirements
 

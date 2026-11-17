@@ -35,16 +35,14 @@ How hard it is to split each game into an SFML-free, testable class, for student
 
 ## Recommended
 
-**Racing (4).** `Car` (racing.cpp:30) is already SFML-free, so extracting `Car` on its own is **not enough** for the week 2 class. Expect a world or track class that owns:
+**Racing (4).** `Car` (racing.cpp:23) is already SFML-free, so extracting `Car` on its own is **not enough** for the week 2 class. Expect a world or track class that owns:
 - the checkpoints (global `points[]`, which `Car::findTarget` reads directly)
-- the player's acceleration and steering (racing.cpp:98-115, currently locals in `racing()`)
-- car-to-car collision (racing.cpp:126-140)
-
-The starter's speed and steering rules read `Keyboard::isKeyPressed` directly (changed 2026-11-17, behaviour unchanged) so that `input-data` is available as a second seam refactoring besides `de-global`.
+- the player's acceleration and steering (racing.cpp:98-117, currently locals in `racing()`)
+- car-to-car collision (racing.cpp:127-140)
 
 Tests need float tolerances.
 
-**Arkanoid (4).** Replace `sf::FloatRect` with their own rect struct and the `x=-100` sentinel with an alive flag. Inject the paddle-bounce RNG (`rand()%5+2`, arkanoid.cpp:98). Block and paddle sizes come from texture sizes, so they must become constructor parameters. Blocks are resolved in separate X and Y passes (arkanoid.cpp:76-86). The ball never leaves through the bottom, so there is no lose state.
+**Arkanoid (4).** Replace `sf::FloatRect` with their own rect struct and the `x=-100` sentinel with an alive flag. Inject the paddle-bounce RNG (`rand()%5+2`, arkanoid.cpp:87). Block and paddle sizes come from texture sizes, so they must become constructor parameters. Blocks are resolved in separate X and Y passes (arkanoid.cpp:65-75). The ball never leaves through the bottom, so there is no lose state.
 
 **Tron (4).** `Bike` is nearly pure apart from `rand()` in its constructor. Make the global `field[W][H]`, `speed`, `W` and `H` members. Separate the step loop from the per-step `RenderTexture` drawing (tron.cpp:96-109). Two-player input is duplicated, so a `setDirection(player, dir)` that rejects 180° reversals is a natural method.
 

@@ -7,13 +7,6 @@ using namespace sf;
 // Entry point: int racing(). Globals: num and points[] (checkpoints), and the Car struct above the entry function.
 // State that survives between frames: car[], the player's speed and angle, the tuning values, offsetX / offsetY.
 // Suggested reading order: points -> Car -> racing() setup -> player controls -> AI cars -> collision -> camera and draw.
-// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
-//   SEAM de-global   - Car::findTarget() reads the global points[] and num instead of being given them
-//   SEAM input-data  - the arrow keys are read with Keyboard::isKeyPressed inside the speed and steering rules
-//   rename           - R, N, n, acc, dec, t1, t2, sBackground, beta
-//   constant         - 22 and 25 (radius, checkpoint distance), 320 / 240, 0.005, the car start positions (300, 1700, 50, 80)
-//   struct           - the player's speed, angle, maxSpeed, acc, dec and turnSpeed variables
-//   extract-function - the player controls, or the camera scroll
 // =====
 // ---- DATA: checkpoints the AI cars drive between ----
 const int num=8; //checkpoints
@@ -95,24 +88,31 @@ int racing()
                 app.close();
         }
 
-    // ---- UPDATE + INPUT: player speed and steering, reading the arrow keys directly ----
+    // ---- INPUT: keyboard ----
+    bool Up=0,Right=0,Down=0,Left=0;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Up)) Up=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Right)) Right=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Down)) Down=1;
+    if (Keyboard::isKeyPressed(Keyboard::Key::Left)) Left=1;
+
+    // ---- UPDATE: player speed and steering ----
     //car movement
-    if (Keyboard::isKeyPressed(Keyboard::Key::Up) && speed<maxSpeed)
+    if (Up && speed<maxSpeed)
         if (speed < 0)  speed += dec;
         else  speed += acc;
 
-    if (Keyboard::isKeyPressed(Keyboard::Key::Down) && speed>-maxSpeed)
+    if (Down && speed>-maxSpeed)
         if (speed > 0) speed -= dec;
         else  speed -= acc;
 
-    if (!Keyboard::isKeyPressed(Keyboard::Key::Up) && !Keyboard::isKeyPressed(Keyboard::Key::Down))
+    if (!Up && !Down)
         if (speed - dec > 0) speed -= dec;
         else if (speed + dec < 0) speed += dec;
         else speed = 0;
 
     // HINT: put a breakpoint here, hold Up, then release - watch speed and angle as they change.
-    if (Keyboard::isKeyPressed(Keyboard::Key::Right) && speed!=0)  angle += turnSpeed * speed/maxSpeed;
-    if (Keyboard::isKeyPressed(Keyboard::Key::Left) && speed!=0)   angle -= turnSpeed * speed/maxSpeed;
+    if (Right && speed!=0)  angle += turnSpeed * speed/maxSpeed;
+    if (Left && speed!=0)   angle -= turnSpeed * speed/maxSpeed;
 
     // ---- UPDATE: move every car (cars 1 and up steer towards checkpoints) ----
     car[0].speed = speed;
