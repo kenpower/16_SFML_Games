@@ -8,6 +8,7 @@ Part of the three-week project **Refactor, test and extend an SFML game**. See [
 > - Ken or Ben has seen your breakpoint hit (in the lab)
 > - `NOTES.md` maps the game, and has a manual test script and a test list
 > - you have made at least **6** refactorings, of at least **4** types, including at least **2** seam types
+> - your game's rules are gathered into an `update()` function and a state `struct`, still in the game file
 > - the `week1` tag is pushed **before session 2**
 
 Read `seams_lecture_notes.md` before the lab, or at least sections 1–3.
@@ -28,7 +29,8 @@ In the lab you may use [cs50.ai/chat](https://cs50.ai/chat) for technical questi
 ## At home
 
 - Finish `NOTES.md`: state table, questions, test list.
-- Add the seam map to your game's code (step 5a), then do the seam refactorings (step 5b) and any more general ones, until you have **6+ refactorings**.
+- Add the seam map to your game's code (step 5a), then do the seam refactorings (step 5b) and any more general ones.
+- Finish by gathering the rules into `update()` and a state `struct` (step 5c). That makes **6+ refactorings** in total.
 - Read `howto_split.md` and play `catcher_before` and `catcher_after`.
 - Push the `week1` tag.
 
@@ -223,6 +225,18 @@ Work through `howto_split.md` **steps 1–5**, on your game, one commit each:
 
 Not every game needs all six. Do the ones your seam map shows you need. The step-by-step versions of Catcher in [howto_split/steps/](howto_split/steps/) show each of steps 1–5 as a small change you can compare.
 
+### 5c. Gather the rules into `update()`
+
+Once the rules are untangled, gather them in one place, **still in your game file** (`howto_split.md` step 6, and [steps/step6_update.cpp](howto_split/steps/step6_update.cpp) for Catcher):
+
+- Put the game's state (the variables that live between frames) into one `struct`.
+- Move the RULE lines into one function, `update(...)`, that takes the struct and the plain inputs (keys, `dt`, random values). If one function is too big, use a few: e.g. `movePiece`, `dropPiece`, `clearRows`.
+- The loop should now read: **input → update → draw**.
+
+Play the game and run your manual test script: it must still work. Commit as `refactor(extract-function): gather the rules into update()`. This counts as one of your 6 refactorings.
+
+This is the hardest thinking in the whole split ("which lines are rules?"), so it's best done at home, without a clock running. In session 2 you move this struct and function into your class.
+
 ---
 
 ## End of week 1
@@ -249,6 +263,7 @@ git push origin week1
 - [ ] `NOTES.md` has your game choice, game loop summary, state table, questions, manual test script, test list (5+), seam map summary, known issues and AI use
 - [ ] Seam map tags in your game's code, kept up to date
 - [ ] At least 6 `refactor(<type>):` commits, of at least 4 types, including at least 2 seam types
+- [ ] The rules gathered into `update()` and a state `struct` in the game file, and the game still plays the same
 - [ ] `session1` tag pushed at the end of the lab, and `week1` tag pushed before session 2
 
-The week 2 test task is about your game's rules. You'll do it fastest if you know where every rule is, and the rules are already untangled from SFML.
+In session 2 you move your `update()` and state `struct` into your class, then do a test task. The faster the move, the more time you have for the task.

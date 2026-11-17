@@ -41,8 +41,7 @@ By the end of this project you should be able to:
 5. Recognise and name common code smells.
 6. Find the **seam** between game rules and their dependencies (graphics, input, time, randomness), and split the code there so the rules can be tested.
 7. Decide **what** to test, and write clear, focused unit tests with GoogleTest.
-8. Check that your tests can actually catch mistakes.
-9. Add a new feature **test first**, to code you now control.
+8. Add a new feature **test first**, to code you now control.
 
 Supporting material: the lecture notes on seams (`seams_lecture_notes.md`) and the worked example (`howto_split.md`), which splits a small game called Catcher.
 
@@ -54,7 +53,7 @@ Supporting material: the lecture notes on seams (`seams_lecture_notes.md`) and t
 | Refactoring: 6+ commits, 4+ types, 2+ towards the seam                             |    1 | lab + home |    20 |
 | Extracted class: meets the definition of done                                      |    2 | lab + home |    15 |
 | **Test task**                                                                      |    2 | **in lab** |    15 |
-| Your own tests and break-the-code experiments                                      |    2 | home       |    15 |
+| Your own tests                                                                     |    2 | home       |    15 |
 | **Feature task**, test first                                                       |    3 | **in lab** |    25 |
 
 What a top mark looks like for each part is in that week's brief.
@@ -84,7 +83,7 @@ Ken or Ben may ask any student, in any session, to explain one of their commits 
 
 - Why does this commit not change the game's behaviour?
 - Where did `rand()` (or the clock, or the keyboard) go, and why isn't it in your class?
-- Talk me through this test. Break the code and show me it fail.
+- Talk me through this test, and run it.
 
 Work you can't explain may not be marked. You can't prepare a script for this. Understanding every commit is the preparation.
 

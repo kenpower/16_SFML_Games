@@ -17,11 +17,15 @@ This week is all in the lab. **The deadline is the end of session 3.**
 
 ## In the lab (100 minutes)
 
-At the start of the session, Ken or Ben will give you a **feature** to add to your game. It is a small new rule, such as a score, a counter or a win condition. You don't know it in advance.
+At the start of the session, Ken or Ben will give you the **feature task**. It is the same kind of task for every game:
+
+> Add **a counter** or **a win/lose condition** to your class, **test first**.
+
+You also get a short list of options for your game (for example, for Tetris: count the rows cleared, or end the game when a new piece can't be placed). Choose one. You don't know the list in advance.
 
 | Time | Step |
 |------|------|
-| 0–10 | Get your feature. Pull, build, run the tests. Write the feature at the top of a **Feature** section in `NOTES.md`. |
+| 0–10 | Get the task and choose your feature. Pull, build, run the tests. Write the feature at the top of the **Feature** section in `NOTES.md`. |
 | 10–20 | 1 Plan |
 | 20–45 | 2 Red: write failing tests |
 | 45–70 | 3 Green: make them pass |

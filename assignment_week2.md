@@ -11,21 +11,33 @@ Part of the three-week project **Refactor, test and extend an SFML game**. See [
 > - the **in-lab test task** is pushed by the end of session 2
 > - `NOTES.md` has a behaviour table with at least **8** rows
 > - you have at least **6** tests in total, including at least **2** edge cases
-> - you have recorded **3** break-the-code experiments
 > - the `week2` tag is pushed **before session 3**
+
+## Before the lab
+
+Your week 1 home work ends with the rules gathered into an `update()` function (or a few functions) and a state `struct`, **still in your game file** (week 1, step 5b). If that isn't done, do it before session 2: it makes the lab much easier.
 
 ## In the lab (100 minutes)
 
-At the start of the session, Ken or Ben will give you a **test task** for your game: one or two behaviours to write unit tests for. You don't know them in advance.
-
 | Time | What you do |
 |------|-------------|
-| 0–5 | Get your test task. Write it at the top of a **Test task** section in `NOTES.md`. |
-| 5–65 | Step 6: extract your class, far enough that the behaviours in the task are inside it |
-| 65–95 | Step 7: write the test task's tests, and make them pass |
+| 0–40 | Step 6: move your state struct and `update()` into your game's header, make them a class with getters, and make the game use it. Check the `Tests` target builds. |
+| 40–45 | Get the **test task** (below). Copy it into the **Test task** section of `NOTES.md`. |
+| 45–95 | Step 7a: add the task's rows to your behaviour table, write the tests, and make them pass |
 | 95–100 | Push, and push the `session2` tag. Your test task is marked from that tag. |
 
-You only need to extract the parts of your game the test task needs, so read the task first and plan. If your week 1 seam refactorings are done, the extraction is mostly moving code you've already untangled.
+### The test task
+
+At 40 minutes, Ken or Ben will give you the test task. It is the same kind of task for every game:
+
+> Choose **one rule** in your class. Write **3 tests** for it:
+> 1. a **normal case**: the rule does what it should in an ordinary situation
+> 2. an **edge case**: the rule at a boundary (a wall, a corner, the first or last row, zero, full)
+> 3. a case where the rule **does not apply**: the situation where nothing should happen
+>
+> Add the 3 rows to your behaviour table **before** you write the tests.
+
+You also get a short sheet of example rows for your game. Use them if you can't think of a rule, or if the rule you wanted isn't in your class yet.
 
 If you finish early, carry on with the home steps.
 
@@ -33,9 +45,8 @@ During the lab, the only AI tool allowed is [cs50.ai/chat](https://cs50.ai/chat)
 
 ## At home
 
-- Finish extracting the class, so it holds all the rules you listed in your test list.
-- Write your behaviour table and your own tests (step 7).
-- Do the break-the-code experiments (step 8).
+- Finish the class, so it holds all the rules from your test list, and the game draws from its getters.
+- Grow your behaviour table to **8+ rows**, and your tests to **6+ in total** (step 7b).
 - Push the `week2` tag.
 
 ---
@@ -46,11 +57,10 @@ Move the game's rules into their own class, in their own header file (e.g. `16_S
 
 **Keep it focused.** One class with **3–4 public methods that contain real rules** is enough. For Tetris that could be the board, movement and line clearing, not the whole game. It must contain at least one rule that changes state based on a condition (a collision, a line clear, a reveal, a crash).
 
-The quickest route is `howto_split.md` steps 6–8:
+You start the lab with the rules already gathered into `update()` and a state `struct` in your game file (week 1). Now follow `howto_split.md` steps 7–8:
 
-1. Gather the rules into one `update()` function (or a few functions) and one state `struct`, **still in the game file**. Play the game: it must still work.
-2. Move them into your game's header, which is already provided with an empty class inside your game's namespace (e.g. `16_SFML_Games/TetrisBoard.h`). State becomes private members, functions become public methods, and the game draws from **getters**. Add `#include "TetrisBoard.h"` (or your game's header) to your game's `.cpp` file.
-3. Build the `Tests` target. Your game's test file (e.g. `Tests/tetris_test.cpp`) already includes the header, so if your class pulls in SFML, it won't compile. Replace the placeholder `name()` test with real tests once you have some.
+1. Move them into your game's header, which is already provided with an empty class inside your game's namespace (e.g. `16_SFML_Games/TetrisBoard.h`). State becomes private members, functions become public methods, and the game draws from **getters**. Add `#include "TetrisBoard.h"` (or your game's header) to your game's `.cpp` file.
+2. Build the `Tests` target. Your game's test file (e.g. `Tests/tetris_test.cpp`) already includes the header, so if your class pulls in SFML, it won't compile. Replace the placeholder `name()` test with real tests once you have some.
 
 Commit each step separately, with `refactor(extract-class):`, and push.
 
@@ -107,15 +117,15 @@ Good tests:
 - **Check one behaviour each.** Several `EXPECT`s are fine if they all check the same behaviour.
 - **Are independent.** Each test builds its own objects. No test relies on another having run first.
 - **Don't need the game window**, and run in milliseconds.
-- **Use `EXPECT_FLOAT_EQ`** (or `EXPECT_NEAR`) for floats.
+- **Use `EXPECT_EQ`, `EXPECT_TRUE` and `EXPECT_FALSE`.** Your game keeps its state in whole numbers and `bool`s, so you can compare exactly.
 
 You may need small helper methods so a test can set up a situation or read a result, e.g. `setCell(r, c, value)` or `cellAt(r, c)`. That's normal. Getting the class into a known state is a big part of testing.
 
 ### 7a. The test task (in the lab)
 
-Write the tests for the behaviours you were given. Commit them with `test: <task>` and push before you leave.
+Write the 3 tests from the task: normal case, edge case, and a case where the rule doesn't apply. Commit them with `test: <rule>` and push before you leave.
 
-If a given behaviour turns out not to be what your game does, write a test for what it **does** do, name it honestly, and explain in the **Test task** section of `NOTES.md`.
+If the rule turns out not to do what you expected, write a test for what it **does** do, name it honestly, and explain in the **Test task** section of `NOTES.md`.
 
 ### 7b. Your own tests (at home)
 
@@ -125,9 +135,9 @@ Turn your **Test list** into a **Behaviour table** in `NOTES.md`, with **at leas
 |--------------------|--------|-----------------|
 | An empty board, with a piece touching the left wall | Move the piece left | The piece stays where it is |
 | A cell with a mine on all 8 sides | Count its neighbouring mines | The count is 8 |
-| A ball moving right, at the right edge | Update the ball | Its horizontal direction reverses |
+| A bike moving right, with a trail in the next cell | Step the game once | The game is over |
 
-- **Be specific.** "The ball bounces" is too vague to test. "The ball's `dx` changes from `+6` to `-6`" can be tested.
+- **Be specific.** "The piece stops" is too vague to test. "The piece's cells are copied into the board, and a new piece starts at the top" can be tested.
 - **One action per row.** If you need the word "and" in the action column, split it into two rows.
 - **The expected result must be something you can check in code**: a return value, or a value you can read back from a getter.
 
@@ -142,16 +152,6 @@ Then write tests from the table until you have **at least 6 tests in total** (th
 ### Check the tick on GitHub
 
 Every time you push, GitHub builds your code and runs your tests. You can see a ✔ or ✘ next to your latest commit, or in the **Actions** tab. A ✘ because a test found a real bug is fine, as long as it's explained in `NOTES.md`. A ✘ because the tests **don't compile** must be fixed. The usual cause is SFML leaking into your header.
-
-## Step 8 – Check your tests can fail (at home)
-
-A test that can never fail is worthless. For **three** of your tests:
-
-1. Deliberately break the code it tests. For example, change `<` to `<=`, remove a line, or return the wrong value.
-2. Run the tests and check that **that** test fails.
-3. Undo the change. Don't commit the broken code.
-
-Record each experiment in a **Break-the-code** section of `NOTES.md`: what you broke, and which test caught it. If no test failed, you've found a missing test, so write it.
 
 ---
 
@@ -170,8 +170,8 @@ git push origin week2
 | Part | Marks | What a top mark looks like |
 |------|------:|----------------------------|
 | Extracted class | 15 | Meets every item of the definition of done. The game draws from its getters. The class owns real rules. |
-| Test task (in lab) | 15 | The given behaviours are tested, with clear names and Arrange/Act/Assert, and the tests pass (or an honest failure is explained) |
-| Your own tests | 15 | Behaviour table with 8+ rows. 6+ tests in total that follow it, with 2+ edge cases. 3 break-the-code experiments, each caught by a test. |
+| Test task (in lab) | 15 | Rows written first. 3 tests (normal, edge, doesn't apply) for one real rule, with clear names and Arrange/Act/Assert. They pass, or an honest failure is explained. |
+| Your own tests | 15 | Behaviour table with 8+ rows. 6+ tests in total that follow it, with 2+ edge cases, clear names and Arrange/Act/Assert. |
 
 ### Ready for week 3?
 
@@ -179,7 +179,6 @@ git push origin week2
 - [ ] The test task pushed, and the `session2` tag pushed, at the end of session 2
 - [ ] Behaviour table with at least 8 rows
 - [ ] At least 6 tests in total, including at least 2 edge cases, all passing or explained
-- [ ] 3 break-the-code experiments recorded
 - [ ] `week2` tag pushed
 
 In week 3 you'll be given a feature to add to your class, test first, in the lab. You'll do it fastest if your class is clean, its tests pass, and you know how to add a method and a test for it.

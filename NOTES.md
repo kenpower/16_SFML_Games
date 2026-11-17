@@ -93,18 +93,6 @@ _Turn your Test list into at least 8 rows. Be specific and check-able in code. O
 |  |  |  |
 |  |  |  |
 
-## Break-the-code
-
-_Three experiments. Break the code on purpose, run the tests, undo it. Do not commit the broken code. If no test failed, write the missing test._
-
-| What you broke | Which test caught it |
-|----------------|----------------------|
-| Changed `<` to `<=` in the wall check | `PieceCannotMovePastLeftWall` |
-|  |  |
-|  |  |
-
----
-
 # Week 3 (week 3 - fill in later)
 
 ## Feature
