@@ -29,6 +29,7 @@ int arkanoid()
     Sprite sBackground(t2), sBall(t3), sPaddle(t4), sBlock(t1);
 
     // ---- SETUP: block and paddle sizes in pixels, taken from their images ----
+    // HINT: the image sizes are block 42 x 20, paddle 90 x 9, ball 12 x 12. A class without SFML can't ask a texture, so it needs these numbers.
     float blockW = t1.getSize().x, blockH = t1.getSize().y;
     float paddleW = t4.getSize().x, paddleH = t4.getSize().y;
 

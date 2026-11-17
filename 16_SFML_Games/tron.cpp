@@ -8,6 +8,8 @@ using namespace sf;
 // Suggested reading order: struct Bike, then SETUP in tron(), then the loop: INPUT, UPDATE, DRAW.
 // =====
 // ---- GLOBAL STATE: arena size, speed, trail map ----
+// HINT: field is 600 x 480 bools (about 288 KB). If it becomes a class member, store it in a std::vector, not a C array:
+// a big array inside an object created as a local variable (e.g. in a test) can overflow the stack.
 const int W=600;
 const int H=480;
 int speed = 4;
@@ -91,6 +93,7 @@ int tron()
             field[p1.x][p1.y]=1; 
             field[p2.x][p2.y]=1;
     
+            // HINT: the drawing below only needs to know where each bike is after each step.
             CircleShape c(3);
             c.setPosition({float(p1.x),float(p1.y)}); c.setFillColor(p1Color);    t.draw(c);
             c.setPosition({float(p2.x),float(p2.y)}); c.setFillColor(p2Color);    t.draw(c);

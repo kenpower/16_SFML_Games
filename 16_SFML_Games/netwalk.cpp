@@ -34,6 +34,7 @@ GridPos Left(-1,0);
 GridPos DIR[4] = {Up,Right,Down,Left};
 
 // ---- DATA: one pipe tile - which sides it connects to, plus rotation state ----
+// HINT: orientation is part of the puzzle; angle is only the animated picture of it (see the DRAW section).
 struct pipe
 {
   std::vector<GridPos> dirs;
