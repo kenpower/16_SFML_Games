@@ -92,8 +92,8 @@ constexpr int tileSize = 18;
 
 ### Teaching material
 
-- `assignment.md` - the student project brief (3-week solo project: overview, marking, rules, tags), with `assignment_week1.md`, `assignment_week2.md` and `assignment_week3.md` (weeks 2 and 3 are marked DRAFT)
-- The seams lecture notes and the Catcher worked example (`howto_split.md`, seam-map `before/`, one program per step in `steps/`, finished `after/`) live in https://github.com/kenpower/split-at-the-seam. Instructor notes and in-lab task drafts live in the private https://github.com/kenpower/sfml-refactor-lab-instructor - never add them to this public repo
+- The student project briefs (`assignment*.md`, `NOTES.md` template, `GIT_CHEATSHEET.md`) live only in https://github.com/kenpower/SFML_Game_Refactor_Test_Worksheet, a cut-down copy of this repo with Tetris, Minesweeper, Tron, Netwalk and Xonix. Don't add copies here; changes to the game code or scaffolding below should be mirrored there
+- The seams lecture notes and the Catcher worked example (`howto_split.md`, seam-map `before/`, one program per step in `steps/`, finished `after/`) live in https://github.com/kenpower/split-at-the-seam. Instructor notes and in-lab task drafts live in the private https://github.com/kenpower/SFML_Game_Refactor_Test_Worksheet-instructor - never add them to this public repo
 - `Tests/<game>_test.cpp` - one test file per assignment game (tetris, minesweeper, tron, netwalk - the four integer-state games; Arkanoid and Racing were dropped because students haven't done float tests), each testing the placeholder `name()` of an empty class stub (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`, namespace `<game>_game`); `16_SFML_Games/PlainTypes.h` - SFML-free `plain::Point`/`Vec2f`/`Rect` for students' classes. Students put their class in namespace `<game>_game` (not `<game>`, which clashes with the game's entry function)
 - Game files carry `// ===== GUIDE`, `// ---- ... ----` signpost and `// HINT:` comments to help students navigate. Keep them accurate when changing code, and do not add comments that point out the games' bugs - students are meant to discover them.
 

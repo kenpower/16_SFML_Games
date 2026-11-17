@@ -8,14 +8,9 @@ The games work, but most of them are written as one long loop that mixes the gam
 
 | Document | What it is |
 |----------|------------|
-| [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md) | **The project brief**: a three-week solo project to refactor, test and extend one game. Overview, marking, rules and tags. |
-| [assignment_week1.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week1.md) | Week 1: understand your game and refactor it towards a seam |
-| [assignment_week2.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week2.md) | Week 2 *(draft)*: split the game at the seam and test it |
-| [assignment_week3.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week3.md) | Week 3 *(draft)*: add a feature, test first |
+| [SFML_Game_Refactor_Test_Worksheet](https://github.com/kenpower/SFML_Game_Refactor_Test_Worksheet) | **The three-week student project** (briefs, `NOTES.md` template, git cheat sheet). It uses a cut-down copy of this repository with just Tetris, Minesweeper, Tron, Netwalk and Xonix. |
 | [seams_lecture_notes.md](https://github.com/kenpower/split-at-the-seam/blob/main/seams_lecture_notes.md) | Lecture notes: what a seam is, why you split an app there, how to find it, and why `rand()`, the clock and the keyboard stay outside |
 | [howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md) | Step-by-step worked example: splitting **Catcher**, a small game made for this purpose, into an SFML-free class and testing it |
-| [NOTES.md](https://github.com/kenpower/16_SFML_Games/blob/main/NOTES.md) | The template students fill in during the project, with a section for every note the briefs ask for |
-| [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md) | One-page git card: commit, push, tags, undo, in Visual Studio and on the command line |
 | [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md) | Full setup, build, run and test instructions for Windows, Linux and macOS |
 
 ## The seams lecture notes and the Catcher example
