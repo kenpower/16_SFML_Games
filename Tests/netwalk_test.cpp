@@ -1,23 +1,25 @@
 // Unit tests for Netwalk.
 //
-// This file is already part of the Tests program: every .cpp in Tests/ is built automatically
-// (re-run CMake after you add a new one). Only work in the file for YOUR game.
+// Every .cpp in Tests/ is built into the Tests program automatically.
+// Only work in the file for YOUR game.
 //
 // How to use it (week 2):
-//   1. Put your extracted class in its own header in 16_SFML_Games/, inside namespace netwalk_game,
-//      e.g. 16_SFML_Games/PipeGrid.h  ->  namespace netwalk_game { class PipeGrid { ... }; }
-//   2. Include it below. The Tests program does not link SFML, so if your header pulls in SFML,
-//      this file will not compile. That is deliberate: it proves your class is free of SFML.
-//   3. Replace the placeholder test with real ones, named after behaviours:
+//   1. Your extracted class goes in 16_SFML_Games/PipeGrid.h, which is already included below.
+//      The Tests program does not link SFML, so if that header pulls in SFML, this file
+//      will not compile. That is deliberate: it proves your class is free of SFML.
+//   2. Replace the placeholder test with real ones, named after behaviours, e.g.
 //        TEST(PipeGrid, RotatingAPipeTurnsItsConnectionsClockwise) { ... }
-//      Use your class name (not "Netwalk") as the first part of TEST(), so names don't clash with other files.
+//      Use Arrange / Act / Assert (see assignment_week2.md).
 
 #include <gtest/gtest.h>
-// #include "PipeGrid.h"
-// using namespace netwalk_game;
+#include "PipeGrid.h"
 
-// Placeholder: shows this file builds and runs. Delete it once you have a real test.
-TEST(Netwalk, TestFileBuildsAndRuns)
+using namespace netwalk_game;
+
+// Placeholder: shows the class compiles in the Tests program. Delete it once you have a real test.
+TEST(PipeGrid, NameIsNetwalk)
 {
-    EXPECT_EQ(4, 2 + 2);
+    PipeGrid game;
+
+    EXPECT_EQ("Netwalk", game.name());
 }

@@ -94,7 +94,7 @@ constexpr int tileSize = 18;
 
 - `assignment.md` - the student project brief (3-week solo project: overview, marking, rules, tags), with `assignment_week1.md`, `assignment_week2.md` and `assignment_week3.md` (weeks 2 and 3 are marked DRAFT)
 - `seams_lecture_notes.md` - lecture notes on seams; `howto_split.md` + `howto_split/` - the Catcher worked example (`before/` has seam-map comments, `steps/` one program per step, `after/` the finished split)
-- `Tests/<game>_test.cpp` - one placeholder test file per assignment game (tetris, minesweeper, arkanoid, racing, tron, netwalk); `16_SFML_Games/PlainTypes.h` - SFML-free `plain::Point`/`Vec2f`/`Rect` for students' classes. Students put their class in namespace `<game>_game` (not `<game>`, which clashes with the game's entry function)
+- `Tests/<game>_test.cpp` - one test file per assignment game (tetris, minesweeper, tron, netwalk - the four integer-state games; Arkanoid and Racing were dropped because students haven't done float tests), each testing the placeholder `name()` of an empty class stub (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`, namespace `<game>_game`); `16_SFML_Games/PlainTypes.h` - SFML-free `plain::Point`/`Vec2f`/`Rect` for students' classes. Students put their class in namespace `<game>_game` (not `<game>`, which clashes with the game's entry function)
 - `16_SFML_Games/REFACTORING_GUIDE.md` - games by difficulty and common refactorings
 - Game files carry `// ===== GUIDE`, `// ---- ... ----` signpost and `// HINT:` comments to help students navigate. Keep them accurate when changing code, and do not add comments that point out the games' bugs - students are meant to discover them.
 

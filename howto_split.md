@@ -243,6 +243,8 @@ if (FloatRect({fruitX, fruitY}, {20, 20}).findIntersection(FloatRect({basketX, 4
 
 See the result: [steps/step1_state.cpp](howto_split/steps/step1_state.cpp)
 
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `FirstFruitStartsAtTopAtGivenX`: the fruit's position is now a number a test can read, not something inside a shape.
+
 ### Step 2 – Name the magic numbers
 
 Now that the numbers are visible, give them names. It makes the next steps much easier to read.
@@ -261,6 +263,8 @@ Check each one: `320` was really `400 - 80`, the window width minus the basket w
 
 See the result: [steps/step2_constants.cpp](howto_split/steps/step2_constants.cpp)
 
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `BasketStopsAtRightEdge`: the test expects `400 - 80`, which is now readable as `WIDTH - BASKET_W`.
+
 ### Step 3 – Turn input into plain data
 
 Read the keyboard **once**, at the top of the frame, into `bool`s. The rules then use the `bool`s and never touch `Keyboard`:
@@ -278,6 +282,8 @@ A test can't press a key, but it *can* set `left = true`.
 `commit: refactor: read keys into plain bools before the update`
 
 See the result: [steps/step3_input.cpp](howto_split/steps/step3_input.cpp)
+
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `BasketMovesLeftWhileLeftIsHeld`: a test can't press a key, but it can pass `LEFT`.
 
 ### Step 4 – Pass in time and randomness
 
@@ -304,6 +310,8 @@ In a test you pass a number you chose, like `50`, and then you can check that th
 
 See the result: [steps/step4_inject.cpp](howto_split/steps/step4_inject.cpp)
 
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `CaughtFruitIsReplacedAtTopAtNextX` (the test chooses the next x) and `FruitFallsAt100PixelsPerSecondAtStart` (the test chooses `dt`).
+
 ### Step 5 – Replace SFML types in the rules with your own
 
 The rules still use `sf::FloatRect` for collisions. Write a tiny replacement:
@@ -327,6 +335,8 @@ Do the same for `sf::Vector2i`, `sf::Vector2f`, `sf::Color` and so on, if the ru
 `commit: refactor: use own Rect for collisions instead of sf::FloatRect`
 
 See the result: [steps/step5_rect.cpp](howto_split/steps/step5_rect.cpp)
+
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `Overlaps.RectanglesOnlyTouchingDoNotOverlap`: the collision rule can now be checked on its own, without SFML.
 
 ### Step 6 – Gather the rules into one function
 
@@ -367,6 +377,8 @@ If the loop now reads as **input → update → draw**, the seam is found. Build
 `commit: refactor: extract update() and CatcherState from the game loop`
 
 See the result: [steps/step6_update.cpp](howto_split/steps/step6_update.cpp)
+
+The test in [CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) that this step makes possible: `FruitAboveBasketIsCaught`: a test can now run the game one frame at a time by calling `update()`.
 
 ### Step 7 – Move it into its own header and make it a class
 

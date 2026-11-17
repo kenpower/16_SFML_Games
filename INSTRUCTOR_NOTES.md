@@ -11,12 +11,12 @@ How hard it is to split each game into an SFML-free, testable class, for student
 | Fifteen Puzzle | 2 | Not allowed (too simple) |
 | Snake | 3 | Not allowed (too simple) |
 | Doodle Jump | 3 | Not allowed (too simple) |
-| Racing | 4 | Recommended |
-| Arkanoid | 4 | Recommended |
-| Tron | 4 | Recommended |
-| Minesweeper | 4 | Recommended |
-| Netwalk | 4–5 | Recommended |
-| Tetris | 5 | Recommended |
+| Racing | 4 | Not used (float state; students haven't done float tests) |
+| Arkanoid | 4 | Not used (float state; students haven't done float tests) |
+| Tron | 4 | **Offered** |
+| Minesweeper | 4 | **Offered** |
+| Netwalk | 4–5 | **Offered** |
+| Tetris | 5 | **Offered** |
 | Mahjong | 5 | Allowed |
 | Outrun | 6 | Allowed (stretch) |
 | Bejeweled | 7 | Allowed (stretch) |

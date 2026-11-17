@@ -56,7 +56,7 @@ You push a tag at two points each week:
 | `session1`, `session2`, `session3` | at the **end of each lab session**, before you leave | what you did in the lab. The in-lab tasks are marked from `session2` and `session3`. |
 | `week1`, `week2` | **before the next session** starts | what you did at home |
 
-To tag and push (replace `session1` with the tag you need):
+To tag and push (replace `session1` with the tag you need). [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md) has these commands, how to check a tag reached GitHub, and how to fix a wrong tag:
 
 ```sh
 git push
@@ -79,8 +79,8 @@ Work you can't explain may not be marked. You can't prepare a script for this. U
 ## Rules
 
 - **Push after every commit.** GitHub records when each push arrives. A history of small, regular pushes is your evidence that the work is yours.
-- Only change your chosen game's `.cpp` file and its test file, `Tests/<game>_test.cpp` (one is provided for each of the six games). You may **add** new files for extracted classes. Don't delete any other files.
-- Put your extracted class in a **namespace named after your game**: `tetris_game`, `minesweeper_game`, `arkanoid_game`, `racing_game`, `tron_game` or `netwalk_game`. All the games are built into one program, so without a namespace a class called `Grid` or `Car` can silently clash with another game's class of the same name.
+- Only change your chosen game's `.cpp` file its class header (e.g. `16_SFML_Games/TetrisBoard.h`) and its test file (e.g. `Tests/tetris_test.cpp`). A header and a test file are provided for each of the four games. You may **add** new files if you need them. Don't delete any other files.
+- Put your extracted class in a **namespace named after your game**: `tetris_game`, `minesweeper_game`, `tron_game` or `netwalk_game`. The provided header already has it. All the games are built into one program, so without a namespace a class called `Grid` can silently clash with another game's class of the same name.
 - You don't need to edit `CMakeLists.txt`. A header-only class (like `Grid.h`) in the `16_SFML_Games/` folder is already found by both the game and the `Tests` project, and any `.cpp` in `Tests/` is added to the test program. If you add a `.cpp` file for your class, you will need to add it to `CMakeLists.txt`.
 - This is individual work. You can discuss ideas with classmates, but every commit must be your own.
 - **AI tools:** you may use them to _explain_ code or concepts, not to write your changes. Record each use in an **AI use** section of `NOTES.md` (one line each, e.g. "asked what `std::array` is"). Honest declarations are not penalised.

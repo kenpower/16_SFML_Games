@@ -49,8 +49,8 @@ Move the game's rules into their own class, in their own header file (e.g. `16_S
 The quickest route is `howto_split.md` steps 6–8:
 
 1. Gather the rules into one `update()` function (or a few functions) and one state `struct`, **still in the game file**. Play the game: it must still work.
-2. Move them into a header and turn them into a class, inside your game's namespace (e.g. `namespace tetris_game { class TetrisBoard { ... }; }`). State becomes private members, functions become public methods, and the game draws from **getters**.
-3. Open your game's test file, which is already provided (e.g. `Tests/tetris_test.cpp`). Uncomment the `#include` and `using namespace` lines, change them to your class's header, build the `Tests` target, and check that the placeholder test still passes. The comments at the top of the file explain each step.
+2. Move them into your game's header, which is already provided with an empty class inside your game's namespace (e.g. `16_SFML_Games/TetrisBoard.h`). State becomes private members, functions become public methods, and the game draws from **getters**. Add `#include "TetrisBoard.h"` (or your game's header) to your game's `.cpp` file.
+3. Build the `Tests` target. Your game's test file (e.g. `Tests/tetris_test.cpp`) already includes the header, so if your class pulls in SFML, it won't compile. Replace the placeholder `name()` test with real tests once you have some.
 
 Commit each step separately, with `refactor(extract-class):`, and push.
 
@@ -76,8 +76,6 @@ Search your header for `SFML`, `rand`, `time`, `Clock` and `Keyboard`. None of t
 |------|------------------------------|
 | Tetris | The board, collision checking, rotation, line clearing |
 | Minesweeper | Placing mines, counting neighbours, revealing cells |
-| Arkanoid | Ball movement and bouncing, brick collisions |
-| Racing | Car movement, AI steering towards checkpoints, car-to-car collision |
 | Tron | The bikes, the trail map, steering, crash detection |
 | Netwalk | The pipe grid, rotating pipes, finding which cells connect to the server, puzzle generation |
 

@@ -36,7 +36,7 @@ In the lab you may use [cs50.ai/chat](https://cs50.ai/chat) for technical questi
 
 ## Step 0 – Build, run and debug
 
-Follow the [README](README.md#build-and-test-quick-version) to build the project. **If you use Visual Studio, do everything in the IDE**, not the command line. If you get stuck, [BUILDING.md](BUILDING.md) has the full details.
+Follow the [README](README.md#build-and-test-quick-version) to build the project. **If you use Visual Studio, build, run and test in the IDE**, not on the command line. (Tags need the terminal: see [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md).) If you get stuck, [BUILDING.md](BUILDING.md) has the full details.
 
 1. **Open** the repository folder: in Visual Studio use *File → Open → Folder…*; in VS Code use the CMake Tools extension. Choose the **Debug** configuration.
 2. **Build** everything (*Build → Build All* in Visual Studio).
@@ -48,12 +48,20 @@ Follow the [README](README.md#build-and-test-quick-version) to build the project
 
 ## Step 1 – Choose a game
 
-Choose **one** of **Tetris, Minesweeper, Arkanoid, Racing, Tron or Netwalk**. If you want a different game, ask Ken or Ben first. It may be too complex for this project.
+Choose **one** of these four games:
 
-You **cannot** choose:
+| Game | Your class (already provided, empty) | Test file |
+|------|--------------------------------------|-----------|
+| **Tetris** | `16_SFML_Games/TetrisBoard.h` | `Tests/tetris_test.cpp` |
+| **Minesweeper** | `16_SFML_Games/MineField.h` | `Tests/minesweeper_test.cpp` |
+| **Tron** | `16_SFML_Games/TronArena.h` | `Tests/tron_test.cpp` |
+| **Netwalk** | `16_SFML_Games/PipeGrid.h` | `Tests/netwalk_test.cpp` |
 
-- **Xonix**: it is the worked example of refactoring and testing (see `Grid.h`, `Player.h` and `Tests/test.cpp`).
-- **Fifteen Puzzle, Snake or Doodle Jump**: they are too simple. Their logic is already almost separate from SFML, so there is not enough to extract.
+All four keep their game state in whole numbers (grids, cells, directions), so their tests compare `int`s and `bool`s.
+
+The other games aren't part of this project. Xonix is the worked example (see `Grid.h`, `Player.h` and `Tests/test.cpp`). Some games are too simple to need splitting, and others are too complex for three weeks or need floating-point tests.
+
+Read the **Refactorings to look for** list at the top of your game's `.cpp` file. It tells you where to start.
 
 Write your choice at the top of `NOTES.md`.
 
@@ -69,7 +77,7 @@ Understanding an unfamiliar codebase is hard, and you are not expected to unders
 
 ### Deliverable: `NOTES.md`
 
-Create `NOTES.md` in the root of your repository with:
+Fill in `NOTES.md`, in the root of your repository. A template is provided, with a heading and a short prompt for every section you need over the three weeks. This week, fill in:
 
 1. The 3–4 big jobs of the game loop.
 2. A table of the important state variables and what they mean.
@@ -142,7 +150,7 @@ So `refactor(state-out-of-sfml):` means "a refactoring of type state-out-of-sfml
 These rules apply to every refactoring in this project:
 
 - **One refactoring per commit.** Start each message with `refactor(<type>):`, using a type from the table below, e.g. `refactor(rename): rename field to board`.
-- **After every refactoring**, build, run your manual test script, commit, and **push**.
+- **After every refactoring**, build, run your manual test script, commit, and **push**. [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md) shows how, in Visual Studio and on the command line.
 - Keep each commit small enough to review in a minute or two. "Rename `a` to `currentPiece`" is one commit. "Rename everything and extract three functions" is too much.
 - If a step breaks the game and you can't see why within a few minutes, undo it (`git restore .`) and take a smaller step.
 

@@ -14,6 +14,8 @@ The games work, but most of them are written as one long loop that mixes the gam
 | [assignment_week3.md](assignment_week3.md) | Week 3 *(draft)*: add a feature, test first |
 | [seams_lecture_notes.md](seams_lecture_notes.md) | Lecture notes: what a seam is, why you split an app there, how to find it, and why `rand()`, the clock and the keyboard stay outside |
 | [howto_split.md](howto_split.md) | Step-by-step worked example: splitting **Catcher**, a small game made for this purpose, into an SFML-free class and testing it |
+| [NOTES.md](NOTES.md) | The template students fill in during the project, with a section for every note the briefs ask for |
+| [GIT_CHEATSHEET.md](GIT_CHEATSHEET.md) | One-page git card: commit, push, tags, undo, in Visual Studio and on the command line |
 | [BUILDING.md](BUILDING.md) | Full setup, build, run and test instructions for Windows, Linux and macOS |
 | [16_SFML_Games/REFACTORING_GUIDE.md](16_SFML_Games/REFACTORING_GUIDE.md) | The games by difficulty, and common refactorings with examples |
 
@@ -65,7 +67,7 @@ In VS Code, use the CMake Tools extension: pick a preset, then use its Build, De
 |------|--------------|
 | `16_SFML_Games/` | One `.cpp` file per game, the launcher (`16_SFML_Games.cpp`), and SFML-free classes that tests can use: `Grid.h` and `Player.h` (the Xonix worked example) and `PlainTypes.h` (`Point`, `Vec2f`, `Rect` for your own classes) |
 | `16_SFML_Games/images/` | Game assets, copied next to the executable when you build |
-| `Tests/` | Unit tests. `test.cpp` tests the Xonix classes. There is one file for each assignment game (`tetris_test.cpp`, `minesweeper_test.cpp`, `arkanoid_test.cpp`, `racing_test.cpp`, `tron_test.cpp`, `netwalk_test.cpp`), each with one placeholder test. The tests don't link SFML. |
+| `Tests/` | Unit tests. `test.cpp` tests the Xonix classes. There is one file for each of the four assignment games (`tetris_test.cpp`, `minesweeper_test.cpp`, `tron_test.cpp`, `netwalk_test.cpp`). Each one tests the placeholder `name()` of the game's empty class (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`). The tests don't link SFML. |
 | `howto_split/` | The Catcher example |
 
 ### Reading the game code
