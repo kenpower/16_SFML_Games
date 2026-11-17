@@ -12,15 +12,16 @@ The example game is **Catcher**: move a basket left and right to catch falling f
 | [howto_split/after/CatcherGame.h](howto_split/after/CatcherGame.h) | **After**: the rules in a class with no SFML. Testable. |
 | [howto_split/after/catcher.cpp](howto_split/after/catcher.cpp) | **After**: the game file. It only reads input, calls the class, and draws. |
 | [howto_split/after/CatcherGame_test.cpp](howto_split/after/CatcherGame_test.cpp) | **After**: unit tests for the class. No window opens. |
+| [howto_split/steps/](howto_split/steps/) | **Steps 1-6**: one complete, compilable program per step, so you can diff consecutive steps, e.g. `git diff --no-index howto_split/steps/step2_constants.cpp howto_split/steps/step3_input.cpp`. Step 7 is the `after/` folder. |
 
 Read the two `catcher.cpp` files side by side before you go on. They play exactly the same.
 
 ### Playing Catcher
 
-Each version is its own CMake target, built by the same project as the 16 games: `catcher_before`, `catcher_after`, and `CatcherTests` for the unit tests. Configure the project as the [README](README.md) describes, then:
+Each version is its own CMake target, built by the same project as the 16 games: `catcher_before`, `catcher_step1` to `catcher_step6` (one per step, in `howto_split/steps/`), `catcher_after`, and `CatcherTests` for the unit tests. Configure the project as the [README](README.md) describes, then:
 
 ```sh
-cmake --build build --config Release --target catcher_before catcher_after CatcherTests
+cmake --build build --config Release --target catcher_before catcher_step1 catcher_step2 catcher_step3 catcher_step4 catcher_step5 catcher_step6 catcher_after CatcherTests
 ```
 
 The executables go in `build/bin/` (or `build/bin/Release/` with Visual Studio). Catcher needs no image files, so you can run it from any folder:
@@ -34,7 +35,7 @@ In Visual Studio or VS Code (CMake Tools), pick `catcher_before` or `catcher_aft
 
 **Controls:** Left and Right arrows move the basket. Space restarts after game over. The score and lives are shown in the window title.
 
-The tests run with the rest of the suite (`ctest --test-dir build -C Release --output-on-failure`). To run only the Catcher tests, add `-R "^Catcher\."`.
+The tests run with the rest of the suite. In Visual Studio, use *Test → Test Explorer → Run All Tests*; the Catcher tests are listed under `CatcherTests`. On the command line: `ctest --test-dir build -C Release --output-on-failure`, and add `-R "^Catcher\."` to run only the Catcher tests.
 
 ---
 
@@ -240,6 +241,8 @@ if (FloatRect({fruitX, fruitY}, {20, 20}).findIntersection(FloatRect({basketX, 4
 
 `commit: refactor: keep basket and fruit positions in plain variables`
 
+See the result: [steps/step1_state.cpp](howto_split/steps/step1_state.cpp)
+
 ### Step 2 – Name the magic numbers
 
 Now that the numbers are visible, give them names. It makes the next steps much easier to read.
@@ -256,6 +259,8 @@ Check each one: `320` was really `400 - 80`, the window width minus the basket w
 
 `commit: refactor: replace magic numbers with named constants`
 
+See the result: [steps/step2_constants.cpp](howto_split/steps/step2_constants.cpp)
+
 ### Step 3 – Turn input into plain data
 
 Read the keyboard **once**, at the top of the frame, into `bool`s. The rules then use the `bool`s and never touch `Keyboard`:
@@ -271,6 +276,8 @@ if (right) basketX += BASKET_SPEED * dt;
 A test can't press a key, but it *can* set `left = true`.
 
 `commit: refactor: read keys into plain bools before the update`
+
+See the result: [steps/step3_input.cpp](howto_split/steps/step3_input.cpp)
 
 ### Step 4 – Pass in time and randomness
 
@@ -295,6 +302,8 @@ In a test you pass a number you chose, like `50`, and then you can check that th
 
 `commit: refactor: pass the random fruit position into the rules`
 
+See the result: [steps/step4_inject.cpp](howto_split/steps/step4_inject.cpp)
+
 ### Step 5 – Replace SFML types in the rules with your own
 
 The rules still use `sf::FloatRect` for collisions. Write a tiny replacement:
@@ -316,6 +325,8 @@ Do the same for `sf::Vector2i`, `sf::Vector2f`, `sf::Color` and so on, if the ru
 **Check the edges:** `findIntersection` says rectangles that only *touch* don't overlap. Using `<` (not `<=`) keeps that the same.
 
 `commit: refactor: use own Rect for collisions instead of sf::FloatRect`
+
+See the result: [steps/step5_rect.cpp](howto_split/steps/step5_rect.cpp)
 
 ### Step 6 – Gather the rules into one function
 
@@ -354,6 +365,8 @@ while (window.isOpen())
 If the loop now reads as **input → update → draw**, the seam is found. Build, play, commit.
 
 `commit: refactor: extract update() and CatcherState from the game loop`
+
+See the result: [steps/step6_update.cpp](howto_split/steps/step6_update.cpp)
 
 ### Step 7 – Move it into its own header and make it a class
 
