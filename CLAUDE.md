@@ -13,9 +13,15 @@ This is a collection of 16 classic games implemented in C++ using SFML (Simple a
 - **C++ Standard**: C++17
 - **SFML Version**: 3 - an installed SFML 3 is used if found (also searches `SFML_SDK` and `C:\SFML-3*`) and a probe build in `cmake/sfml_check/` links against it; otherwise CMake fetches and builds SFML 3.0.2 (static, no audio/network)
 
-See `README.md` for full setup instructions, including Linux packages.
+`README.md` is an index to the docs; see `BUILDING.md` for full setup instructions, including Linux packages.
 
 ### Building
+
+```sh
+cmake --workflow --preset default    # configure + build + test (Release, build/); "debug" preset uses build-debug/
+```
+
+or without presets (`CMakePresets.json` needs CMake 3.25+):
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -31,8 +37,11 @@ On Windows with the Ninja build in `build/`, run CMake inside the MSVC developer
 GoogleTest is fetched by CMake. Disable the tests with `-DSFML_GAMES_BUILD_TESTS=OFF`.
 
 ```sh
-ctest --test-dir build -C Release --output-on-failure
+ctest --preset default
+# or: ctest --test-dir build -C Release --output-on-failure
 ```
+
+There are two test executables (`Tests`, `CatcherTests`); build both before running ctest or the unbuilt one is reported as `CatcherTests_NOT_BUILT`.
 
 `Tests/test.cpp` includes headers from `16_SFML_Games/` directly (the test target has that folder on its include path). Classes under test must not include SFML.
 
@@ -83,7 +92,9 @@ constexpr int tileSize = 18;
 
 ### Teaching material
 
-- `assignment.md` - the student lab brief (read, refactor, extract an SFML-free testable class)
+- `assignment.md` - the student project brief (3-week solo project: overview, marking, rules, tags), with `assignment_week1.md`, `assignment_week2.md` and `assignment_week3.md` (weeks 2 and 3 are marked DRAFT)
+- `seams_lecture_notes.md` - lecture notes on seams; `howto_split.md` + `howto_split/` - the Catcher worked example (`before/` has seam-map comments, `steps/` one program per step, `after/` the finished split)
+- `Tests/<game>_test.cpp` - one placeholder test file per assignment game (tetris, minesweeper, arkanoid, racing, tron, netwalk); `16_SFML_Games/PlainTypes.h` - SFML-free `plain::Point`/`Vec2f`/`Rect` for students' classes. Students put their class in namespace `<game>_game` (not `<game>`, which clashes with the game's entry function)
 - `16_SFML_Games/REFACTORING_GUIDE.md` - games by difficulty and common refactorings
 - Game files carry `// ===== GUIDE`, `// ---- ... ----` signpost and `// HINT:` comments to help students navigate. Keep them accurate when changing code, and do not add comments that point out the games' bugs - students are meant to discover them.
 

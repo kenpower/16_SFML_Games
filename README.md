@@ -1,99 +1,85 @@
 # 16 SFML Games
 
-A launcher for sixteen small games written with [SFML 3](https://www.sfml-dev.org/): Tetris, Doodle Jump, Arkanoid, Snake, Minesweeper, Fifteen Puzzle, Racing, Outrun, Xonix, Bejeweled, Netwalk, Mahjong Solitaire, Tron, Chess, Asteroids (Volleyball is a placeholder that needs Box2D and is not built).
+Sixteen small classic games written in C++17 with [SFML 3](https://www.sfml-dev.org/), behind one text-menu launcher: Tetris, Doodle Jump, Arkanoid, Snake, Minesweeper, Fifteen Puzzle, Racing, Outrun, Xonix, Bejeweled, Netwalk, Mahjong Solitaire, Tron, Chess and Asteroids. (Volleyball is a placeholder that needs Box2D and is not built.)
 
-The project uses CMake and builds on Windows (MSVC), Linux (GCC/Clang) and macOS.
+The games work, but most of them are written as one long loop that mixes the game's rules with graphics, keyboard, time and random numbers. That makes them good material for learning to **read, refactor and test unfamiliar code**, which is what this repository is used for.
 
-## Requirements
+## Start here
 
-- CMake 3.21 or newer
-- A C++17 compiler (MSVC 2019+, GCC 9+, Clang 10+, Apple Clang)
-- Git and an internet connection on the first configure. If SFML 3 is not installed, CMake downloads and builds SFML 3.0.2 (static, no audio/network). GoogleTest is downloaded for the tests.
+| Document | What it is |
+|----------|------------|
+| [assignment.md](assignment.md) | **The project brief**: a three-week solo project to refactor, test and extend one game. Overview, marking, rules and tags. |
+| [assignment_week1.md](assignment_week1.md) | Week 1: understand your game and refactor it towards a seam |
+| [assignment_week2.md](assignment_week2.md) | Week 2 *(draft)*: split the game at the seam and test it |
+| [assignment_week3.md](assignment_week3.md) | Week 3 *(draft)*: add a feature, test first |
+| [seams_lecture_notes.md](seams_lecture_notes.md) | Lecture notes: what a seam is, why you split an app there, how to find it, and why `rand()`, the clock and the keyboard stay outside |
+| [howto_split.md](howto_split.md) | Step-by-step worked example: splitting **Catcher**, a small game made for this purpose, into an SFML-free class and testing it |
+| [BUILDING.md](BUILDING.md) | Full setup, build, run and test instructions for Windows, Linux and macOS |
+| [16_SFML_Games/REFACTORING_GUIDE.md](16_SFML_Games/REFACTORING_GUIDE.md) | The games by difficulty, and common refactorings with examples |
 
-### Linux packages
+## The Catcher example
 
-SFML 3 needs the X11/OpenGL development packages when it is built from source:
+Catcher (move a basket, catch falling fruit) is not one of the 16 games. It exists to show the method without giving away an answer:
 
-```sh
-# Debian / Ubuntu
-sudo apt install build-essential cmake git \
-    libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
-    libfreetype-dev libgl1-mesa-dev libegl1-mesa-dev
-```
+| Folder | What's in it |
+|--------|--------------|
+| [howto_split/before/](howto_split/before/) | Everything tangled in one loop. Every line has a **seam map** comment (`// [RULE+RAND+DRAW]`) showing what it depends on. |
+| [howto_split/steps/](howto_split/steps/) | One complete program per refactoring step, so you can compare consecutive steps |
+| [howto_split/after/](howto_split/after/) | The finished split: `CatcherGame.h` (rules, no SFML), a thin `catcher.cpp`, and unit tests |
 
-Fedora: `sudo dnf install gcc-c++ cmake git libX11-devel libXrandr-devel libXcursor-devel libXi-devel systemd-devel freetype-devel mesa-libGL-devel mesa-libEGL-devel`
+Build targets: `catcher_before`, `catcher_step1` … `catcher_step6`, `catcher_after`, and `CatcherTests`.
 
-### macOS
+## Build and test (quick version)
 
-Install Xcode command line tools and CMake (`xcode-select --install`, `brew install cmake`). No other packages are needed.
+SFML 3 and GoogleTest are downloaded on the first configure if they aren't installed. See [BUILDING.md](BUILDING.md) for details, including Linux packages.
 
-## Configure and build
+### Visual Studio (Windows)
 
-The same commands work on every platform:
+Use the IDE, not the command line. You need Visual Studio 2022 with the **Desktop development with C++** workload, which includes CMake and the GoogleTest test adapter.
 
-```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-```
+1. **Open:** *File → Open → Folder…* and pick this repository's folder. Visual Studio reads `CMakePresets.json` and configures the project. Wait for "CMake generation finished" in the Output window.
+2. **Choose a configuration:** pick **Debug** in the configuration drop-down on the toolbar.
+3. **Build:** *Build → Build All*.
+4. **Run or debug a game:** choose **16_SFML_Games.exe** (or `catcher_before.exe`, …) in the *Select Startup Item* drop-down next to the green ▶ button, then press **F5**. If the game's images don't load, the debugger is running it from the wrong folder (see [BUILDING.md](BUILDING.md#visual-studio)).
+5. **Test:** *Test → Test Explorer*, then **Run All Tests** (▶▶). Every test appears in a tree. Double-click a failing test to go to it. To debug a test, right-click it and choose **Debug**.
 
-On Windows with a Visual Studio generator (multi-config) pass `--config Release` (or `Debug`) to the build step; `CMAKE_BUILD_TYPE` is ignored there. Use `-G Ninja` for a single-config build from a "x64 Native Tools" prompt.
+### Command line (Linux, macOS, or Windows without Visual Studio)
 
-The executable is placed in `build/bin/` (`build/bin/Release/` with multi-config generators). The `images/` folder (and `stockfish.exe` on Windows) is copied next to it after each build.
-
-### Using an installed SFML
-
-By default CMake looks for an installed SFML 3 first and only downloads one if none is found. It looks in:
-
-- `-DSFML_DIR=<sfml>/lib/cmake/SFML`, `-DSFML_ROOT=<sfml>` or the `SFML_ROOT` environment variable
-- `-DCMAKE_PREFIX_PATH=<sfml>` or the `CMAKE_PREFIX_PATH` environment variable
-- `-DSFML_SDK=<folder>` or the `SFML_SDK` environment variable, pointing at an SFML SDK folder or at a folder containing `SFML-3*` SDKs
-- on Windows, `C:\SFML-3*` (also the nested `C:\SFML-3.0.2\SFML-3.0.2` that "Extract All" creates), `C:\SFML\SFML-3*` and `C:\SFML` (newest version first)
-- CMake's standard locations (`PATH`, `Program Files`, `/usr`, `/usr/local`, Homebrew)
+You need CMake 3.21+, a C++17 compiler and Git.
 
 ```sh
-cmake -S . -B build -DSFML_SDK=C:/SFML-3.0.2
+cmake --workflow --preset default    # configure, build and run the tests (Release, in build/)
+cmake --workflow --preset debug      # the same for Debug, in build-debug/
+ctest --test-dir build -C Release --output-on-failure    # run the tests again
 ```
 
-Before using an installed SFML, CMake builds a tiny test program against it. If that fails (for example, a 32-bit SDK or one built for a different compiler), the install is ignored and SFML is downloaded instead. The configure output says which one was used.
+In VS Code, use the CMake Tools extension: pick a preset, then use its Build, Debug and Test buttons in the status bar.
 
-To always download and build SFML instead, use `-DSFML_GAMES_FETCH_SFML=ON`. For an installed static SFML, also pass `-DSFML_STATIC_LIBRARIES=ON`. On Windows with an installed shared SFML, the DLLs are copied next to the executable automatically.
+### Running the launcher
 
-## Run
+**Run the launcher from its own folder** (`build/bin`, or `build-debug/bin` for Debug). The games load images with relative paths. Type the capital letter in a game's name (e.g. `T` for Tetris) to start it, and close its window to return to the menu.
 
-The games load their assets with relative paths (`images/...`), so **run the executable from its own folder**:
+## Where things are
 
-```sh
-cd build/bin            # build/bin/Release on Windows with Visual Studio generators
-./16_SFML_Games         # 16_SFML_Games.exe on Windows
-```
+| Path | What's there |
+|------|--------------|
+| `16_SFML_Games/` | One `.cpp` file per game, the launcher (`16_SFML_Games.cpp`), and SFML-free classes that tests can use: `Grid.h` and `Player.h` (the Xonix worked example) and `PlainTypes.h` (`Point`, `Vec2f`, `Rect` for your own classes) |
+| `16_SFML_Games/images/` | Game assets, copied next to the executable when you build |
+| `Tests/` | Unit tests. `test.cpp` tests the Xonix classes. There is one file for each assignment game (`tetris_test.cpp`, `minesweeper_test.cpp`, `arkanoid_test.cpp`, `racing_test.cpp`, `tron_test.cpp`, `netwalk_test.cpp`), each with one placeholder test. The tests don't link SFML. |
+| `howto_split/` | The Catcher example |
 
-A text menu asks for a letter (the uppercase letter in the game name, for example `T` for Tetris); the game then opens in its own window. Close the window to return to the menu.
+### Reading the game code
 
-### Chess and Stockfish
+The game files carry signpost comments to help you find your way around:
 
-Chess talks to a [Stockfish](https://stockfishchess.org/) engine (press Space for the computer's move).
+- `// ===== GUIDE` at the top: where to start reading and what state survives between frames
+- `// ---- SETUP / INPUT / UPDATE / DRAW ----`: the big jobs in each game loop
+- `// HINT:` things worth looking at closely, often with the debugger
 
-- Windows: the bundled `stockfish.exe` is copied next to the executable.
-- Linux / macOS: install Stockfish with your package manager (`sudo apt install stockfish`, `sudo dnf install stockfish`, `sudo pacman -S stockfish`, `brew install stockfish`) **before configuring**. CMake searches `PATH` plus `/usr/games`, `/usr/local/games`, `/opt/homebrew/bin` and `/usr/local/bin`, and compiles the found path into the game. If it is not found, CMake prints a warning with these install commands and the game falls back to looking for `stockfish` on `PATH` at runtime. Override with `-DSTOCKFISH_EXECUTABLE=/path/to/stockfish`. If you install Stockfish after configuring, reconfigure with `cmake --fresh -S . -B build` (or delete `STOCKFISH_EXECUTABLE` from the cache). Without Stockfish, chess still runs but the computer's move (Space) will not work.
+### Chess
 
-## Tests
+Chess plays against the [Stockfish](https://stockfishchess.org/) engine (press Space for the computer's move). On Windows it is bundled. On Linux and macOS, install `stockfish` with your package manager before configuring. See [BUILDING.md](BUILDING.md#chess-and-stockfish).
 
-The unit tests (GoogleTest, for the xonix `Grid` and `Player` classes) are built by default; disable them with `-DSFML_GAMES_BUILD_TESTS=OFF`. Every `.cpp` file in `Tests/` is part of the test program, so a new test file only needs CMake to be re-run.
+### Continuous integration
 
-```sh
-ctest --test-dir build -C Release --output-on-failure
-```
-
-To build only the tests, without downloading or building SFML (this is what CI does):
-
-```sh
-cmake -S . -B build-tests -DSFML_GAMES_BUILD_GAME=OFF
-cmake --build build-tests
-ctest --test-dir build-tests --output-on-failure
-```
-
-The test program does not link SFML, so classes under test must not include it.
-
-## Continuous integration
-
-`.github/workflows/build-and-test.yml` runs on every push: a quick Linux job builds and runs the unit tests without SFML, and a Windows job checks the whole game builds.
+Every push runs two GitHub checks: the unit tests on Linux, without SFML, and a full game build on Windows. You can see the result as a ✔ or ✘ next to each commit.
