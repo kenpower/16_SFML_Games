@@ -12,24 +12,15 @@ The games work, but most of them are written as one long loop that mixes the gam
 | [assignment_week1.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week1.md) | Week 1: understand your game and refactor it towards a seam |
 | [assignment_week2.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week2.md) | Week 2 *(draft)*: split the game at the seam and test it |
 | [assignment_week3.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment_week3.md) | Week 3 *(draft)*: add a feature, test first |
-| [seams_lecture_notes.md](https://github.com/kenpower/16_SFML_Games/blob/main/seams_lecture_notes.md) | Lecture notes: what a seam is, why you split an app there, how to find it, and why `rand()`, the clock and the keyboard stay outside |
-| [howto_split.md](https://github.com/kenpower/16_SFML_Games/blob/main/howto_split.md) | Step-by-step worked example: splitting **Catcher**, a small game made for this purpose, into an SFML-free class and testing it |
+| [seams_lecture_notes.md](https://github.com/kenpower/split-at-the-seam/blob/main/seams_lecture_notes.md) | Lecture notes: what a seam is, why you split an app there, how to find it, and why `rand()`, the clock and the keyboard stay outside |
+| [howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md) | Step-by-step worked example: splitting **Catcher**, a small game made for this purpose, into an SFML-free class and testing it |
 | [NOTES.md](https://github.com/kenpower/16_SFML_Games/blob/main/NOTES.md) | The template students fill in during the project, with a section for every note the briefs ask for |
 | [GIT_CHEATSHEET.md](https://github.com/kenpower/16_SFML_Games/blob/main/GIT_CHEATSHEET.md) | One-page git card: commit, push, tags, undo, in Visual Studio and on the command line |
 | [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md) | Full setup, build, run and test instructions for Windows, Linux and macOS |
-| [16_SFML_Games/REFACTORING_GUIDE.md](https://github.com/kenpower/16_SFML_Games/blob/main/16_SFML_Games/REFACTORING_GUIDE.md) | The games by difficulty, and common refactorings with examples |
 
-## The Catcher example
+## The seams lecture notes and the Catcher example
 
-Catcher (move a basket, catch falling fruit) is not one of the 16 games. It exists to show the method without giving away an answer:
-
-| Folder | What's in it |
-|--------|--------------|
-| [howto_split/before/](howto_split/before/) | Everything tangled in one loop. Every line has a **seam map** comment (`// [RULE+RAND+DRAW]`) showing what it depends on. |
-| [howto_split/steps/](howto_split/steps/) | One complete program per refactoring step, so you can compare consecutive steps |
-| [howto_split/after/](howto_split/after/) | The finished split: `CatcherGame.h` (rules, no SFML), a thin `catcher.cpp`, and unit tests |
-
-Build targets: `catcher_before`, `catcher_step1` … `catcher_step6`, `catcher_after`, and `CatcherTests`.
+The lecture notes on seams and the worked example are in their own repository, **[split-at-the-seam](https://github.com/kenpower/split-at-the-seam)**. Catcher (move a basket, catch falling fruit) is not one of these games. It shows the method without giving away an answer: the tangled version with a seam map in every line, one complete program per refactoring step, and the finished split with unit tests.
 
 ## Build and test (quick version)
 
@@ -42,7 +33,7 @@ Use the IDE, not the command line. You need Visual Studio 2022 with the **Deskto
 1. **Open:** *File → Open → Folder…* and pick this repository's folder. Visual Studio reads `CMakePresets.json` and configures the project. Wait for "CMake generation finished" in the Output window.
 2. **Choose a configuration:** pick **Debug** in the configuration drop-down on the toolbar.
 3. **Build:** *Build → Build All*.
-4. **Run or debug a game:** choose **16_SFML_Games.exe** (or `catcher_before.exe`, …) in the *Select Startup Item* drop-down next to the green ▶ button, then press **F5**. If the game's images don't load, the debugger is running it from the wrong folder (see [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md#visual-studio)).
+4. **Run or debug a game:** choose **16_SFML_Games.exe** in the *Select Startup Item* drop-down next to the green ▶ button, then press **F5**. If the game's images don't load, the debugger is running it from the wrong folder (see [BUILDING.md](https://github.com/kenpower/16_SFML_Games/blob/main/BUILDING.md#visual-studio)).
 5. **Test:** *Test → Test Explorer*, then **Run All Tests** (▶▶). Every test appears in a tree. Double-click a failing test to go to it. To debug a test, right-click it and choose **Debug**.
 
 ### Command line (Linux, macOS, or Windows without Visual Studio)
@@ -68,7 +59,6 @@ In VS Code, use the CMake Tools extension: pick a preset, then use its Build, De
 | `16_SFML_Games/` | One `.cpp` file per game, the launcher (`16_SFML_Games.cpp`), and SFML-free classes that tests can use: `Grid.h` and `Player.h` (the Xonix worked example) and `PlainTypes.h` (`Point`, `Vec2f`, `Rect` for your own classes) |
 | `16_SFML_Games/images/` | Game assets, copied next to the executable when you build |
 | `Tests/` | Unit tests. `test.cpp` tests the Xonix classes. There is one file for each of the four assignment games (`tetris_test.cpp`, `minesweeper_test.cpp`, `tron_test.cpp`, `netwalk_test.cpp`). Each one tests the placeholder `name()` of the game's empty class (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`). The tests don't link SFML. |
-| `howto_split/` | The Catcher example |
 
 ### Reading the game code
 

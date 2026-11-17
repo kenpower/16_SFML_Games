@@ -11,7 +11,7 @@ Part of the three-week project **Refactor, test and extend an SFML game**. See [
 > - your game's rules are gathered into an `update()` function and a state `struct`, still in the game file
 > - the `week1` tag is pushed **before session 2**
 
-Read `seams_lecture_notes.md` before the lab, or at least sections 1–3.
+Read [seams_lecture_notes.md](https://github.com/kenpower/split-at-the-seam/blob/main/seams_lecture_notes.md) before the lab, or at least sections 1–3.
 
 In the lab you may use [cs50.ai/chat](https://cs50.ai/chat)[^duck] for technical questions, such as build errors or debugger problems. See the AI rule in [assignment.md](https://github.com/kenpower/16_SFML_Games/blob/main/assignment.md#rules).
 
@@ -31,7 +31,7 @@ In the lab you may use [cs50.ai/chat](https://cs50.ai/chat)[^duck] for technical
 - Finish `NOTES.md`: state table, questions, test list.
 - Add the seam map to your game's code (step 5a), then do the seam refactorings (step 5b) and any more general ones.
 - Finish by gathering the rules into `update()` and a state `struct` (step 5c). That makes **6+ refactorings** in total.
-- Read `howto_split.md` and play `catcher_before` and `catcher_after`.
+- Read [howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md), and build and play `catcher_before` and `catcher_after` from the [split-at-the-seam](https://github.com/kenpower/split-at-the-seam) repository.
 - Push the `week1` tag.
 
 ---
@@ -195,7 +195,7 @@ Tag the important lines of your game (setup, the loop, and any helper functions 
 | `[DRAW]` | sprites, `window.draw` | stays in the game file |
 | `[GLOBAL]` | reads or writes a global variable | becomes a class member or a parameter |
 
-For example, from [howto_split/before/catcher.cpp](howto_split/before/catcher.cpp), which has a complete seam map:
+For example, from [howto_split/before/catcher.cpp](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split/before/catcher.cpp), which has a complete seam map:
 
 ```cpp
 if (Keyboard::isKeyPressed(Keyboard::Key::Left))  basket.move({-300 * dt, 0});   // [KEY+RULE+TIME+DRAW]
@@ -214,7 +214,7 @@ When the rules move into your class in week 2, delete the tags from the class. K
 
 ### 5b. Untangle them
 
-Work through `howto_split.md` **steps 1–5**, on your game, one commit each:
+Work through [howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md) **steps 1–5**, on your game, one commit each:
 
 1. Take state out of SFML objects → `refactor(state-out-of-sfml):`
 2. Name the magic numbers → `refactor(constant):`
@@ -223,11 +223,11 @@ Work through `howto_split.md` **steps 1–5**, on your game, one commit each:
 5. Replace SFML types in the rules → `refactor(sfml-type):`
 6. Stop helper functions reading globals → `refactor(de-global):`
 
-Not every game needs all six. Do the ones your seam map shows you need. The step-by-step versions of Catcher in [howto_split/steps/](howto_split/steps/) show each of steps 1–5 as a small change you can compare.
+Not every game needs all six. Do the ones your seam map shows you need. The step-by-step versions of Catcher in [howto_split/steps/](https://github.com/kenpower/split-at-the-seam/tree/main/howto_split/steps) show each of steps 1–5 as a small change you can compare.
 
 ### 5c. Gather the rules into `update()`
 
-Once the rules are untangled, gather them in one place, **still in your game file** (`howto_split.md` step 6, and [steps/step6_update.cpp](howto_split/steps/step6_update.cpp) for Catcher):
+Once the rules are untangled, gather them in one place, **still in your game file** ([howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md) step 6, and [steps/step6_update.cpp](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split/steps/step6_update.cpp) for Catcher):
 
 - Put the game's state (the variables that live between frames) into one `struct`.
 - Move the RULE lines into one function, `update(...)`, that takes the struct and the plain inputs (keys, `dt`, random values). If one function is too big, use a few: e.g. `movePiece`, `dropPiece`, `clearRows`.

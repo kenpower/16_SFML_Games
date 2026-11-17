@@ -134,7 +134,7 @@ ctest --preset default                                   # with presets
 ctest --test-dir build -C Release --output-on-failure    # without
 ```
 
-Build everything (or at least the `Tests` and `CatcherTests` targets) before running ctest; a test executable that has not been built shows up as `..._NOT_BUILT` and fails.
+Build everything (or at least the `Tests` target) before running ctest; a test executable that has not been built shows up as `..._NOT_BUILT` and fails.
 
 To build only the tests, without downloading or building SFML (this is what CI does):
 

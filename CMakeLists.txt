@@ -14,7 +14,6 @@ option(SFML_GAMES_BUILD_GAME "Build the game launcher (requires SFML)" ON)
 include(FetchContent)
 
 set(GAME_DIR ${CMAKE_CURRENT_SOURCE_DIR}/16_SFML_Games)
-set(CATCHER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/howto_split)
 
 if(SFML_GAMES_BUILD_GAME)
 # ---------------------------------------------------------------------------
@@ -219,30 +218,6 @@ if(WIN32 AND SFML_FOUND AND NOT SFML_STATIC_LIBRARIES)
     )
 endif()
 
-# ---------------------------------------------------------------------------
-# Catcher: the worked example in howto_split.md, before and after the split
-# ---------------------------------------------------------------------------
-add_executable(catcher_before ${CATCHER_DIR}/before/catcher.cpp)
-add_executable(catcher_after  ${CATCHER_DIR}/after/catcher.cpp ${CATCHER_DIR}/after/CatcherGame.h)
-# One complete program per refactoring step (steps 1-6; step 7 is catcher_after)
-add_executable(catcher_step1 ${CATCHER_DIR}/steps/step1_state.cpp)
-add_executable(catcher_step2 ${CATCHER_DIR}/steps/step2_constants.cpp)
-add_executable(catcher_step3 ${CATCHER_DIR}/steps/step3_input.cpp)
-add_executable(catcher_step4 ${CATCHER_DIR}/steps/step4_inject.cpp)
-add_executable(catcher_step5 ${CATCHER_DIR}/steps/step5_rect.cpp)
-add_executable(catcher_step6 ${CATCHER_DIR}/steps/step6_update.cpp)
-
-foreach(catcher catcher_before catcher_step1 catcher_step2 catcher_step3 catcher_step4 catcher_step5 catcher_step6 catcher_after)
-    target_link_libraries(${catcher} PRIVATE SFML::Graphics SFML::Window SFML::System)
-    set_target_properties(${catcher} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    if(WIN32 AND SFML_FOUND AND NOT SFML_STATIC_LIBRARIES)
-        add_custom_command(TARGET ${catcher} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    $<TARGET_RUNTIME_DLLS:${catcher}> $<TARGET_FILE_DIR:${catcher}>
-            COMMAND_EXPAND_LISTS
-        )
-    endif()
-endforeach()
 endif() # SFML_GAMES_BUILD_GAME
 
 # ---------------------------------------------------------------------------
@@ -269,11 +244,6 @@ if(SFML_GAMES_BUILD_TESTS)
     target_include_directories(Tests PRIVATE ${GAME_DIR})
     target_link_libraries(Tests PRIVATE GTest::gtest_main)
 
-    add_executable(CatcherTests ${CATCHER_DIR}/after/CatcherGame_test.cpp)
-    target_include_directories(CatcherTests PRIVATE ${CATCHER_DIR}/after)
-    target_link_libraries(CatcherTests PRIVATE GTest::gtest_main)
-
     include(GoogleTest)
     gtest_discover_tests(Tests)
-    gtest_discover_tests(CatcherTests TEST_PREFIX "Catcher.")
 endif()

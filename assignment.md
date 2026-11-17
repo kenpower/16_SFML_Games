@@ -43,7 +43,7 @@ By the end of this project you should be able to:
 7. Decide **what** to test, and write clear, focused unit tests with GoogleTest.
 8. Add a new feature **test first**, to code you now control.
 
-Supporting material: the lecture notes on seams (`seams_lecture_notes.md`) and the worked example (`howto_split.md`), which splits a small game called Catcher.
+Supporting material: the lecture notes on seams ([seams_lecture_notes.md](https://github.com/kenpower/split-at-the-seam/blob/main/seams_lecture_notes.md)) and the worked example ([howto_split.md](https://github.com/kenpower/split-at-the-seam/blob/main/howto_split.md)), both in the [split-at-the-seam](https://github.com/kenpower/split-at-the-seam) repository. The example splits a small game called Catcher.
 
 ## Marking
 

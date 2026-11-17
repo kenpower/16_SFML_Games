@@ -41,7 +41,7 @@ ctest --preset default
 # or: ctest --test-dir build -C Release --output-on-failure
 ```
 
-There are two test executables (`Tests`, `CatcherTests`); build both before running ctest or the unbuilt one is reported as `CatcherTests_NOT_BUILT`.
+Build the `Tests` target before running ctest, or it is reported as `Tests_NOT_BUILT`.
 
 `Tests/test.cpp` includes headers from `16_SFML_Games/` directly (the test target has that folder on its include path). Classes under test must not include SFML.
 
@@ -93,9 +93,8 @@ constexpr int tileSize = 18;
 ### Teaching material
 
 - `assignment.md` - the student project brief (3-week solo project: overview, marking, rules, tags), with `assignment_week1.md`, `assignment_week2.md` and `assignment_week3.md` (weeks 2 and 3 are marked DRAFT)
-- `seams_lecture_notes.md` - lecture notes on seams; `howto_split.md` + `howto_split/` - the Catcher worked example (`before/` has seam-map comments, `steps/` one program per step, `after/` the finished split)
+- The seams lecture notes and the Catcher worked example (`howto_split.md`, seam-map `before/`, one program per step in `steps/`, finished `after/`) live in https://github.com/kenpower/split-at-the-seam. Instructor notes and in-lab task drafts live in the private https://github.com/kenpower/sfml-refactor-lab-instructor - never add them to this public repo
 - `Tests/<game>_test.cpp` - one test file per assignment game (tetris, minesweeper, tron, netwalk - the four integer-state games; Arkanoid and Racing were dropped because students haven't done float tests), each testing the placeholder `name()` of an empty class stub (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`, namespace `<game>_game`); `16_SFML_Games/PlainTypes.h` - SFML-free `plain::Point`/`Vec2f`/`Rect` for students' classes. Students put their class in namespace `<game>_game` (not `<game>`, which clashes with the game's entry function)
-- `16_SFML_Games/REFACTORING_GUIDE.md` - games by difficulty and common refactorings
 - Game files carry `// ===== GUIDE`, `// ---- ... ----` signpost and `// HINT:` comments to help students navigate. Keep them accurate when changing code, and do not add comments that point out the games' bugs - students are meant to discover them.
 
 ### SFML 3 API Notes

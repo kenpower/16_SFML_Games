@@ -368,5 +368,3 @@ out/
 cmake-build-*/
 CMakeUserPresets.json
 
-# Instructor-only drafts: never push (the repository is public)
-INSTRUCTOR_TASKS.md
