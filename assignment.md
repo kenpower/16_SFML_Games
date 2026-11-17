@@ -18,6 +18,18 @@ The in-lab tasks in weeks 2 and 3 are **not published in advance**. You get them
 
 Each week builds on the one before. If you fall behind, **catch up before the next session**, using the "ready for next week" list at the end of each week's brief.
 
+## Lab buddies (optional)
+
+You may team up with a **lab buddy**: another student who chose the **same game**. You still have your own repository, and all your marks are your own. It's up to you whether you have one.
+
+Lab buddies sit together in the lab, and may:
+
+- talk through how the game's code works
+- review each other's commits ("why is this safe?")
+- help each other with build, debugger and git problems
+
+Lab buddies **don't share code**: never copy each other's changes or type into each other's repositories. The in-lab tasks in weeks 2 and 3 are done **on your own**, even if you have a lab buddy.
+
 ## What you will learn
 
 By the end of this project you should be able to:
