@@ -51,7 +51,7 @@ In VS Code, use the CMake Tools extension: pick a preset, then use its Build, De
 
 | Path | What's there |
 |------|--------------|
-| `16_SFML_Games/` | One `.cpp` file per game, the launcher (`16_SFML_Games.cpp`), and SFML-free classes that tests can use: `Grid.h` and `Player.h` (the Xonix worked example) and `PlainTypes.h` (`Point`, `Vec2f`, `Rect` for your own classes) |
+| `16_SFML_Games/` | One `.cpp` file per game, the launcher (`16_SFML_Games.cpp`), and SFML-free classes that tests can use: `Grid.h` and `Player.h` (the Xonix worked example) and `Geometry.h` (`Point`, `Vec2f`, `Rect` for your own classes) |
 | `16_SFML_Games/images/` | Game assets, copied next to the executable when you build |
 | `Tests/` | Unit tests. `test.cpp` tests the Xonix classes. There is one file for each of the four assignment games (`tetris_test.cpp`, `minesweeper_test.cpp`, `tron_test.cpp`, `netwalk_test.cpp`). Each one tests the placeholder `name()` of the game's empty class (`TetrisBoard.h`, `MineField.h`, `TronArena.h`, `PipeGrid.h`). The tests don't link SFML. |
 

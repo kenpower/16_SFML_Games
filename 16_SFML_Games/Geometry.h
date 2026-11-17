@@ -1,14 +1,14 @@
 #pragma once
-// Small plain types for game rules, with no SFML.
+// Geometry for game rules - points, vectors and rectangles - with no SFML.
 //
 // Use these in your extracted class instead of sf::Vector2i, sf::Vector2f and sf::FloatRect,
 // so the class compiles in the Tests project (which does not link SFML).
 // The game file can convert when it draws, e.g. sprite.setPosition({pos.x, pos.y}).
 //
-// They are in namespace plain so they don't clash with types of the same name in the games.
-// Use them as plain::Point, or add `using plain::Rect;` inside your own namespace.
+// They are in namespace geom so they don't clash with types of the same name in the games.
+// Use them as geom::Point, or add `using geom::Rect;` inside your own namespace.
 
-namespace plain
+namespace geom
 {
     // A cell on a grid, or a whole-number position.
     struct Point
