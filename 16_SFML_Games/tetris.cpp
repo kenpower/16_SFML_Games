@@ -6,6 +6,15 @@ using namespace sf;
 // Entry point: int tetris(). Almost everything happens inside its while (window.isOpen()) loop.
 // State that survives between frames: globals field, a, b (below), plus dx, rotate, colorNum, timer, delay (declared before the loop).
 // Suggested reading order: field and figures -> check() -> setup in tetris() -> the loop, top to bottom.
+// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
+//   SEAM inject         - rand() picks colorNum and the shape index n in the gravity tick; the Clock is read in the loop
+//                         (timer accumulates time), so the elapsed time could be passed in instead
+//   SEAM de-global      - check() reads the globals field and a[] instead of being given them; the loop also uses field, a, b
+//   SEAM input-data     - Keyboard::isKeyPressed(Down) is read in the middle of the update (it sets delay)
+//   rename              - a, b, k, n, s, t1, t2, t3, dx
+//   constant            - 18, the (28, 31) offset, the 0.3 and 0.05 delays, the 7 shapes
+//   extract-function    - move, rotate, tick and clear-lines sections of the loop
+//   std-array           - field and figures are plain C arrays
 // =====
 const int M = 20;
 const int N = 10;

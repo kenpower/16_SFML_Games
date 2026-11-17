@@ -6,6 +6,15 @@ using namespace sf;
 // Entry point is int tron(). State that survives between frames: the globals W, H, speed and field[][] (the trail map),
 // plus the locals p1, p2 (and their colours), t (a RenderTexture holding the picture of the trails) and Game, declared before the loop.
 // Suggested reading order: struct Bike, then SETUP in tron(), then the loop: INPUT, UPDATE, DRAW.
+// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
+//   SEAM inject      - the Bike constructor calls rand() for the starting x, y and dir
+//   SEAM de-global   - Bike::tick() and the loop in tron() read the globals W, H, speed and field
+//   SEAM input-data  - Keyboard::isKeyPressed is called inside the steering code for both players
+//   rename           - p1, p2, t, c, Game
+//   constant         - speed 4, the radius 3, the dir values 0-3, the key lists
+//   enum             - dir as 0, 1, 2, 3
+//   dedupe           - the two blocks of key checks for p1 and p2
+//   struct           - the four keys that belong to one player
 // =====
 // ---- GLOBAL STATE: arena size, speed, trail map ----
 // HINT: field is 600 x 480 bools (about 288 KB). If it becomes a class member, store it in a std::vector, not a C array:

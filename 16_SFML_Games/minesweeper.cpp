@@ -6,6 +6,15 @@ using namespace sf;
 // Entry point: int minesweeper(). There are no globals; the game is the while (app.isOpen()) loop.
 // State that survives between frames: w, grid and sgrid, declared before the loop.
 // Suggested reading order: grid / sgrid -> the two setup loops -> mouse input -> the draw loop.
+// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
+//   SEAM inject         - rand()%5 decides where the mines go in the "place the mines" setup loop
+//   SEAM input-data     - Mouse::getPosition is read every frame and turned into the cell x, y; the click handling changes
+//                         sgrid inside the event loop - it could become plain "reveal cell" / "flag cell" data or calls
+//   extract-function    - place mines, count neighbours, and the rule in the draw loop that changes sgrid
+//   rename              - w, s, t, grid, sgrid, n
+//   constant            - 9 (mine), 10 (hidden), 11 (flag), 32 (tile size), 12 and 10 (grid size)
+//   enum                - the cell codes 0-11 stored in grid and sgrid
+//   dedupe              - the eight neighbour checks in "count neighbouring mines"
 // =====
 int minesweeper()
 {

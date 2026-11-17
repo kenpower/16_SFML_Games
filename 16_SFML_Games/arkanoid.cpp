@@ -7,6 +7,16 @@ using namespace sf;
 // Entry point: int arkanoid(). No globals; the game is the while (app.isOpen()) loop.
 // State that survives between frames: the block vector (and n), the ball's x, y, dx, dy, and the paddle's paddleX, paddleY.
 // Suggested reading order: block setup -> ball variables -> the loop (ball, walls, paddle, draw).
+// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
+//   SEAM sfml-type          - the block and paddle collisions build FloatRects and call findIntersection (see plain::Rect, plain::overlaps)
+//   SEAM state-out-of-sfml  - blockW, blockH, paddleW, paddleH are read from the textures with getSize()
+//   SEAM input-data         - Keyboard::isKeyPressed moves paddleX in the middle of the update
+//   SEAM inject             - rand() chooses dy in the paddle bounce
+//   rename                  - x, y, dx, dy, n, t1..t4, app
+//   constant                - 43, 20, 6, 12, 3, 520, 450, 300, 440
+//   dedupe                  - the two near-identical loops over block[] (one for x, one for y)
+//   struct                  - the ball's x, y, dx, dy as one object
+//   explain-var             - the long collision conditions
 // =====
 
 // ---- DATA: one block, by the pixel position of its top-left corner ----

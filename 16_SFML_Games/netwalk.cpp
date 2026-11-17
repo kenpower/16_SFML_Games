@@ -7,6 +7,14 @@ using namespace sf;
 // Entry point: int netwalk(), at the bottom. The board is the global `grid` (N x N pipes) and the helpers above work on it.
 // State that survives between frames: grid, plus servPos and the sprites declared before the loop in netwalk().
 // Suggested reading order: struct pipe, then generatePuzzle, then drop, then netwalk() from SETUP downwards.
+// Refactorings to look for (week 1 needs 2+ seam types and 2+ other types):
+//   SEAM de-global   - generatePuzzle(), drop(), cell() and isOut() all work on the global grid instead of being given it
+//   SEAM inject      - rand() in generatePuzzle(), in the SETUP shuffle, and when the server is placed
+//   SEAM input-data  - the mouse position is turned into a grid cell inside the click handler
+//   rename           - tsz, oset, t1..t4, kind, s, n, p
+//   constant         - 54, the 65 / 55 offset, 27, 36, 53, 5
+//   enum             - kind (0 to 3) picks the pipe image
+//   extract-function - finding a pipe's orientation, or resetting the `on` flags
 // =====
 
 const int N = 6;
